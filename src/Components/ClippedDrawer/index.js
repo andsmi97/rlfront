@@ -60,12 +60,36 @@ class ClippedDrawer extends React.Component {
     this.setState({
       files
     });
+    console.log(this.state.files[0]);
   }
+    onSubjectChange = (event) => {
+        this.setState({ subject: event.target.value });
+    };
+  onMessageChange = (event) => {
+    this.setState({ message: event.target.value });
+  };
+//   onMessageChange(e) {
+//     this.setState({ message: e.target.value });
+//   }
 
   onCancel() {
     this.setState({
       files: []
     });
+  }
+  onSubmit = ()=> {
+    let formData = new FormData();
+    this.state.files.forEach(file=>{
+        formData.append(`${file.name}`, file);
+    })
+    // formData.append("file", this.state.files[0]);
+    // console.log(this.state.files[0]);
+    formData.append("subject", this.state.subject);
+    formData.append("message", this.state.message);
+      fetch("http://localhost:3001/upload", {
+      method: "POST",
+      body: formData
+    }).then(res=>console.log(res));
   }
   render() {
     const { classes } = this.props;
@@ -118,12 +142,13 @@ class ClippedDrawer extends React.Component {
             justify="center"
             alignItems="flex-start"
           >
-            <Paper className="w55 h100 df jcc fdc">
+            <Paper className="w55 h100 df jcc fdc mr2">
               <TextField
                 id="standard-dense"
                 label="Тема сообщения"
                 margin="dense"
                 variant="filled"
+                onChange={this.onSubjectChange}
               />
               <TextField
                 id="filled-multiline-static"
@@ -133,6 +158,7 @@ class ClippedDrawer extends React.Component {
                 className={classes.textField}
                 margin="normal"
                 variant="filled"
+                onChange={this.onMessageChange}
               />
               <section>
                 <div className="dropzone">
@@ -157,7 +183,11 @@ class ClippedDrawer extends React.Component {
                   </ul>
                 </aside>
               </section>
-              <Button color="primary" className={classes.button}>
+              <Button
+                color="primary"
+                className={classes.button}
+                onClick={this.onSubmit}
+              >
                 Отправить
               </Button>
             </Paper>
