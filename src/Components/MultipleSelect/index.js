@@ -66,32 +66,7 @@ class MultipleSelect extends React.Component {
       <Paper className="w40 h100">
         <div className={classes.root}>
           <FormControl className="nameselect">
-            <InputLabel htmlFor="select-multiple">ФИО</InputLabel>
-            <Select
-              multiple
-              value={this.state.name}
-              onChange={this.handleChange}
-              input={<Input id="select-multiple" />}
-              MenuProps={MenuProps}
-            >
-              {names.map(name => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={{
-                    fontWeight:
-                      this.state.name.indexOf(name) === -1
-                        ? theme.typography.fontWeightRegular
-                        : theme.typography.fontWeightMedium
-                  }}
-                >
-                  {name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl className="nameselect">
-            <InputLabel htmlFor="select-multiple-chip">Выбранные</InputLabel>
+            <InputLabel htmlFor="select-multiple-chip">Получатели</InputLabel>
             <Select
               multiple
               value={this.state.name}
