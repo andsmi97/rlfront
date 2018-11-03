@@ -65,7 +65,7 @@ class MultipleSelect extends React.Component {
     return (
       <Paper className="w40 h100">
         <div className={classes.root}>
-          <FormControl className={classes.formControl}>
+          <FormControl className="nameselect">
             <InputLabel htmlFor="select-multiple">ФИО</InputLabel>
             <Select
               multiple
@@ -90,7 +90,7 @@ class MultipleSelect extends React.Component {
               ))}
             </Select>
           </FormControl>
-          <FormControl className={classes.formControl}>
+          <FormControl className="nameselect">
             <InputLabel htmlFor="select-multiple-chip">Выбранные</InputLabel>
             <Select
               multiple

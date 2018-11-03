@@ -161,14 +161,14 @@ class ClippedDrawer extends React.Component {
                 onChange={this.onMessageChange}
               />
               <section>
-                <div className="dropzone">
+                <div>
                   <Dropzone
+                    className="dropzone"
                     onDrop={this.onDrop.bind(this)}
                     onFileDialogCancel={this.onCancel.bind(this)}
                   >
-                    <p>
-                      Try dropping some files here, or click to select files to
-                      upload.
+                    <p сlassName="dropboxtext">
+                      Перенесите сюда или выбирите файлы для загрузки.
                     </p>
                   </Dropzone>
                 </div>

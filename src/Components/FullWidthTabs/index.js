@@ -46,9 +46,10 @@ class FullWidthTabs extends React.Component {
     const { classes, theme } = this.props;
 
     return (
-      <div className={classes.root}>
+      <div className="rightbuttons">
         <AppBar position="static" color="default">
           <Tabs
+            className="right-buttons"
             value={this.state.value}
             onChange={this.handleChange}
             indicatorColor="primary"
