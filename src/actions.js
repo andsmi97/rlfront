@@ -1,8 +1,13 @@
 import {
-  CHANGE_SEARCH_FIELD,
-  INSERT_TENANT,
-  DELETE_TENANT,
-  UPDATE_TENANT,
+  INSERT_TENANT_FAILED,
+  INSERT_TENANT_SUCCESS,
+  INSERT_TENANT_PENDING,
+  DELETE_TENANT_FAILED,
+  DELETE_TENANT_SUCCESS,
+  DELETE_TENANT_PENDING,
+  UPDATE_TENANT_FAILED,
+  UPDATE_TENANT_SUCCESS,
+  UPDATE_TENANT_PENDING,
   REQUEST_TENANTS_FAILED,
   REQUEST_TENANTS_SUCCESS,
   REQUEST_TENANTS_PENDING,
@@ -15,17 +20,28 @@ import {
   CHANGE_UPDATE_EMAIL_FIELD,
   CHANGE_DELETE_HOUSENUMBER_FIELD,
   CHANGE_MESSAGE_FIELD,
-  CHANGE_SUBJECT_FIELD
+  CHANGE_SUBJECT_FIELD,
+  CHANGE_SELECTED_TENANTS
 } from "./constants.js";
 
+
+// exportConst insertTenant = () => dispatch => {
+//   dispatch({ type: INSERT_TENANT_PENDING});
+//   fetch("http://localhost:3001/tenantinsert",{method:"POST",body:})
+// }
 //APP part
-export const requestTenatns = () => dispatch => {
+export const requestTenants = () => dispatch => {
   dispatch({ type: REQUEST_TENANTS_PENDING });
   fetch("http://localhost:3001/tenants")
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_TENANTS_SUCCESS, patyload: data }))
     .catch(error => dispatch({ type: REQUEST_TENANTS_FAILED, payload: error }));
 };
+
+export const changeTenants = tenants => ({
+  type: CHANGE_SELECTED_TENANTS,
+  payload: tenants
+});
 
 //Tenant part
 export const setInsertNameField = text => ({
@@ -55,11 +71,6 @@ export const setUpdateEmailField = text => ({
 
 export const setDeleteHouseNumberField = text => ({
   type: CHANGE_DELETE_HOUSENUMBER_FIELD,
-  payload: text
-});
-
-export const setSearchField = text => ({
-  type: CHANGE_SEARCH_FIELD,
   payload: text
 });
 

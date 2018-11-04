@@ -18,9 +18,23 @@ import MultipleSelect from "../MultipleSelect";
 import TextField from "@material-ui/core/TextField";
 import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
-
+import { connect } from "react-redux";
 // import { mailFolderListItems, otherMailFolderListItems } from './tileData';
-
+// import { setSearchField, requestRobots } from "../actions";
+const mapStateToProps = state => {
+  return {
+    // searchField: state.searchRobots.searchField,
+    // robots: state.requestRobots.robots,
+    // isPending: state.requestRobots.isPending,
+    // error: state.requestRobots.error
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    // onSearchChange: event => dispatch(setSearchField(event.target.value)),
+    // onRequestRobots: () => dispatch(requestRobots())
+  };
+};
 const drawerWidth = 240;
 
 const styles = theme => ({
@@ -62,35 +76,35 @@ class ClippedDrawer extends React.Component {
     });
     console.log(this.state.files[0]);
   }
-    onSubjectChange = (event) => {
-        this.setState({ subject: event.target.value });
-    };
-  onMessageChange = (event) => {
+  onSubjectChange = event => {
+    this.setState({ subject: event.target.value });
+  };
+  onMessageChange = event => {
     this.setState({ message: event.target.value });
   };
-//   onMessageChange(e) {
-//     this.setState({ message: e.target.value });
-//   }
+  //   onMessageChange(e) {
+  //     this.setState({ message: e.target.value });
+  //   }
 
   onCancel() {
     this.setState({
       files: []
     });
   }
-  onSubmit = ()=> {
+  onSubmit = () => {
     let formData = new FormData();
-    this.state.files.forEach(file=>{
-        formData.append(`${file.name}`, file);
-    })
-    // formData.append("file", this.state.files[0]);
-    // console.log(this.state.files[0]);
+    this.state.files.forEach(file => {
+      formData.append(`${file.name}`, file);
+    });
     formData.append("subject", this.state.subject);
     formData.append("message", this.state.message);
-      fetch("http://localhost:3001/upload", {
+    fetch("http://localhost:3001/upload", {
       method: "POST",
       body: formData
-    }).then(res=>console.log(res));
-  }
+    })
+      .then(res => console.log(res))
+      .catch(error => console.log(error));
+  };
   render() {
     const { classes } = this.props;
     return (
@@ -102,12 +116,7 @@ class ClippedDrawer extends React.Component {
             </Typography>
           </Toolbar>
         </AppBar>
-        <Drawer
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper
-          }}
-        >
+        <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
           <div className={classes.toolbar} />
           <ListItem button>
             <ListItemIcon>
@@ -167,13 +176,13 @@ class ClippedDrawer extends React.Component {
                     onDrop={this.onDrop.bind(this)}
                     onFileDialogCancel={this.onCancel.bind(this)}
                   >
-                    <p сlassName="dropboxtext">
+                    <p className="dropboxtext">
                       Перенесите сюда или выбирите файлы для загрузки.
                     </p>
                   </Dropzone>
                 </div>
                 <aside>
-                  <h2>Dropped files</h2>
+                  <h2>Отправляемые файлы</h2>
                   <ul>
                     {this.state.files.map(f => (
                       <li key={f.name}>
@@ -203,4 +212,8 @@ ClippedDrawer.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(ClippedDrawer);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(ClippedDrawer));
+// export default ClippedDrawer;

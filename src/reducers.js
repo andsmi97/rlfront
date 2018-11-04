@@ -14,13 +14,15 @@ import {
   CHANGE_UPDATE_EMAIL_FIELD,
   CHANGE_DELETE_HOUSENUMBER_FIELD,
   CHANGE_MESSAGE_FIELD,
-  CHANGE_SUBJECT_FIELD
+  CHANGE_SUBJECT_FIELD,
+  CHANGE_SELECTED_TENANTS
 } from "./constants.js";
 
 const initialStateEmail = {
   subjectField: "",
   messageField: ""
 };
+
 export const changeEmailInputs = (state = initialStateEmail, action = {}) => {
   switch (action.type) {
     case CHANGE_MESSAGE_FIELD:
@@ -35,8 +37,22 @@ export const changeEmailInputs = (state = initialStateEmail, action = {}) => {
       return state;
   }
 };
+
+const names = [
+  "Гуляев Вячеслав Владленович",
+  "Попов Артем Гордеевич",
+  "Силин Донат Глебович",
+  "Третьяков Пантелеймон Онисимович",
+  "Агафонов Глеб Михайлович",
+  "Кузьмин Владлен Вениаминович",
+  "Ефремов Юрий Геннадьевич",
+  "Кузнецов Остап Иосифович",
+  "Красильников Карл Рудольфович",
+  "Рябов Семен Русланович"
+];
 const initialStateTenants = {
-  tenants: [],
+  tenants: names,
+  selectedTenants: names,
   insertNameField: "",
   insertEmailField: "",
   insertHouseNumberField: "",
@@ -46,6 +62,19 @@ const initialStateTenants = {
   isPending: false
 };
 
+export const changeSelectedTenants = (
+  state = initialStateTenants,
+  action = {}
+) => {
+  switch (action.type) {
+    case CHANGE_SELECTED_TENANTS:
+      return Object.assign({}, state, {
+        selectedTenants: action.payload
+      });
+    default:
+      return state;
+  }
+};
 export const changeTenantsInputs = (
   state = initialStateTenants,
   action = {}

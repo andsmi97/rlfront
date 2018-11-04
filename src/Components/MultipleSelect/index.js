@@ -9,6 +9,22 @@ import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
 import FullWidthTabs from "../FullWidthTabs";
 import Paper from "@material-ui/core/Paper";
+import { changeTenants } from "../../actions";
+import { connect } from "react-redux";
+const mapStateToProps = state => {
+  return { selectedTenants: state.changeSelectedTenants.selectedTenants };
+  // searchField: state.searchRobots.searchField,
+  // robots: state.requestRobots.robots,
+  // isPending: state.requestRobots.isPending,
+  // error: state.requestRobots.error
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    onTenantChange: event => dispatch(changeTenants(event.target.value))
+  };
+  // onSearchChange: event => dispatch(setSearchField(event.target.value)),
+  // onRequestRobots: () => dispatch(requestRobots())
+};
 const styles = theme => ({
   root: {
     display: "flex",
@@ -40,28 +56,24 @@ const MenuProps = {
 };
 
 const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder"
+  "Гуляев Вячеслав Владленович",
+  "Попов Артем Гордеевич",
+  "Силин Донат Глебович",
+  "Третьяков Пантелеймон Онисимович",
+  "Агафонов Глеб Михайлович",
+  "Кузьмин Владлен Вениаминович",
+  "Ефремов Юрий Геннадьевич",
+  "Кузнецов Остап Иосифович",
+  "Красильников Карл Рудольфович",
+  "Рябов Семен Русланович"
 ];
 class MultipleSelect extends React.Component {
-  state = {
-    name: names
-  };
-
   handleChange = event => {
     this.setState({ name: event.target.value });
   };
 
   render() {
-    const { classes, theme } = this.props;
+    const { classes, theme, onTenantChange, selectedTenants } = this.props;
     return (
       <Paper className="w40 h100">
         <div className={classes.root}>
@@ -69,8 +81,8 @@ class MultipleSelect extends React.Component {
             <InputLabel htmlFor="select-multiple-chip">Получатели</InputLabel>
             <Select
               multiple
-              value={this.state.name}
-              onChange={this.handleChange}
+              value={selectedTenants}
+              onChange={onTenantChange}
               input={<Input id="select-multiple-chip" />}
               renderValue={selected => (
                 <div className={classes.chips}>
@@ -87,7 +99,7 @@ class MultipleSelect extends React.Component {
                   value={name}
                   style={{
                     fontWeight:
-                      this.state.name.indexOf(name) === -1
+                      selectedTenants.indexOf(name) === -1
                         ? theme.typography.fontWeightRegular
                         : theme.typography.fontWeightMedium
                   }}
@@ -109,4 +121,7 @@ MultipleSelect.propTypes = {
   theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(MultipleSelect);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles, { withTheme: true })(MultipleSelect));
