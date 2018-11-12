@@ -40,10 +40,15 @@
 .w40 {
   width: 40%;
 }
-.mr2{
-    margin-right: 2%;
+.mr2 {
+  margin-right: 2%;
 }
-
+.p15 {
+  padding: 15px !important;
+}
+.filestosend > ul {
+  list-style: none;
+}
 @media (min-width: 960px) {
   .App {
     .MuiTab-root-317 {
@@ -58,7 +63,7 @@
 
 .dropzone {
   position: relative;
-  width: 97%;
+  width: 100%;
   height: 200px;
   border-width: 2px;
   border-color: rgba(102, 102, 102, 0.5);
@@ -66,6 +71,8 @@
   border-radius: 5px;
   font-family: Roboto;
   padding: 10px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
 }
 
 .MultipleSelect-root-293 {
@@ -80,7 +87,6 @@
   width: 90%;
 }
 
-
 .FullWidthTabs-root-346 {
   width: 90%;
 }
@@ -89,17 +95,15 @@
   padding: 5px;
 }
 
-.MuiPaper-root-15 {
-  margin: 5px;
-}
-
 .MuiTabs-flexContainer-348 {
   height: 100%;
   width: 100%;
   justify-content: center;
   align-items: center;
 }
-
+.fullwidthtabs {
+  width: 100%;
+}
 .right-buttons {
   width: 100%;
   display: flex;
@@ -107,6 +111,9 @@
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
+  > div {
+    width: 100%;
+  }
 }
 
 .MultipleSelect-formControl-294 {
@@ -131,4 +138,30 @@
 
 .MuiPaper-elevation2-19 {
   padding-top: 20px;
+}
+
+@media (min-width: 1450px) {
+  .App {
+    .leftpaper {
+      width: 50%;
+    }
+  }
+}
+
+@media (min-width: 1305px) {
+  .App {
+    .leftpaper {
+      width: 55%;
+    }
+    .rightpart{
+      width: 35%;
+    }
+  }
+}
+@media (min-width: 960px) {
+  .App {
+    .tab {
+      min-width: 72px;
+    }
+  }
 }

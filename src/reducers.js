@@ -1,12 +1,7 @@
 import {
-  INSERT_TENANT,
-  DELETE_TENANT,
-  UPDATE_TENANT,
   REQUEST_TENANTS_FAILED,
   REQUEST_TENANTS_SUCCESS,
   REQUEST_TENANTS_PENDING,
-  SEND_MESSAGES,
-  UPLOAD_FILES,
   CHANGE_INSERT_NAME_FIELD,
   CHANGE_INSERT_EMAIL_FIELD,
   CHANGE_INSERT_HOUSENUMBER_FIELD,
@@ -15,68 +10,115 @@ import {
   CHANGE_DELETE_HOUSENUMBER_FIELD,
   CHANGE_MESSAGE_FIELD,
   CHANGE_SUBJECT_FIELD,
-  CHANGE_SELECTED_TENANTS
+  CHANGE_SELECTED_TENANTS,
+  CHANGE_SENDING_FILES,
+  REMOVE_SENDING_FILES,
+  SELECT_ALL_TENANTS_ON_LOAD
 } from "./constants.js";
-
+import { getTenantsObjectsFromSelected } from "./tenantsSupportFunctions";
 const initialStateEmail = {
   subjectField: "",
-  messageField: ""
+  messageField: "",
+  files: []
 };
 
 export const changeEmailInputs = (state = initialStateEmail, action = {}) => {
   switch (action.type) {
     case CHANGE_MESSAGE_FIELD:
       return Object.assign({}, state, {
-        subjectField: action.payload
+        messageField: action.payload
       });
     case CHANGE_SUBJECT_FIELD:
       return Object.assign({}, state, {
-        messageField: action.payload
+        subjectField: action.payload
+      });
+    case CHANGE_SENDING_FILES:
+      return Object.assign({}, state, {
+        files: action.payload
+      });
+    case REMOVE_SENDING_FILES:
+      return Object.assign({}, state, {
+        files: action.payload
       });
     default:
       return state;
   }
 };
 
-const names = [
-  "Гуляев Вячеслав Владленович",
-  "Попов Артем Гордеевич",
-  "Силин Донат Глебович",
-  "Третьяков Пантелеймон Онисимович",
-  "Агафонов Глеб Михайлович",
-  "Кузьмин Владлен Вениаминович",
-  "Ефремов Юрий Геннадьевич",
-  "Кузнецов Остап Иосифович",
-  "Красильников Карл Рудольфович",
-  "Рябов Семен Русланович"
-];
 const initialStateTenants = {
-  tenants: names,
-  selectedTenants: names,
+  tenants: {},
+  tenantsArray: [],
+  selectedTenants: [],
+  selectedTenantsObject: {},
+  isPending: false,
+  error: ""
+};
+
+export const requestTenants = (state = initialStateTenants, action = {}) => {
+  switch (action.type) {
+    case REQUEST_TENANTS_PENDING:
+      return Object.assign({}, state, { isPending: true });
+    case REQUEST_TENANTS_SUCCESS:
+      return Object.assign({}, state, {
+        tenants: action.payload,
+        isPending: false
+      });
+    case REQUEST_TENANTS_FAILED:
+      return Object.assign({}, state, {
+        error: action.payload,
+        isPending: false
+      });
+    case SELECT_ALL_TENANTS_ON_LOAD:
+      return Object.assign({}, state, {
+        tenantsArray: action.payload,
+        selectedTenants: action.payload,
+        selectedTenantsObject: getTenantsObjectsFromSelected(
+          action.payload,
+          state.tenants
+        )
+      });
+    case CHANGE_SELECTED_TENANTS:
+      return Object.assign({}, state, {
+        selectedTenants: action.payload,
+        selectedTenantsObject: getTenantsObjectsFromSelected(
+          action.payload,
+          state.tenants
+        )
+      });
+    default:
+      return state;
+  }
+};
+// const initialStateSelectedTenants = {
+//   selectedTenants: [],
+//   selectedTenantsObjects: {}
+// };
+// export const changeSelectedTenants = (
+//   state = initialStateSelectedTenants,
+//   action = {}
+// ) => {
+//   switch (action.type) {
+//     case CHANGE_SELECTED_TENANTS:
+//       return Object.assign({}, state, {
+//         selectedTenants: action.payload
+//       });
+
+//     default:
+//       return state;
+//   }
+// };
+
+const initialStateFields = {
   insertNameField: "",
   insertEmailField: "",
   insertHouseNumberField: "",
   updateNameField: "",
   updateEmailField: "",
-  deleteHouseNumberField: "",
-  isPending: false
+  deleteHouseNumberField: ""
 };
 
-export const changeSelectedTenants = (
-  state = initialStateTenants,
-  action = {}
-) => {
-  switch (action.type) {
-    case CHANGE_SELECTED_TENANTS:
-      return Object.assign({}, state, {
-        selectedTenants: action.payload
-      });
-    default:
-      return state;
-  }
-};
 export const changeTenantsInputs = (
-  state = initialStateTenants,
+  state = initialStateFields,
   action = {}
 ) => {
   switch (action.type) {
@@ -107,8 +149,4 @@ export const changeTenantsInputs = (
     default:
       return state;
   }
-};
-
-const initialStateFiles = {
-  files: []
 };

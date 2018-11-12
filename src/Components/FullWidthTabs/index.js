@@ -23,8 +23,8 @@ const mapStateToProps = state => {
     insertNameField: state.changeTenantsInputs.insertNameField,
     insertEmailField: state.changeTenantsInputs.insertEmailField,
     insertHouseNumberField: state.changeTenantsInputs.insertHouseNumberField,
-    updateNameField: state.changeTenantsInputs.insertNameField,
-    updateEmailField: state.changeTenantsInputs.insertEmailField,
+    updateNameField: state.changeTenantsInputs.updateNameField,
+    updateEmailField: state.changeTenantsInputs.updateEmailField,
     deleteHouseNumberField: state.changeTenantsInputs.deleteHouseNumberField
   };
 };
@@ -140,34 +140,37 @@ class FullWidthTabs extends React.Component {
             textColor="primary"
             fullWidth
           >
-            <Tab label="Добавить" />
-            <Tab label="Изменить" />
-            <Tab label="Удалить" />
+            <Tab className="tab" label="Добавить" />
+            <Tab className="tab" label="Изменить" />
+            <Tab className="tab" label="Удалить" />
           </Tabs>
         </AppBar>
         <SwipeableViews
           axis={theme.direction === "rtl" ? "x-reverse" : "x"}
           index={this.state.value}
           onChangeIndex={this.handleChangeIndex}
+          className="fullwidthtabs"
         >
           <TabContainer dir={theme.direction}>
             <TextField
-              id="standard-dense"
+              id="insert-fio"
               label="ФИО"
               margin="dense"
               onChange={onInsertNameChange}
             />
             <TextField
-              id="standard-dense"
+              id="insert-number"
               label="№Дома"
               margin="dense"
               onChange={onInsertHouseNumberChange}
+              type="number"
             />
             <TextField
-              id="standard-dense"
+              id="insert-email"
               label="Email"
               margin="dense"
               onChange={onInsertEmailChange}
+              type="email"
             />
             <Button
               color="primary"
@@ -179,16 +182,17 @@ class FullWidthTabs extends React.Component {
           </TabContainer>
           <TabContainer dir={theme.direction}>
             <TextField
-              id="standard-dense"
+              id="update-name"
               label="ФИО"
               margin="dense"
               onChange={onUpdateNameChange}
             />
             <TextField
-              id="standard-dense"
+              id="update-email"
               label="Email"
               margin="dense"
               onChange={onUpdateEmailChange}
+              type="email"
             />
             <Button color="primary" className={classes.button}>
               Изменить жильца
@@ -196,12 +200,17 @@ class FullWidthTabs extends React.Component {
           </TabContainer>
           <TabContainer dir={theme.direction}>
             <TextField
-              id="standard-dense"
+              id="delete-number"
               label="№Дома"
+              type="number"
               margin="dense"
               onChange={onDeleteHouseNumberChange}
             />
-            <Button color="secondary" className={classes.button} onClick={this.deleteTenant}>
+            <Button
+              color="secondary"
+              className={classes.button}
+              onClick={this.deleteTenant}
+            >
               Удалить жильца
             </Button>
           </TabContainer>

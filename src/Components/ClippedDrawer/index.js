@@ -20,19 +20,26 @@ import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 // import { mailFolderListItems, otherMailFolderListItems } from './tileData';
-// import { setSearchField, requestRobots } from "../actions";
+import {
+  setSubjectField,
+  setMessageField,
+  setSendingFiles,
+  removeSendingFiles
+} from "../../actions";
 const mapStateToProps = state => {
   return {
-    // searchField: state.searchRobots.searchField,
-    // robots: state.requestRobots.robots,
-    // isPending: state.requestRobots.isPending,
-    // error: state.requestRobots.error
+    subjectField: state.changeEmailInputs.subjectField,
+    messageField: state.changeEmailInputs.messageField,
+    files: state.changeEmailInputs.files,
+    selectedTenantsObject: state.requestTenants.selectedTenantsObject
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
-    // onSearchChange: event => dispatch(setSearchField(event.target.value)),
-    // onRequestRobots: () => dispatch(requestRobots())
+    onMessageChange: event => dispatch(setMessageField(event.target.value)),
+    onSubjectChange: event => dispatch(setSubjectField(event.target.value)),
+    onDrop: files => dispatch(setSendingFiles(files)),
+    onCancel: () => dispatch(removeSendingFiles())
   };
 };
 const drawerWidth = 240;
@@ -56,57 +63,42 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3,
-    minWidth: 0 // So the Typography noWrap works
+    paddingTop: theme.spacing.unit * 3,
+    minWidth: 0,
+    overflowY: "scroll" // So the Typography noWrap works
   },
   toolbar: theme.mixins.toolbar
 });
-class ClippedDrawer extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      files: [],
-      message: "",
-      subject: ""
-    };
-  }
-  onDrop(files) {
-    this.setState({
-      files
-    });
-    console.log(this.state.files[0]);
-  }
-  onSubjectChange = event => {
-    this.setState({ subject: event.target.value });
-  };
-  onMessageChange = event => {
-    this.setState({ message: event.target.value });
-  };
-  //   onMessageChange(e) {
-  //     this.setState({ message: e.target.value });
-  //   }
 
-  onCancel() {
-    this.setState({
-      files: []
-    });
-  }
+class ClippedDrawer extends React.Component {
   onSubmit = () => {
     let formData = new FormData();
-    this.state.files.forEach(file => {
+    this.props.files.forEach(file => {
       formData.append(`${file.name}`, file);
     });
-    formData.append("subject", this.state.subject);
-    formData.append("message", this.state.message);
-    fetch("http://localhost:3001/upload", {
+    formData.append("subject", this.props.subjectField);
+    formData.append("message", this.props.messageField);
+    Object.entries(this.props.selectedTenantsObject).forEach(tenant => {
+      formData.append(`${tenant[0]}name`, tenant[1].name);
+      formData.append(`${tenant[0]}email`, tenant[1].email);
+    });
+    fetch("http://localhost:3001/mail", {
       method: "POST",
       body: formData
     })
       .then(res => console.log(res))
       .catch(error => console.log(error));
   };
+
   render() {
-    const { classes } = this.props;
+    const {
+      classes,
+      onMessageChange,
+      onSubjectChange,
+      onDrop,
+      onCancel,
+      files
+    } = this.props;
     return (
       <div className={classes.root}>
         <AppBar position="absolute" className={classes.appBar}>
@@ -151,46 +143,50 @@ class ClippedDrawer extends React.Component {
             justify="center"
             alignItems="flex-start"
           >
-            <Paper className="w55 h100 df jcc fdc mr2">
+            <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
               <TextField
                 id="standard-dense"
                 label="Тема сообщения"
                 margin="dense"
                 variant="filled"
-                onChange={this.onSubjectChange}
+                onChange={onSubjectChange}
               />
               <TextField
                 id="filled-multiline-static"
                 label="Сообщение"
                 multiline
-                rows="20"
+                rows="15"
                 className={classes.textField}
                 margin="normal"
                 variant="filled"
-                onChange={this.onMessageChange}
+                onChange={onMessageChange}
               />
               <section>
                 <div>
                   <Dropzone
                     className="dropzone"
-                    onDrop={this.onDrop.bind(this)}
-                    onFileDialogCancel={this.onCancel.bind(this)}
+                    onDrop={onDrop.bind(this)}
+                    onFileDialogCancel={onCancel.bind(this)}
                   >
                     <p className="dropboxtext">
                       Перенесите сюда или выбирите файлы для загрузки.
                     </p>
                   </Dropzone>
                 </div>
-                <aside>
-                  <h2>Отправляемые файлы</h2>
-                  <ul>
-                    {this.state.files.map(f => (
-                      <li key={f.name}>
-                        {f.name} - {f.size} bytes
-                      </li>
-                    ))}
-                  </ul>
-                </aside>
+                {!(files.length < 1) ? (
+                  <aside className="filestosend">
+                    <h2>Отправляемые файлы</h2>
+                    <ul>
+                      {files.map(f => (
+                        <li key={f.name}>
+                          {f.name} - {f.size} bytes
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
+                ) : (
+                  <aside />
+                )}
               </section>
               <Button
                 color="primary"
