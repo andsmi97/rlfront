@@ -15,17 +15,35 @@ import {
   setInsertHouseNumberField,
   setUpdateNameField,
   setUpdateEmailField,
-  setDeleteHouseNumberField
+  setDeleteHouseNumberField,
+  openInsertSuccessPopUp,
+  openUpdateSuccessPopUp,
+  openDeleteSuccessPopUp,
+  closeInsertSuccessPopUp,
+  closeUpdateSuccessPopUp,
+  closeDeleteSuccessPopUp,
+  setUpdateHouseNumberField,
+  resetDeleteTenantFields,
+  resetUpdateTenantFields,
+  resetInsertTenantFields
 } from "../../actions";
-
+import SnackBar from "../Snackbar";
+import Snackbar from "@material-ui/core/Snackbar";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 const mapStateToProps = state => {
   return {
     insertNameField: state.changeTenantsInputs.insertNameField,
     insertEmailField: state.changeTenantsInputs.insertEmailField,
     insertHouseNumberField: state.changeTenantsInputs.insertHouseNumberField,
     updateNameField: state.changeTenantsInputs.updateNameField,
+    updateHouseNumberField: state.changeTenantsInputs.updateHouseNumberField,
     updateEmailField: state.changeTenantsInputs.updateEmailField,
-    deleteHouseNumberField: state.changeTenantsInputs.deleteHouseNumberField
+    deleteHouseNumberField: state.changeTenantsInputs.deleteHouseNumberField,
+    snackInsert: state.handleSnackbars.snackInsert,
+    snackUpdate: state.handleSnackbars.snackUpdate,
+    snackDelete: state.handleSnackbars.snackDelete
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -40,8 +58,19 @@ const mapDispatchToProps = dispatch => {
       dispatch(setUpdateNameField(event.target.value)),
     onUpdateEmailChange: event =>
       dispatch(setUpdateEmailField(event.target.value)),
+    onUpdateHouseNumberChange: event =>
+      dispatch(setUpdateHouseNumberField(event.target.value)),
     onDeleteHouseNumberChange: event =>
-      dispatch(setDeleteHouseNumberField(event.target.value))
+      dispatch(setDeleteHouseNumberField(event.target.value)),
+    onInsertionSuccess: () => dispatch(openInsertSuccessPopUp()),
+    onUpdateSuccess: () => dispatch(openUpdateSuccessPopUp()),
+    onDeleteSuccess: () => dispatch(openDeleteSuccessPopUp()),
+    onInsertionSuccessClose: () => dispatch(closeInsertSuccessPopUp()),
+    onUpdateSuccessClose: () => dispatch(closeUpdateSuccessPopUp()),
+    onDeleteSuccessClose: () => dispatch(closeDeleteSuccessPopUp()),
+    onResetTenantInsertFields: () => dispatch(resetInsertTenantFields()),
+    onResetTenantUpdateFields: () => dispatch(resetUpdateTenantFields()),
+    onResetTenantDeleteFields: () => dispatch(resetDeleteTenantFields())
   };
 };
 
@@ -89,21 +118,27 @@ class FullWidthTabs extends React.Component {
         email: this.props.insertEmailField,
         houseNumber: this.props.insertHouseNumberField
       })
-    }).then(response => console.log(response));
+    })
+      .then(response => console.log(response))
+      .then(() => this.props.onInsertionSuccess())
+      .then(() => this.props.onResetTenantInsertFields());
   };
 
   updateTenant = () => {
     fetch("http://localhost:3001/tenantupdate", {
-      method: "put",
+      method: "post",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         name: this.props.updateNameField,
         email: this.props.updateEmailField,
-        houseNumber: this.props.insertHouseNumberField
+        houseNumber: this.props.updateHouseNumberField
       })
-    }).then(response => console.log(response));
+    })
+      .then(response => console.log(response))
+      .then(() => this.props.onUpdateSuccess())
+      .then(() => this.props.onResetTenantUpdateFields());
   };
 
   deleteTenant = () => {
@@ -115,7 +150,10 @@ class FullWidthTabs extends React.Component {
       body: JSON.stringify({
         houseNumber: this.props.deleteHouseNumberField
       })
-    }).then(response => console.log(response));
+    })
+      .then(response => console.log(response))
+      .then(() => this.props.onDeleteSuccess())
+      .then(() => this.props.onResetTenantDeleteFields());
   };
   render() {
     const {
@@ -126,7 +164,8 @@ class FullWidthTabs extends React.Component {
       onInsertHouseNumberChange,
       onUpdateNameChange,
       onUpdateEmailChange,
-      onDeleteHouseNumberChange
+      onDeleteHouseNumberChange,
+      onUpdateHouseNumberChange
     } = this.props;
 
     return (
@@ -153,24 +192,28 @@ class FullWidthTabs extends React.Component {
         >
           <TabContainer dir={theme.direction}>
             <TextField
-              id="insert-fio"
-              label="ФИО"
-              margin="dense"
-              onChange={onInsertNameChange}
-            />
-            <TextField
               id="insert-number"
               label="№Дома"
               margin="dense"
               onChange={onInsertHouseNumberChange}
               type="number"
+              value={this.props.insertHouseNumberField}
             />
+            <TextField
+              id="insert-fio"
+              label="ФИО"
+              margin="dense"
+              onChange={onInsertNameChange}
+              value={this.props.insertNameField}
+            />
+
             <TextField
               id="insert-email"
               label="Email"
               margin="dense"
               onChange={onInsertEmailChange}
               type="email"
+              value={this.props.insertEmailField}
             />
             <Button
               color="primary"
@@ -182,10 +225,18 @@ class FullWidthTabs extends React.Component {
           </TabContainer>
           <TabContainer dir={theme.direction}>
             <TextField
+              id="update-housenumber"
+              label="№Дома"
+              margin="dense"
+              onChange={onUpdateHouseNumberChange}
+              value={this.props.updateHouseNumberField}
+            />
+            <TextField
               id="update-name"
               label="ФИО"
               margin="dense"
               onChange={onUpdateNameChange}
+              value={this.props.updateNameField}
             />
             <TextField
               id="update-email"
@@ -193,8 +244,13 @@ class FullWidthTabs extends React.Component {
               margin="dense"
               onChange={onUpdateEmailChange}
               type="email"
+              value={this.props.updateEmailField}
             />
-            <Button color="primary" className={classes.button}>
+            <Button
+              color="primary"
+              className={classes.button}
+              onClick={this.updateTenant}
+            >
               Изменить жильца
             </Button>
           </TabContainer>
@@ -205,6 +261,7 @@ class FullWidthTabs extends React.Component {
               type="number"
               margin="dense"
               onChange={onDeleteHouseNumberChange}
+              value={this.props.deleteHouseNumberField}
             />
             <Button
               color="secondary"
@@ -215,6 +272,45 @@ class FullWidthTabs extends React.Component {
             </Button>
           </TabContainer>
         </SwipeableViews>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackInsert}
+          autoHideDuration={6000}
+          onClose={this.props.onInsertionSuccessClose}
+          ContentProps={{ "aria-describedby": "message-id" }}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onInsertionSuccessClose}
+            variant="success"
+            message="Пользователь успешно добавлен"
+          />
+        </Snackbar>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackUpdate}
+          autoHideDuration={6000}
+          onClose={this.props.onUpdateSuccessClose}
+          ContentProps={{ "aria-describedby": "message-id" }}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onUpdateSuccessClose}
+            variant="success"
+            message="Пользователь успешно обновлен"
+          />
+        </Snackbar>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackDelete}
+          autoHideDuration={6000}
+          onClose={this.props.onDeleteSuccessClose}
+          ContentProps={{ "aria-describedby": "message-id" }}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onDeleteSuccessClose}
+            variant="success"
+            message="Пользователь успешно удален"
+          />
+        </Snackbar>
       </div>
     );
   }

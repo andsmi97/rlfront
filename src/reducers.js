@@ -7,13 +7,26 @@ import {
   CHANGE_INSERT_HOUSENUMBER_FIELD,
   CHANGE_UPDATE_NAME_FIELD,
   CHANGE_UPDATE_EMAIL_FIELD,
+  CHANGE_UPDATE_HOUSENUMBER_FIELD,
   CHANGE_DELETE_HOUSENUMBER_FIELD,
   CHANGE_MESSAGE_FIELD,
   CHANGE_SUBJECT_FIELD,
   CHANGE_SELECTED_TENANTS,
   CHANGE_SENDING_FILES,
   REMOVE_SENDING_FILES,
-  SELECT_ALL_TENANTS_ON_LOAD
+  SELECT_ALL_TENANTS_ON_LOAD,
+  SWITCH_INSERTION_SUCCESS,
+  SWITCH_UPDATE_SUCCESS,
+  SWITCH_DELETE_SUCCESS,
+  SWITCH_MESSAGE_SEND_SUCCESS,
+  SWITCH_INSERTION_SUCCESS_CLOSE,
+  SWITCH_UPDATE_SUCCESS_CLOSE,
+  SWITCH_DELETE_SUCCESS_CLOSE,
+  SWITCH_MESSAGE_SEND_SUCCESS_CLOSE,
+  RESET_EMAIL_FIELDS,
+  RESET_TENANT_INSERT_FIELDS,
+  RESET_TENANT_UPDATE_FIELDS,
+  RESET_TENANT_DELETE_FIELDS
 } from "./constants.js";
 import { getTenantsObjectsFromSelected } from "./tenantsSupportFunctions";
 const initialStateEmail = {
@@ -25,20 +38,18 @@ const initialStateEmail = {
 export const changeEmailInputs = (state = initialStateEmail, action = {}) => {
   switch (action.type) {
     case CHANGE_MESSAGE_FIELD:
-      return Object.assign({}, state, {
-        messageField: action.payload
-      });
+      return Object.assign({}, state, { messageField: action.payload });
     case CHANGE_SUBJECT_FIELD:
-      return Object.assign({}, state, {
-        subjectField: action.payload
-      });
+      return Object.assign({}, state, { subjectField: action.payload });
     case CHANGE_SENDING_FILES:
-      return Object.assign({}, state, {
-        files: action.payload
-      });
+      return Object.assign({}, state, { files: action.payload });
     case REMOVE_SENDING_FILES:
+      return Object.assign({}, state, { files: action.payload });
+    case RESET_EMAIL_FIELDS:
       return Object.assign({}, state, {
-        files: action.payload
+        subjectField: "",
+        messageField: "",
+        files: []
       });
     default:
       return state;
@@ -89,24 +100,6 @@ export const requestTenants = (state = initialStateTenants, action = {}) => {
       return state;
   }
 };
-// const initialStateSelectedTenants = {
-//   selectedTenants: [],
-//   selectedTenantsObjects: {}
-// };
-// export const changeSelectedTenants = (
-//   state = initialStateSelectedTenants,
-//   action = {}
-// ) => {
-//   switch (action.type) {
-//     case CHANGE_SELECTED_TENANTS:
-//       return Object.assign({}, state, {
-//         selectedTenants: action.payload
-//       });
-
-//     default:
-//       return state;
-//   }
-// };
 
 const initialStateFields = {
   insertNameField: "",
@@ -114,6 +107,7 @@ const initialStateFields = {
   insertHouseNumberField: "",
   updateNameField: "",
   updateEmailField: "",
+  updateHouseNumberField: "",
   deleteHouseNumberField: ""
 };
 
@@ -123,29 +117,70 @@ export const changeTenantsInputs = (
 ) => {
   switch (action.type) {
     case CHANGE_INSERT_NAME_FIELD:
-      return Object.assign({}, state, {
-        insertNameField: action.payload
-      });
+      return Object.assign({}, state, { insertNameField: action.payload });
     case CHANGE_INSERT_EMAIL_FIELD:
-      return Object.assign({}, state, {
-        insertEmailField: action.payload
-      });
+      return Object.assign({}, state, { insertEmailField: action.payload });
     case CHANGE_INSERT_HOUSENUMBER_FIELD:
       return Object.assign({}, state, {
         insertHouseNumberField: action.payload
       });
+    case CHANGE_UPDATE_HOUSENUMBER_FIELD:
+      return Object.assign({}, state, {
+        updateHouseNumberField: action.payload
+      });
     case CHANGE_UPDATE_NAME_FIELD:
-      return Object.assign({}, state, {
-        updateNameField: action.payload
-      });
+      return Object.assign({}, state, { updateNameField: action.payload });
     case CHANGE_UPDATE_EMAIL_FIELD:
-      return Object.assign({}, state, {
-        updateEmailField: action.payload
-      });
+      return Object.assign({}, state, { updateEmailField: action.payload });
     case CHANGE_DELETE_HOUSENUMBER_FIELD:
       return Object.assign({}, state, {
         deleteHouseNumberField: action.payload
       });
+    case RESET_TENANT_INSERT_FIELDS:
+      return Object.assign({}, state, {
+        insertNameField: "",
+        insertEmailField: "",
+        insertHouseNumberField: ""
+      });
+    case RESET_TENANT_UPDATE_FIELDS:
+      return Object.assign({}, state, {
+        updateNameField: "",
+        updateEmailField: "",
+        updateHouseNumberField: ""
+      });
+    case RESET_TENANT_DELETE_FIELDS:
+      return Object.assign({}, state, {
+        deleteHouseNumberField: ""
+      });
+    default:
+      return state;
+  }
+};
+const initialStateSnackbars = {
+  snackInsert: false,
+  snackUpdate: false,
+  snackDelete: false,
+  snackMessageSend: false
+};
+export const handleSnackbars = (state = initialStateSnackbars, action = {}) => {
+  console.log("I AM HERE");
+  switch (action.type) {
+    case SWITCH_INSERTION_SUCCESS:
+      return Object.assign({}, state, { snackInsert: action.payload });
+    case SWITCH_UPDATE_SUCCESS:
+      return Object.assign({}, state, { snackUpdate: action.payload });
+    case SWITCH_DELETE_SUCCESS:
+      return Object.assign({}, state, { snackDelete: action.payload });
+    case SWITCH_MESSAGE_SEND_SUCCESS:
+      return Object.assign({}, state, { snackMessageSend: action.payload });
+    case SWITCH_INSERTION_SUCCESS_CLOSE:
+      return Object.assign({}, state, { snackInsert: action.payload });
+    case SWITCH_UPDATE_SUCCESS_CLOSE:
+      return Object.assign({}, state, { snackUpdate: action.payload });
+    case SWITCH_DELETE_SUCCESS_CLOSE:
+      return Object.assign({}, state, { snackDelete: action.payload });
+    case SWITCH_MESSAGE_SEND_SUCCESS_CLOSE:
+      return Object.assign({}, state, { snackMessageSend: action.payload });
     default:
       return state;
   }

@@ -153,7 +153,7 @@
     .leftpaper {
       width: 55%;
     }
-    .rightpart{
+    .rightpart {
       width: 35%;
     }
   }
@@ -164,4 +164,8 @@
       min-width: 72px;
     }
   }
+}
+div[class^="MySnackbarContent"],
+div[class*=" MySnackbarContent"] {
+  flex-direction: row !important;
 }

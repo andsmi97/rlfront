@@ -9,14 +9,16 @@ import { Provider } from "react-redux";
 import {
   changeEmailInputs,
   changeTenantsInputs,
-  requestTenants
+  requestTenants,
+  handleSnackbars
 } from "./reducers";
 
 const logger = createLogger();
 const rootReducer = combineReducers({
   changeEmailInputs,
   changeTenantsInputs,
-  requestTenants
+  requestTenants,
+  handleSnackbars
 });
 const store = createStore(
   rootReducer,

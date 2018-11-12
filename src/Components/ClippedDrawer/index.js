@@ -19,19 +19,25 @@ import TextField from "@material-ui/core/TextField";
 import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
+import Snackbar from "@material-ui/core/Snackbar";
+import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 // import { mailFolderListItems, otherMailFolderListItems } from './tileData';
 import {
   setSubjectField,
   setMessageField,
   setSendingFiles,
-  removeSendingFiles
+  removeSendingFiles,
+  closeMessageSuccessPopUp,
+  openMessageSuccessPopUp,
+  resetEmailFields
 } from "../../actions";
 const mapStateToProps = state => {
   return {
     subjectField: state.changeEmailInputs.subjectField,
     messageField: state.changeEmailInputs.messageField,
     files: state.changeEmailInputs.files,
-    selectedTenantsObject: state.requestTenants.selectedTenantsObject
+    selectedTenantsObject: state.requestTenants.selectedTenantsObject,
+    snackMessageSend: state.handleSnackbars.snackMessageSend
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -39,7 +45,10 @@ const mapDispatchToProps = dispatch => {
     onMessageChange: event => dispatch(setMessageField(event.target.value)),
     onSubjectChange: event => dispatch(setSubjectField(event.target.value)),
     onDrop: files => dispatch(setSendingFiles(files)),
-    onCancel: () => dispatch(removeSendingFiles())
+    onCancel: () => dispatch(removeSendingFiles()),
+    onMessageSendSuccess: () => dispatch(openMessageSuccessPopUp()),
+    onMessageSendSuccessClose: () => dispatch(closeMessageSuccessPopUp()),
+    onResetMessageFields: () => dispatch(resetEmailFields())
   };
 };
 const drawerWidth = 240;
@@ -82,11 +91,10 @@ class ClippedDrawer extends React.Component {
       formData.append(`${tenant[0]}name`, tenant[1].name);
       formData.append(`${tenant[0]}email`, tenant[1].email);
     });
-    fetch("http://localhost:3001/mail", {
-      method: "POST",
-      body: formData
-    })
+    fetch("http://localhost:3001/mail", { method: "POST", body: formData })
       .then(res => console.log(res))
+      .then(() => this.props.onMessageSendSuccess())
+      .then(() => this.props.onResetMessageFields())
       .catch(error => console.log(error));
   };
 
@@ -147,6 +155,7 @@ class ClippedDrawer extends React.Component {
               <TextField
                 id="standard-dense"
                 label="Тема сообщения"
+                value={this.props.subjectField}
                 margin="dense"
                 variant="filled"
                 onChange={onSubjectChange}
@@ -159,6 +168,7 @@ class ClippedDrawer extends React.Component {
                 className={classes.textField}
                 margin="normal"
                 variant="filled"
+                value={this.props.messageField}
                 onChange={onMessageChange}
               />
               <section>
@@ -199,6 +209,19 @@ class ClippedDrawer extends React.Component {
             <MultipleSelect />
           </Grid>
         </main>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackMessageSend}
+          autoHideDuration={6000}
+          onClose={this.props.onMessageSendSuccessClose}
+          ContentProps={{ "aria-describedby": "message-id" }}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onMessageSendSuccessClose}
+            variant="success"
+            message="Сообщения отправлены"
+          />
+        </Snackbar>
       </div>
     );
   }

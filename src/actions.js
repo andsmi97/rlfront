@@ -9,17 +9,26 @@ import {
   CHANGE_INSERT_HOUSENUMBER_FIELD,
   CHANGE_UPDATE_NAME_FIELD,
   CHANGE_UPDATE_EMAIL_FIELD,
+  CHANGE_UPDATE_HOUSENUMBER_FIELD,
   CHANGE_DELETE_HOUSENUMBER_FIELD,
   CHANGE_MESSAGE_FIELD,
   CHANGE_SUBJECT_FIELD,
   CHANGE_SELECTED_TENANTS,
-  SELECT_ALL_TENANTS_ON_LOAD
+  SELECT_ALL_TENANTS_ON_LOAD,
+  SWITCH_INSERTION_SUCCESS,
+  SWITCH_UPDATE_SUCCESS,
+  SWITCH_DELETE_SUCCESS,
+  SWITCH_MESSAGE_SEND_SUCCESS,
+  SWITCH_INSERTION_SUCCESS_CLOSE,
+  SWITCH_UPDATE_SUCCESS_CLOSE,
+  SWITCH_DELETE_SUCCESS_CLOSE,
+  SWITCH_MESSAGE_SEND_SUCCESS_CLOSE,
+  RESET_EMAIL_FIELDS,
+  RESET_TENANT_INSERT_FIELDS,
+  RESET_TENANT_UPDATE_FIELDS,
+  RESET_TENANT_DELETE_FIELDS
 } from "./constants.js";
 import { createTenantsStringArray } from "./tenantsSupportFunctions";
-// exportConst insertTenant = () => dispatch => {
-//   dispatch({ type: INSERT_TENANT_PENDING});
-//   fetch("http://localhost:3001/tenantinsert",{method:"POST",body:})
-// }
 //APP part
 export const requestTenants = () => dispatch => {
   dispatch({ type: REQUEST_TENANTS_PENDING });
@@ -70,6 +79,11 @@ export const setUpdateEmailField = text => ({
   payload: text
 });
 
+export const setUpdateHouseNumberField = text => ({
+  type: CHANGE_UPDATE_HOUSENUMBER_FIELD,
+  payload: text
+});
+
 export const setDeleteHouseNumberField = text => ({
   type: CHANGE_DELETE_HOUSENUMBER_FIELD,
   payload: text
@@ -94,4 +108,62 @@ export const setSendingFiles = files => ({
 export const removeSendingFiles = () => ({
   type: REMOVE_SENDING_FILES,
   payload: []
+});
+
+//Snackbars part
+export const openInsertSuccessPopUp = () => ({
+  type: SWITCH_INSERTION_SUCCESS,
+  payload: true
+});
+
+export const openUpdateSuccessPopUp = () => ({
+  type: SWITCH_UPDATE_SUCCESS,
+  payload: true
+});
+
+export const openDeleteSuccessPopUp = () => ({
+  type: SWITCH_DELETE_SUCCESS,
+  payload: true
+});
+
+export const openMessageSuccessPopUp = () => ({
+  type: SWITCH_MESSAGE_SEND_SUCCESS,
+  payload: true
+});
+
+export const closeInsertSuccessPopUp = () => ({
+  type: SWITCH_INSERTION_SUCCESS_CLOSE,
+  payload: false
+});
+
+export const closeUpdateSuccessPopUp = () => ({
+  type: SWITCH_UPDATE_SUCCESS_CLOSE,
+  payload: false
+});
+
+export const closeDeleteSuccessPopUp = () => ({
+  type: SWITCH_DELETE_SUCCESS_CLOSE,
+  payload: false
+});
+
+export const closeMessageSuccessPopUp = () => ({
+  type: SWITCH_MESSAGE_SEND_SUCCESS_CLOSE,
+  payload: false
+});
+
+export const resetEmailFields = () => ({
+  type: RESET_EMAIL_FIELDS,
+  payload: ""
+});
+export const resetInsertTenantFields = () => ({
+  type: RESET_TENANT_INSERT_FIELDS,
+  payload: ""
+});
+export const resetUpdateTenantFields = () => ({
+  type: RESET_TENANT_UPDATE_FIELDS,
+  payload: ""
+});
+export const resetDeleteTenantFields = () => ({
+  type: RESET_TENANT_DELETE_FIELDS,
+  payload: ""
 });
