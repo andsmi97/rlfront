@@ -26,7 +26,8 @@ import {
   RESET_EMAIL_FIELDS,
   RESET_TENANT_INSERT_FIELDS,
   RESET_TENANT_UPDATE_FIELDS,
-  RESET_TENANT_DELETE_FIELDS
+  RESET_TENANT_DELETE_FIELDS,
+  BACKEND_URI 
 } from "./constants.js";
 import { createTenantsStringArray } from "./tenantsSupportFunctions";
 
@@ -34,7 +35,7 @@ import { createTenantsStringArray } from "./tenantsSupportFunctions";
 //APP part
 export const requestTenants = () => dispatch => {
   dispatch({ type: REQUEST_TENANTS_PENDING });
-  fetch("http://localhost:3001/tenants")
+  fetch(`${BACKEND_URI}/tenants`)
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_TENANTS_SUCCESS, payload: data }))
     .then(data =>
@@ -43,7 +44,9 @@ export const requestTenants = () => dispatch => {
         payload: createTenantsStringArray(data.payload)
       })
     )
-    .catch(error => dispatch({ type: REQUEST_TENANTS_FAILED, payload: error }));
+    .catch(error =>
+      dispatch({ type: REQUEST_TENANTS_FAILED, payload: error })
+    );
 };
 
 export const changeTenants = tenants => ({

@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
+import { BACKEND_URI } from "../../constants.js";
 import {
   setInsertNameField,
   setInsertEmailField,
@@ -105,7 +106,7 @@ class FullWidthTabs extends React.Component {
   };
 
   insertTenant = () => {
-    fetch("http://localhost:3001/tenantinsert", {
+    fetch(`${BACKEND_URI}/tenantinsert`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -122,7 +123,7 @@ class FullWidthTabs extends React.Component {
   };
 
   updateTenant = () => {
-    fetch("http://localhost:3001/tenantupdate", {
+    fetch(`${BACKEND_URI}/tenantupdate`, {
       method: "post",
       headers: {
         "Content-Type": "application/json"
@@ -139,7 +140,7 @@ class FullWidthTabs extends React.Component {
   };
 
   deleteTenant = () => {
-    fetch("http://localhost:3001/tenantdelete", {
+    fetch(`${BACKEND_URI}/tenantdelete`, {
       method: "delete",
       headers: {
         "Content-Type": "application/json"

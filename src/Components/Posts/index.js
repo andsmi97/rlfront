@@ -12,6 +12,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { setTitleField, setBodyField } from "./actions";
 import ReactQuill from "react-quill";
+import { BACKEND_URI } from "../../constants";
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -48,7 +49,7 @@ const mapDispatchToProps = dispatch => {
 };
 class Posts extends React.Component {
   onSubmitPost = () => {
-    fetch("http://localhost:3001/addpost", {
+    fetch(`${BACKEND_URI}/addpost`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

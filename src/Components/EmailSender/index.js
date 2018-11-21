@@ -10,6 +10,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { BACKEND_URI } from "../../constants.js";
 import {
   setSubjectField,
   setMessageField,
@@ -76,7 +77,7 @@ class EmailSender extends React.Component {
       formData.append(`${tenant[0]}name`, tenant[1].name);
       formData.append(`${tenant[0]}email`, tenant[1].email);
     });
-    fetch("http://localhost:3001/mail", { method: "POST", body: formData })
+    fetch(`${BACKEND_URI}/mail`, { method: "POST", body: formData })
       .then(res => console.log(res))
       .then(() => this.props.onMessageSendSuccess())
       .then(() => this.props.onResetMessageFields())
