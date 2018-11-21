@@ -14,7 +14,6 @@ import ContactIcon from "@material-ui/icons/ContactMail";
 import NewsIcon from "@material-ui/icons/FormatAlignLeft";
 import Posts from "../Posts";
 import { connect } from "react-redux";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
 import {
@@ -114,23 +113,6 @@ class ClippedDrawer extends React.Component {
     "image"
   ];
 
-  onSubmit = () => {
-    let formData = new FormData();
-    this.props.files.forEach(file => {
-      formData.append(`${file.name}`, file);
-    });
-    formData.append("subject", this.props.subjectField);
-    formData.append("message", this.props.messageField);
-    Object.entries(this.props.selectedTenantsObject).forEach(tenant => {
-      formData.append(`${tenant[0]}name`, tenant[1].name);
-      formData.append(`${tenant[0]}email`, tenant[1].email);
-    });
-    fetch("http://localhost:3001/mail", { method: "POST", body: formData })
-      .then(res => console.log(res))
-      .then(() => this.props.onMessageSendSuccess())
-      .then(() => this.props.onResetMessageFields())
-      .catch(error => console.log(error));
-  };
 
   onClickEmailSender = e => {
     this.setState({ screen: "EmailSender" });
@@ -140,12 +122,7 @@ class ClippedDrawer extends React.Component {
   };
   render() {
     const {
-      classes,
-      onMessageChange,
-      onSubjectChange,
-      onDrop,
-      onCancel,
-      files
+      classes
     } = this.props;
 
     if (this.state.screen === "EmailSender") {

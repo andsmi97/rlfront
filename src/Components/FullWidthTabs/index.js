@@ -27,10 +27,7 @@ import {
   resetUpdateTenantFields,
   resetInsertTenantFields
 } from "../../actions";
-import SnackBar from "../Snackbar";
 import Snackbar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 const mapStateToProps = state => {
   return {

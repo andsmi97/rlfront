@@ -29,6 +29,8 @@ import {
   RESET_TENANT_DELETE_FIELDS
 } from "./constants.js";
 import { createTenantsStringArray } from "./tenantsSupportFunctions";
+
+
 //APP part
 export const requestTenants = () => dispatch => {
   dispatch({ type: REQUEST_TENANTS_PENDING });

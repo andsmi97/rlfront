@@ -36,11 +36,6 @@
   align-items: center;
 }
 
-/* .App .MuiTypography-root-46.MuiTypography-body1-55 {
-  display: flex;
-  flex-direction: column;
-} */
-
 .App .react-swipeable-view-container div[class*="MuiTypography-root"],
 .App .react-swipeable-view-container div[class*="MuiTypography-root"] {
   display: flex;
@@ -170,31 +165,19 @@ div[class*="MultipleSelect-root"]
   align-items: center;
 }
 
-/* .MultipleSelect-root-293 {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-} */
 
 div[class^="FullWidthTabs-root"],
 div[class*="FullWidthTabs-root"]
  {
   width: 90%;
 }
-/* .FullWidthTabs-root-346 {
-  width: 90%;
-} */
+
 
 div[class^="MuiPaper-elevation"],
 div[class*="MuiPaper-elevation"]
  {
   padding: 5px;
 }
-/* .MuiPaper-elevation2-19 {
-  padding: 5px;
-} */
 
 div[class^="MuiTabs-flexContainer"],
 div[class*="MuiTabs-flexContainer"]
@@ -204,12 +187,7 @@ div[class*="MuiTabs-flexContainer"]
   justify-content: center;
   align-items: center;
 }
-/* .MuiTabs-flexContainer-348 {
-  height: 100%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-} */
+
 
 div[class^="MultipleSelect-formControl"],
 div[class*="MultipleSelect-formControl"] 
@@ -217,10 +195,7 @@ div[class*="MultipleSelect-formControl"]
   margin: 8px;
   width: 90%;
 }
-/* .MultipleSelect-formControl-294 {
-  margin: 8px;
-  width: 90%;
-} */
+
 
 div[class^="MuiInput-formControl"],
 div[class*="MuiInput-formControl"]
@@ -228,14 +203,17 @@ div[class*="MuiInput-formControl"]
   margin-top: 20px;
   padding-top: 10px;
 }
-/* .MuiInput-formControl-305 {
-  margin-top: 20px;
-  padding-top: 10px;
-} */
+
 div[class^="MuiPaper-elevation2"],
  div[class*="MuiPaper-elevation2"]{
   padding-top: 20px;
 }
-/* .MuiPaper-elevation2-19 {
-  padding-top: 20px;
-} */
+
+
+/* Posts here */
+.quill{
+  height: 400px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+

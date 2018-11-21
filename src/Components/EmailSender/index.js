@@ -51,6 +51,7 @@ const mapStateToProps = state => {
     snackMessageSend: state.handleSnackbars.snackMessageSend
   };
 };
+
 const mapDispatchToProps = dispatch => {
   return {
     onMessageChange: event => dispatch(setMessageField(event.target.value)),
@@ -62,7 +63,26 @@ const mapDispatchToProps = dispatch => {
     onResetMessageFields: () => dispatch(resetEmailFields())
   };
 };
+
 class EmailSender extends React.Component {
+  onSubmit = () => {
+    let formData = new FormData();
+    this.props.files.forEach(file => {
+      formData.append(`${file.name}`, file);
+    });
+    formData.append("subject", this.props.subjectField);
+    formData.append("message", this.props.messageField);
+    Object.entries(this.props.selectedTenantsObject).forEach(tenant => {
+      formData.append(`${tenant[0]}name`, tenant[1].name);
+      formData.append(`${tenant[0]}email`, tenant[1].email);
+    });
+    fetch("http://localhost:3001/mail", { method: "POST", body: formData })
+      .then(res => console.log(res))
+      .then(() => this.props.onMessageSendSuccess())
+      .then(() => this.props.onResetMessageFields())
+      .catch(error => console.log(error));
+  };
+
   render() {
     const {
       classes,

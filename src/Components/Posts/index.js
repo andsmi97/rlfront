@@ -3,22 +3,14 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import MultipleSelect from "../MultipleSelect";
 import TextField from "@material-ui/core/TextField";
-import Dropzone from "react-dropzone";
+// import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  setSubjectField,
-  setMessageField,
-  setSendingFiles,
-  removeSendingFiles,
-  closeMessageSuccessPopUp,
-  openMessageSuccessPopUp,
-  resetEmailFields
-} from "../../actions";
+import { setTitleField, setBodyField } from "./actions";
 import ReactQuill from "react-quill";
 const styles = theme => ({
   root: {
@@ -44,52 +36,46 @@ const styles = theme => ({
 
 const mapStateToProps = state => {
   return {
-    subjectField: state.changeEmailInputs.subjectField,
-    messageField: state.changeEmailInputs.messageField,
-    files: state.changeEmailInputs.files,
-    selectedTenantsObject: state.requestTenants.selectedTenantsObject,
-    snackMessageSend: state.handleSnackbars.snackMessageSend
+    titleField: state.postsReducer.titleField,
+    bodyField: state.postsReducer.bodyField
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
-    onMessageChange: event => dispatch(setMessageField(event.target.value)),
-    onSubjectChange: event => dispatch(setSubjectField(event.target.value)),
-    onDrop: files => dispatch(setSendingFiles(files)),
-    onCancel: () => dispatch(removeSendingFiles()),
-    onMessageSendSuccess: () => dispatch(openMessageSuccessPopUp()),
-    onMessageSendSuccessClose: () => dispatch(closeMessageSuccessPopUp()),
-    onResetMessageFields: () => dispatch(resetEmailFields())
+    onTitleChange: event => dispatch(setTitleField(event.target.value)),
+    onBodyChange: value => dispatch(setBodyField(value))
   };
 };
 class Posts extends React.Component {
+  onSubmitPost = () => {
+    fetch("http://localhost:3001/addpost", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        title: this.props.titleField,
+        body: this.props.bodyField
+      })
+    }).then(response => console.log(response));
+    // .then(() => this.props.onInsertionSuccess())
+    // .then(() => this.props.onResetTenantInsertFields());
+  };
   constructor(props) {
     super(props);
-    this.state = { text: "", screen: "EmailSender" }; // You can also pass a Quill Delta here
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(value) {
-    this.setState({ text: value });
+    this.state = { screen: "EmailSender" }; // You can also pass a Quill Delta here
   }
 
   modules = {
     toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" }
-      ],
-      ["link", "image"],
+      ["bold", "italic", "underline", "blockquote"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["link", "video"],
       ["clean"]
     ]
   };
 
   formats = [
-    "header",
     "bold",
     "italic",
     "underline",
@@ -97,18 +83,11 @@ class Posts extends React.Component {
     "list",
     "bullet",
     "link",
-    "image"
+    "video"
   ];
 
   render() {
-    const {
-      classes,
-      onMessageChange,
-      onSubjectChange,
-      onDrop,
-      onCancel,
-      files
-    } = this.props;
+    const { classes, onTitleChange, onBodyChange, bodyField } = this.props;
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
@@ -125,19 +104,18 @@ class Posts extends React.Component {
               value={this.props.subjectField}
               margin="dense"
               variant="filled"
-              onChange={onSubjectChange}
+              onChange={onTitleChange}
             />
             <ReactQuill
               modules={this.modules}
               formats={this.formats}
-              value={this.state.text}
-              onChange={this.handleChange}
+              value={bodyField}
+              onChange={onBodyChange}
             />
-
             <Button
               color="primary"
               className={classes.button}
-              onClick={this.onSubmit}
+              onClick={this.onSubmitPost}
             >
               Добавить новость
             </Button>
