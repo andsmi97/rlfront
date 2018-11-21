@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Drawer from "./Components/ClippedDrawer";
 import { connect } from "react-redux";
-import "./App.scss";
+import "./App.css";
 
 const mapStateToProps = state => {
   return {};

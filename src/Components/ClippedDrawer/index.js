@@ -12,16 +12,11 @@ import EmailIcon from "@material-ui/icons/Email";
 import MoneyIcon from "@material-ui/icons/MonetizationOn";
 import ContactIcon from "@material-ui/icons/ContactMail";
 import NewsIcon from "@material-ui/icons/FormatAlignLeft";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
-import MultipleSelect from "../MultipleSelect";
-import TextField from "@material-ui/core/TextField";
-import Dropzone from "react-dropzone";
-import Button from "@material-ui/core/Button";
+import Posts from "../Posts";
 import { connect } from "react-redux";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
-// import { mailFolderListItems, otherMailFolderListItems } from './tileData';
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+
 import {
   setSubjectField,
   setMessageField,
@@ -31,6 +26,8 @@ import {
   openMessageSuccessPopUp,
   resetEmailFields
 } from "../../actions";
+import EmailSender from "../EmailSender";
+
 const mapStateToProps = state => {
   return {
     subjectField: state.changeEmailInputs.subjectField,
@@ -80,6 +77,43 @@ const styles = theme => ({
 });
 
 class ClippedDrawer extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { text: "", screen: "EmailSender" }; // You can also pass a Quill Delta here
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(value) {
+    this.setState({ text: value });
+  }
+
+  modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" }
+      ],
+      ["link", "image"],
+      ["clean"]
+    ]
+  };
+
+  formats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "blockquote",
+    "list",
+    "bullet",
+    "link",
+    "image"
+  ];
+
   onSubmit = () => {
     let formData = new FormData();
     this.props.files.forEach(file => {
@@ -98,6 +132,12 @@ class ClippedDrawer extends React.Component {
       .catch(error => console.log(error));
   };
 
+  onClickEmailSender = e => {
+    this.setState({ screen: "EmailSender" });
+  };
+  onClickNews = e => {
+    this.setState({ screen: "News" });
+  };
   render() {
     const {
       classes,
@@ -107,123 +147,100 @@ class ClippedDrawer extends React.Component {
       onCancel,
       files
     } = this.props;
-    return (
-      <div className={classes.root}>
-        <AppBar position="absolute" className={classes.appBar}>
-          <Toolbar>
-            <Typography variant="title" color="inherit" noWrap>
-              Красное озеро
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-          <div className={classes.toolbar} />
-          <ListItem button>
-            <ListItemIcon>
-              <EmailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Рассылка" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <NewsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Новости" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <MoneyIcon />
-            </ListItemIcon>
-            <ListItemText primary="Цены" />
-          </ListItem>
-          <ListItem button>
-            <ListItemIcon>
-              <ContactIcon />
-            </ListItemIcon>
-            <ListItemText primary="Контакты" />
-          </ListItem>
-        </Drawer>
-        <main className={classes.content}>
-          <div className={classes.toolbar} />
-          <Grid
-            container
-            direction="row"
-            justify="center"
-            alignItems="flex-start"
-          >
-            <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
-              <TextField
-                id="standard-dense"
-                label="Тема сообщения"
-                value={this.props.subjectField}
-                margin="dense"
-                variant="filled"
-                onChange={onSubjectChange}
-              />
-              <TextField
-                id="filled-multiline-static"
-                label="Сообщение"
-                multiline
-                rows="15"
-                className={classes.textField}
-                margin="normal"
-                variant="filled"
-                value={this.props.messageField}
-                onChange={onMessageChange}
-              />
-              <section>
-                <div>
-                  <Dropzone
-                    className="dropzone"
-                    onDrop={onDrop.bind(this)}
-                    onFileDialogCancel={onCancel.bind(this)}
-                  >
-                    <p className="dropboxtext">
-                      Перенесите сюда или выбирите файлы для загрузки.
-                    </p>
-                  </Dropzone>
-                </div>
-                {!(files.length < 1) ? (
-                  <aside className="filestosend">
-                    <h2>Отправляемые файлы</h2>
-                    <ul>
-                      {files.map(f => (
-                        <li key={f.name}>
-                          {f.name} - {f.size} bytes
-                        </li>
-                      ))}
-                    </ul>
-                  </aside>
-                ) : (
-                  <aside />
-                )}
-              </section>
-              <Button
-                color="primary"
-                className={classes.button}
-                onClick={this.onSubmit}
-              >
-                Отправить
-              </Button>
-            </Paper>
-            <MultipleSelect />
-          </Grid>
-        </main>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackMessageSend}
-          autoHideDuration={6000}
-          onClose={this.props.onMessageSendSuccessClose}
-          ContentProps={{ "aria-describedby": "message-id" }}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onMessageSendSuccessClose}
-            variant="success"
-            message="Сообщения отправлены"
-          />
-        </Snackbar>
-      </div>
-    );
+
+    if (this.state.screen === "EmailSender") {
+      return (
+        // <div>
+        <div className={classes.root}>
+          <AppBar position="absolute" className={classes.appBar}>
+            <Toolbar>
+              <Typography variant="title" color="inherit" noWrap>
+                Красное озеро
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+            <div className={classes.toolbar} />
+            <ListItem button onClick={this.onClickEmailSender}>
+              <ListItemIcon>
+                <EmailIcon />
+              </ListItemIcon>
+              <ListItemText primary="Рассылка" />
+            </ListItem>
+            <ListItem button onClick={this.onClickNews}>
+              <ListItemIcon>
+                <NewsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Новости" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <MoneyIcon />
+              </ListItemIcon>
+              <ListItemText primary="Цены" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <ContactIcon />
+              </ListItemIcon>
+              <ListItemText primary="Контакты" />
+            </ListItem>
+          </Drawer>
+          {/* {(this.state.screen === "EmailSender") ? (<EmailSender />) : (<div />)} */}
+          <EmailSender />
+        </div>
+      );
+    } else {
+      return (
+        <div className={classes.root}>
+          <AppBar position="absolute" className={classes.appBar}>
+            <Toolbar>
+              <Typography variant="title" color="inherit" noWrap>
+                Красное озеро
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+            <div className={classes.toolbar} />
+            <ListItem onClick={this.onClickEmailSender} button>
+              <ListItemIcon>
+                <EmailIcon />
+              </ListItemIcon>
+              <ListItemText primary="Рассылка" />
+            </ListItem>
+            <ListItem button onClick={this.onClickNews}>
+              <ListItemIcon>
+                <NewsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Новости" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <MoneyIcon />
+              </ListItemIcon>
+              <ListItemText primary="Цены" />
+            </ListItem>
+            <ListItem button>
+              <ListItemIcon>
+                <ContactIcon />
+              </ListItemIcon>
+              <ListItemText primary="Контакты" />
+            </ListItem>
+          </Drawer>
+          <Posts />
+          {/* {(this.state.screen === "EmailSender") ? (<News />) : (<div />)} */}
+          {/* <EmailSender /> */}
+        </div>
+      );
+    }
+
+    //   {/* <ReactQuill
+    //     modules={this.modules}
+    //     formats={this.formats}
+    //     value={this.state.text}
+    //     onChange={this.handleChange}
+    //   /> */}
+    // {/* </div> */}
   }
 }
 

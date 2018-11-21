@@ -70,21 +70,25 @@ class MultipleSelect extends React.Component {
       selectedTenants,
       tenantsArray
     } = this.props;
-    return <Paper className="w40 h100 rightpart">
+    return (
+      <Paper className="w40 h100 rightpart">
         <div className={classes.root}>
           <FormControl className="nameselect">
-            <InputLabel htmlFor="select-multiple-chip">
-              Получатели
-            </InputLabel>
-            <Select multiple value={selectedTenants} onChange={onTenantChange} input={<Input id="select-multiple-chip" />} renderValue={selected => <div className={classes.chips}>
+            <InputLabel htmlFor="select-multiple-chip">Получатели</InputLabel>
+            <Select
+              multiple
+              value={selectedTenants}
+              onChange={onTenantChange}
+              input={<Input id="select-multiple-chip" />}
+              renderValue={selected => (
+                <div className={classes.chips}>
                   {selected.map(value => (
-                    <Chip
-                      key={value}
-                      label={value}
-                      className={classes.chip}
-                    />
+                    <Chip key={value} label={value} className={classes.chip} />
                   ))}
-                </div>} MenuProps={MenuProps}>
+                </div>
+              )}
+              MenuProps={MenuProps}
+            >
               {tenantsArray.map(selectedTenant => (
                 <MenuItem key={selectedTenant} value={selectedTenant}>
                   {selectedTenant}
@@ -94,7 +98,8 @@ class MultipleSelect extends React.Component {
           </FormControl>
           <FullWidthTabs />
         </div>
-      </Paper>;
+      </Paper>
+    );
   }
 }
 
