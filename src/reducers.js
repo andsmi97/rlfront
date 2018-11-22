@@ -26,7 +26,14 @@ import {
   RESET_EMAIL_FIELDS,
   RESET_TENANT_INSERT_FIELDS,
   RESET_TENANT_UPDATE_FIELDS,
-  RESET_TENANT_DELETE_FIELDS
+  RESET_TENANT_DELETE_FIELDS,
+  CHANGE_UPDATE_ADMIN_EMAIL_FIELD,
+  CHANGE_UPDATE_ADMIN_MAIL_PASS_FIELD,
+  CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD,
+  CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
+  CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
+  RESET_EMAIL_SETTINGS_FIELDS,
+  RESET_ACCOUNT_SETTINGS_FIELDS
 } from "./constants.js";
 import { getTenantsObjectsFromSelected } from "./tenantsSupportFunctions";
 const initialStateEmail = {
@@ -156,6 +163,56 @@ export const changeTenantsInputs = (
       return state;
   }
 };
+
+const initialStateSettingsFields = {
+  updateAdminEmailField: "",
+  updateAdminMailPassField: "",
+  updateAdminAccountPassOldField: "",
+  updateAdminAccountPassNewField: "",
+  updateAdminAccountPassRepeatField: ""
+};
+
+export const changeAdminInputs = (
+  state = initialStateSettingsFields,
+  action = {}
+) => {
+  switch (action.type) {
+    case CHANGE_UPDATE_ADMIN_EMAIL_FIELD:
+      return Object.assign({}, state, {
+        updateAdminEmailField: action.payload
+      });
+    case CHANGE_UPDATE_ADMIN_MAIL_PASS_FIELD:
+      return Object.assign({}, state, {
+        updateAdminMailPassField: action.payload
+      });
+    case CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD:
+      return Object.assign({}, state, {
+        updateAdminAccountPassOldField: action.payload
+      });
+    case CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD:
+      return Object.assign({}, state, {
+        updateAdminAccountPassNewField: action.payload
+      });
+    case CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD:
+      return Object.assign({}, state, {
+        updateAdminAccountPassRepeatField: action.payload 
+      });
+    case RESET_EMAIL_SETTINGS_FIELDS:
+      return Object.assign({}, state, { 
+        updateAdminEmailField: "",
+        updateAdminMailPassField: ""
+      });
+    case RESET_ACCOUNT_SETTINGS_FIELDS:
+      return Object.assign({}, state, { 
+        updateAdminAccountPassOldField: "",
+        updateAdminAccountPassNewField: "",
+        updateAdminAccountPassRepeatField: ""
+      });
+    default:
+      return state;
+  }
+};
+
 const initialStateSnackbars = {
   snackInsert: false,
   snackUpdate: false,
