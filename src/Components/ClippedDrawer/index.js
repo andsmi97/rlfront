@@ -15,7 +15,8 @@ import NewsIcon from "@material-ui/icons/FormatAlignLeft";
 import Posts from "../Posts";
 import { connect } from "react-redux";
 import "react-quill/dist/quill.snow.css";
-
+import Settings from "../Settings";
+import Tariffs from "../Tariffs";
 import {
   setSubjectField,
   setMessageField,
@@ -127,51 +128,49 @@ class ClippedDrawer extends React.Component {
   };
 
   render() {
-    const {
-      classes
-    } = this.props;
-      return (
-        <div className={classes.root}>
-          <AppBar position="absolute" className={classes.appBar}>
-            <Toolbar>
-              <Typography variant="title" color="inherit" noWrap>
-                Красное озеро
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-            <div className={classes.toolbar} />
-            <ListItem button onClick={this.onClickEmailSender}>
-              <ListItemIcon>
-                <EmailIcon />
-              </ListItemIcon>
-              <ListItemText primary="Рассылка" />
-            </ListItem>
-            <ListItem button onClick={this.onClickNews}>
-              <ListItemIcon>
-                <NewsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Новости" />
-            </ListItem>
-            <ListItem button onClick={this.onClickTariffs}>
-              <ListItemIcon>
-                <MoneyIcon />
-              </ListItemIcon>
-              <ListItemText primary="Тарифы" />
-            </ListItem>
-            <ListItem button onClick={this.onClickSettings}>
-              <ListItemIcon>
-                <ContactIcon />
-              </ListItemIcon>
-              <ListItemText primary="Настройки" />
-            </ListItem>
-          </Drawer>
-          {this.state.screen === "EmailSender"&&<EmailSender />}
-          {this.state.screen === "News"&&<Posts/>}
-          {this.state.screen === "Tarriffs"&&<Tariffs/>}
-          {this.state.screen === "Settings"&&<Settings/>}
-        </div>
-      );
+    const { classes } = this.props;
+    return (
+      <div className={classes.root}>
+        <AppBar position="absolute" className={classes.appBar}>
+          <Toolbar>
+            <Typography variant="title" color="inherit" noWrap>
+              Красное озеро
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+          <div className={classes.toolbar} />
+          <ListItem button onClick={this.onClickEmailSender}>
+            <ListItemIcon>
+              <EmailIcon />
+            </ListItemIcon>
+            <ListItemText primary="Рассылка" />
+          </ListItem>
+          <ListItem button onClick={this.onClickNews}>
+            <ListItemIcon>
+              <NewsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Новости" />
+          </ListItem>
+          <ListItem button onClick={this.onClickTariffs}>
+            <ListItemIcon>
+              <MoneyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Тарифы" />
+          </ListItem>
+          <ListItem button onClick={this.onClickSettings}>
+            <ListItemIcon>
+              <ContactIcon />
+            </ListItemIcon>
+            <ListItemText primary="Настройки" />
+          </ListItem>
+        </Drawer>
+        {this.state.screen === "EmailSender" && <EmailSender />}
+        {this.state.screen === "News" && <Posts />}
+        {this.state.screen === "Tarriffs" && <Tariffs />}
+        {this.state.screen === "Settings" && <Settings />}
+      </div>
+    );
   }
 }
 

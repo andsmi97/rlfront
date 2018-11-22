@@ -18,8 +18,7 @@ import {
     closeUpdateSuccessPopUp,
     resetUpdateTenantFields
   } from "../../actions";
-  import Snackbar from "@material-ui/core/Snackbar";
-  import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
+
 
   const mapStateToProps = state => {
     return {
@@ -61,7 +60,7 @@ const styles = theme => ({
     toolbar: theme.mixins.toolbar
   });
 
-class FullWidthTabs extends React.Component {
+class Settings extends React.Component {
 
   updateTenant = () => {
     fetch(`${BACKEND_URI}/tenantupdate`, { //change
@@ -115,7 +114,7 @@ class FullWidthTabs extends React.Component {
   }
 }
 
-FullWidthTabs.propTypes = {
+Settings.propTypes = {
   classes: PropTypes.object.isRequired,
   theme: PropTypes.object.isRequired
 };
@@ -123,4 +122,4 @@ FullWidthTabs.propTypes = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles, { withTheme: true })(FullWidthTabs));
+)(withStyles(styles, { withTheme: true })(Settings));
