@@ -113,7 +113,6 @@ class ClippedDrawer extends React.Component {
     "image"
   ];
 
-
   onClickEmailSender = e => {
     this.setState({ screen: "EmailSender" });
   };
