@@ -10,7 +10,8 @@ import {
   changeEmailInputs,
   changeTenantsInputs,
   requestTenants,
-  handleSnackbars
+  handleSnackbars,
+  changeAdminInputs
 } from "./reducers";
 import { postsReducer } from "./Components/Posts/reducers.js";
 import { postReducer } from "./Components/Posts/Post/reducers.js";
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
   requestTenants,
   handleSnackbars,
   postsReducer,
-  postReducer
+  postReducer,
+  changeAdminInputs
 });
 const store = createStore(
   rootReducer,
