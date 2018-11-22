@@ -122,4 +122,4 @@ Tariffs.propTypes = {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(withStyles(styles, { withTheme: true })(Tariffs));
+)(withStyles(styles)(Tariffs));

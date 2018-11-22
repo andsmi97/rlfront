@@ -167,7 +167,7 @@ class ClippedDrawer extends React.Component {
         </Drawer>
         {this.state.screen === "EmailSender" && <EmailSender />}
         {this.state.screen === "News" && <Posts />}
-        {this.state.screen === "Tarriffs" && <Tariffs />}
+        {this.state.screen === "Tariffs" && <Tariffs />}
         {this.state.screen === "Settings" && <Settings />}
       </div>
     );
