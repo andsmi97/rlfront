@@ -38,9 +38,9 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
-    overflowY: "scroll" // So the Typography noWrap works
+    overflowY: "scroll",
+    marginTop:40 // So the Typography noWrap works
   },
-  toolbar: theme.mixins.toolbar
 });
 
 const mapStateToProps = state => {
@@ -102,62 +102,66 @@ class EmailSender extends React.Component {
           justify="center"
           alignItems="flex-start"
         >
-          <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
-            <TextField
-              id="standard-dense"
-              label="Тема сообщения"
-              value={this.props.subjectField}
-              margin="dense"
-              variant="filled"
-              onChange={onSubjectChange}
-            />
-            <TextField
-              id="filled-multiline-static"
-              label="Сообщение"
-              multiline
-              rows="15"
-              className={classes.textField}
-              margin="normal"
-              variant="filled"
-              value={this.props.messageField}
-              onChange={onMessageChange}
-            />
-            <section>
-              <div>
-                <Dropzone
-                  className="dropzone"
-                  onDrop={onDrop.bind(this)}
-                  onFileDialogCancel={onCancel.bind(this)}
-                >
-                  <p className="dropboxtext">
-                    Перенесите сюда или выбирите файлы для загрузки.
-                  </p>
-                </Dropzone>
-              </div>
-              {!(files.length < 1) ? (
-                <aside className="filestosend">
-                  <h2>Отправляемые файлы</h2>
-                  <ul>
-                    {files.map(f => (
-                      <li key={f.name}>
-                        {f.name} - {f.size} bytes
-                      </li>
-                    ))}
-                  </ul>
-                </aside>
-              ) : (
-                <aside />
-              )}
-            </section>
-            <Button
-              color="primary"
-              className={classes.button}
-              onClick={this.onSubmit}
-            >
-              Отправить
-            </Button>
-          </Paper>
-          <MultipleSelect />
+          <Grid item xs={8}>
+            <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
+              <TextField
+                id="standard-dense"
+                label="Тема сообщения"
+                value={this.props.subjectField}
+                margin="dense"
+                variant="filled"
+                onChange={onSubjectChange}
+              />
+              <TextField
+                id="filled-multiline-static"
+                label="Сообщение"
+                multiline
+                rows="15"
+                className={classes.textField}
+                margin="normal"
+                variant="filled"
+                value={this.props.messageField}
+                onChange={onMessageChange}
+              />
+              <section>
+                <div>
+                  <Dropzone
+                    className="dropzone"
+                    onDrop={onDrop.bind(this)}
+                    onFileDialogCancel={onCancel.bind(this)}
+                  >
+                    <p className="dropboxtext">
+                      Перенесите сюда или выбирите файлы для загрузки.
+                    </p>
+                  </Dropzone>
+                </div>
+                {!(files.length < 1) ? (
+                  <aside className="filestosend">
+                    <h2>Отправляемые файлы</h2>
+                    <ul>
+                      {files.map(f => (
+                        <li key={f.name}>
+                          {f.name} - {f.size} bytes
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
+                ) : (
+                  <aside />
+                )}
+              </section>
+              <Button
+                color="primary"
+                className={classes.button}
+                onClick={this.onSubmit}
+              >
+                Отправить
+              </Button>
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <MultipleSelect />
+          </Grid>
         </Grid>
         <Snackbar
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}

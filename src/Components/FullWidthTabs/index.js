@@ -153,6 +153,7 @@ class FullWidthTabs extends React.Component {
       .then(() => this.props.onDeleteSuccess())
       .then(() => this.props.onResetTenantDeleteFields());
   };
+  
   render() {
     const {
       classes,

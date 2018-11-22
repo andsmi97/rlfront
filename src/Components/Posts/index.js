@@ -10,9 +10,10 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { setTitleField, setBodyField } from "./actions";
+import { setTitleField, setBodyField, requestPosts } from "./actions";
 import ReactQuill from "react-quill";
 import { BACKEND_URI } from "../../constants";
+import Post from "./Post";
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -30,19 +31,21 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
-    overflowY: "scroll" // So the Typography noWrap works
+    overflowY: "scroll", // So the Typography noWrap works
+    marginTop:40
   },
-  toolbar: theme.mixins.toolbar
 });
 
 const mapStateToProps = state => {
   return {
     titleField: state.postsReducer.titleField,
-    bodyField: state.postsReducer.bodyField
+    bodyField: state.postsReducer.bodyField,
+    loadedPosts: state.postsReducer.loadedPosts
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
+    onRequestPosts: () => dispatch(requestPosts()),
     onTitleChange: event => dispatch(setTitleField(event.target.value)),
     onBodyChange: value => dispatch(setBodyField(value))
   };
@@ -62,6 +65,9 @@ class Posts extends React.Component {
     // .then(() => this.props.onInsertionSuccess())
     // .then(() => this.props.onResetTenantInsertFields());
   };
+  componentDidMount() {
+    this.props.onRequestPosts();
+  }
   constructor(props) {
     super(props);
     this.state = { screen: "EmailSender" }; // You can also pass a Quill Delta here
@@ -98,30 +104,39 @@ class Posts extends React.Component {
           justify="center"
           alignItems="flex-start"
         >
-          <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
-            <TextField
-              id="standard-dense"
-              label="Заголовок новости"
-              value={this.props.subjectField}
-              margin="dense"
-              variant="filled"
-              onChange={onTitleChange}
-            />
-            <ReactQuill
-              modules={this.modules}
-              formats={this.formats}
-              value={bodyField}
-              onChange={onBodyChange}
-            />
-            <Button
-              color="primary"
-              className={classes.button}
-              onClick={this.onSubmitPost}
-            >
-              Добавить новость
-            </Button>
-          </Paper>
-          <MultipleSelect />
+          <Grid item xs={8}>
+            <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
+              <TextField
+                id="standard-dense"
+                label="Заголовок новости"
+                value={this.props.subjectField}
+                margin="dense"
+                variant="filled"
+                onChange={onTitleChange}
+              />
+              <ReactQuill
+                modules={this.modules}
+                formats={this.formats}
+                value={bodyField}
+                onChange={onBodyChange}
+              />
+              <Button
+                color="primary"
+                className={classes.button}
+                onClick={this.onSubmitPost}
+              >
+                Добавить новость
+              </Button>
+            </Paper>
+            <Paper className="posts">
+              {this.props.loadedPosts.map(post => {
+                return <Post title={post.title} body={post.body} postID={post._id} key={post._id} />;
+              })}
+            </Paper>
+          </Grid>
+          <Grid item xs={4}>
+            <MultipleSelect />
+          </Grid>
         </Grid>
         <Snackbar
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}

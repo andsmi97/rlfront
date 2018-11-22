@@ -127,7 +127,6 @@ class ClippedDrawer extends React.Component {
 
     if (this.state.screen === "EmailSender") {
       return (
-        // <div>
         <div className={classes.root}>
           <AppBar position="absolute" className={classes.appBar}>
             <Toolbar>

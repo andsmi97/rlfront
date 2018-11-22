@@ -58,7 +58,7 @@
 }
 
 .w55 {
-  width: 55%;
+  /* width: 55%; */
 }
 
 .h100 {
@@ -66,7 +66,7 @@
 }
 
 .w40 {
-  width: 40%;
+  /* width: 40%; */
 }
 
 .mr2 {
@@ -130,17 +130,17 @@
 
 @media (min-width: 1450px) {
   .App .leftpaper {
-    width: 50%;
+    /* width: 50%; */
   }
 }
 
 @media (min-width: 1305px) {
   .App .leftpaper {
-    width: 55%;
+    /* width: 55%; */
   }
 
   .App .rightpart {
-    width: 35%;
+    /* width: 35%; */
   }
 }
 
@@ -207,6 +207,8 @@ div[class*="MuiInput-formControl"]
 div[class^="MuiPaper-elevation2"],
  div[class*="MuiPaper-elevation2"]{
   padding-top: 20px;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: none;
 }
 
 
@@ -217,3 +219,10 @@ div[class^="MuiPaper-elevation2"],
   margin-bottom: 40px;
 }
 
+.posts{
+  margin-right: 20px;
+  padding: 15px!important;
+}
+.jcfe{
+  justify-content: flex-end;
+}

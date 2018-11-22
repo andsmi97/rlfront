@@ -13,13 +13,15 @@ import {
   handleSnackbars
 } from "./reducers";
 import { postsReducer } from "./Components/Posts/reducers.js";
+import { postReducer } from "./Components/Posts/Post/reducers.js";
 const logger = createLogger();
 const rootReducer = combineReducers({
   changeEmailInputs,
   changeTenantsInputs,
   requestTenants,
   handleSnackbars,
-  postsReducer
+  postsReducer,
+  postReducer
 });
 const store = createStore(
   rootReducer,

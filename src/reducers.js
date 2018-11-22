@@ -163,7 +163,6 @@ const initialStateSnackbars = {
   snackMessageSend: false
 };
 export const handleSnackbars = (state = initialStateSnackbars, action = {}) => {
-  console.log("I AM HERE");
   switch (action.type) {
     case SWITCH_INSERTION_SUCCESS:
       return Object.assign({}, state, { snackInsert: action.payload });
