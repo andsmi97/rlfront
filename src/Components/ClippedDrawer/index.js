@@ -120,12 +120,17 @@ class ClippedDrawer extends React.Component {
   onClickNews = e => {
     this.setState({ screen: "News" });
   };
+  onClickTariffs = e => {
+    this.setState({ screen: "Tariffs" });
+  };
+  onClickSettings = e => {
+    this.setState({ screen: "Settings" });
+  };
+
   render() {
     const {
       classes
     } = this.props;
-
-    if (this.state.screen === "EmailSender") {
       return (
         <div className={classes.root}>
           <AppBar position="absolute" className={classes.appBar}>
@@ -149,74 +154,25 @@ class ClippedDrawer extends React.Component {
               </ListItemIcon>
               <ListItemText primary="Новости" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={this.onClickTariffs}>
               <ListItemIcon>
                 <MoneyIcon />
               </ListItemIcon>
-              <ListItemText primary="Цены" />
+              <ListItemText primary="Тарифы" />
             </ListItem>
-            <ListItem button>
+            <ListItem button onClick={this.onClickSettings}>
               <ListItemIcon>
                 <ContactIcon />
               </ListItemIcon>
-              <ListItemText primary="Контакты" />
+              <ListItemText primary="Настройки" />
             </ListItem>
           </Drawer>
-          {/* {(this.state.screen === "EmailSender") ? (<EmailSender />) : (<div />)} */}
-          <EmailSender />
+          {this.state.screen === "EmailSender"&&<EmailSender />}
+          {this.state.screen === "News"&&<Posts/>}
+          {this.state.screen === "Tarriffs"&&<Tariffs/>}
+          {this.state.screen === "Settings"&&<Settings/>}
         </div>
       );
-    } else {
-      return (
-        <div className={classes.root}>
-          <AppBar position="absolute" className={classes.appBar}>
-            <Toolbar>
-              <Typography variant="title" color="inherit" noWrap>
-                Красное озеро
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-            <div className={classes.toolbar} />
-            <ListItem onClick={this.onClickEmailSender} button>
-              <ListItemIcon>
-                <EmailIcon />
-              </ListItemIcon>
-              <ListItemText primary="Рассылка" />
-            </ListItem>
-            <ListItem button onClick={this.onClickNews}>
-              <ListItemIcon>
-                <NewsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Новости" />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <MoneyIcon />
-              </ListItemIcon>
-              <ListItemText primary="Цены" />
-            </ListItem>
-            <ListItem button>
-              <ListItemIcon>
-                <ContactIcon />
-              </ListItemIcon>
-              <ListItemText primary="Контакты" />
-            </ListItem>
-          </Drawer>
-          <Posts />
-          {/* {(this.state.screen === "EmailSender") ? (<News />) : (<div />)} */}
-          {/* <EmailSender /> */}
-        </div>
-      );
-    }
-
-    //   {/* <ReactQuill
-    //     modules={this.modules}
-    //     formats={this.formats}
-    //     value={this.state.text}
-    //     onChange={this.handleChange}
-    //   /> */}
-    // {/* </div> */}
   }
 }
 
