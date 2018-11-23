@@ -33,7 +33,13 @@ import {
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
   RESET_EMAIL_SETTINGS_FIELDS,
-  RESET_ACCOUNT_SETTINGS_FIELDS
+  RESET_ACCOUNT_SETTINGS_FIELDS,
+  CHANGE_UPDATE_TARIFFS_FIELD,
+  RESET_TARIFFS_FIELDS,
+  SWITCH_SETTINGS_SUCCESS,
+  SWITCH_SETTINGS_SUCCESS_CLOSE,
+  SWITCH_TARIFFS_SUCCESS,
+  SWITCH_TARIFFS_SUCCESS_CLOSE
 } from "./constants.js";
 import { getTenantsObjectsFromSelected } from "./tenantsSupportFunctions";
 const initialStateEmail = {
@@ -195,18 +201,40 @@ export const changeAdminInputs = (
       });
     case CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD:
       return Object.assign({}, state, {
-        updateAdminAccountPassRepeatField: action.payload 
+        updateAdminAccountPassRepeatField: action.payload
       });
     case RESET_EMAIL_SETTINGS_FIELDS:
-      return Object.assign({}, state, { 
+      return Object.assign({}, state, {
         updateAdminEmailField: "",
         updateAdminMailPassField: ""
       });
     case RESET_ACCOUNT_SETTINGS_FIELDS:
-      return Object.assign({}, state, { 
+      return Object.assign({}, state, {
         updateAdminAccountPassOldField: "",
         updateAdminAccountPassNewField: "",
         updateAdminAccountPassRepeatField: ""
+      });
+    default:
+      return state;
+  }
+};
+
+const initialStateTariffsFields = {
+  updateTariffsField: ""
+};
+
+export const changeTariffsInputs = (
+  state = initialStateTariffsFields,
+  action = {}
+) => {
+  switch (action.type) {
+    case CHANGE_UPDATE_TARIFFS_FIELD:
+      return Object.assign({}, state, {
+        updateTariffsField: action.payload
+      });
+    case RESET_TARIFFS_FIELDS:
+      return Object.assign({}, state, {
+        updateTariffsField: ""
       });
     default:
       return state;
@@ -217,7 +245,9 @@ const initialStateSnackbars = {
   snackInsert: false,
   snackUpdate: false,
   snackDelete: false,
-  snackMessageSend: false
+  snackMessageSend: false,
+  snackSettings: false,
+  snackTariffs: false
 };
 export const handleSnackbars = (state = initialStateSnackbars, action = {}) => {
   switch (action.type) {
@@ -237,6 +267,14 @@ export const handleSnackbars = (state = initialStateSnackbars, action = {}) => {
       return Object.assign({}, state, { snackDelete: action.payload });
     case SWITCH_MESSAGE_SEND_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackMessageSend: action.payload });
+    case SWITCH_SETTINGS_SUCCESS:
+      return Object.assign({}, state, { snackSettings: action.payload });
+    case SWITCH_SETTINGS_SUCCESS_CLOSE:
+      return Object.assign({}, state, { snackSettings: action.payload });
+    case SWITCH_TARIFFS_SUCCESS:
+      return Object.assign({}, state, { snackTariffs: action.payload });
+    case SWITCH_TARIFFS_SUCCESS_CLOSE:
+      return Object.assign({}, state, { snackTariffs: action.payload });
     default:
       return state;
   }

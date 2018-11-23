@@ -22,10 +22,11 @@ import {
   closeEmailUpdateSuccessPopUp,
   openAccountUpdateSuccessPopUp,
   closeAccountUpdateSuccessPopUp,
+  openSettingsSuccessPopUp,
+  closeSettingsSuccessPopUp
 } from "../../actions";
 
 const mapStateToProps = state => {
-  //fix it
   return {
     updateAdminEmailField: state.changeAdminInputs.updateAdminEmailField,
     updateAdminMailPassField: state.changeAdminInputs.updateAdminMailPassField,
@@ -35,6 +36,8 @@ const mapStateToProps = state => {
       state.changeAdminInputs.updateAdminAccountPassNewField,
     updateAdminAccountPassRepeatField:
       state.changeAdminInputs.updateAdminAccountPassRepeatField,
+
+    snackSettings: state.handleSnackbars.snackSettings
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -50,15 +53,19 @@ const mapDispatchToProps = dispatch => {
     onUpdateAdminAccountPassRepeat: event =>
       dispatch(setUpdateAdminAccountPassRepeat(event.target.value)),
 
-    onResetAdminEmailSettings: () =>
-    dispatch(resetEmailSettingsField()),
-    onResetAdminAccountSettings: () =>
-    dispatch(resetAccountSettingsField()),
+    onResetAdminEmailSettings: () => dispatch(resetEmailSettingsField()),
+    onResetAdminAccountSettings: () => dispatch(resetAccountSettingsField()),
 
-    onEmailSettingsUpdateSuccess: () => dispatch(openEmailUpdateSuccessPopUp()),        
-    onEmailSettingsUpdateSuccessClose: () => dispatch(closeEmailUpdateSuccessPopUp()),
-    onAccountSettingsUpdateSuccess: () => dispatch(openAccountUpdateSuccessPopUp()),        
-    onAccountSettingsUpdateSuccessClose: () => dispatch(closeAccountUpdateSuccessPopUp()),
+    onEmailSettingsUpdateSuccess: () => dispatch(openEmailUpdateSuccessPopUp()),
+    onEmailSettingsUpdateSuccessClose: () =>
+      dispatch(closeEmailUpdateSuccessPopUp()),
+    onAccountSettingsUpdateSuccess: () =>
+      dispatch(openAccountUpdateSuccessPopUp()),
+    onAccountSettingsUpdateSuccessClose: () =>
+      dispatch(closeAccountUpdateSuccessPopUp()),
+
+    onSettingsSuccess: () => dispatch(openSettingsSuccessPopUp()),
+    onSettingsSuccessClose: () => dispatch(closeSettingsSuccessPopUp())
   };
 };
 
@@ -91,13 +98,14 @@ class Settings extends React.Component {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({     
+      body: JSON.stringify({
         user: "admin",
         email: this.props.updateAdminEmailField,
-        passoword: this.props.updateAdminMailPassField
+        password: this.props.updateAdminMailPassField
       })
     })
       .then(response => console.log(response))
+      .then(() => this.props.onSettingsSuccess())
       .then(() => this.props.onEmailSettingsUpdateSuccess())
       .then(() => this.props.onResetAdminEmailSettings());
   };
@@ -107,15 +115,23 @@ class Settings extends React.Component {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({     
+      body: JSON.stringify({
         user: "admin",
         currentPassword: this.props.updateAdminAccountPassOldField,
         newPassword: this.props.updateAdminAccountPassNewField
       })
     })
       .then(response => console.log(response))
-      .then(() => this.props.onAccountSettingsUpdateSuccess())
-      .then(() => this.props.onResetAdminAccountSettings());
+      .then(() => {
+        if (
+          this.props.updateAdminAccountPassNewField ===
+          this.props.updateAdminAccountPassRepeatField
+        ) {
+          this.props.onSettingsSuccess();
+          this.props.onAccountSettingsUpdateSuccess();
+          this.props.onResetAdminAccountSettings();
+        }
+      });
   };
   render() {
     const {
@@ -202,6 +218,19 @@ class Settings extends React.Component {
             </Paper>
           </Grid>
         </Grid>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackSettings}
+          autoHideDuration={6000}
+          onClose={this.props.onSettingsSuccessClose}
+          ContentProps={{ "aria-describedby": "message-id" }}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onSettingsSuccessClose}
+            variant="success"
+            message="Настройки изменены"
+          />
+        </Snackbar>
       </main>
     );
   }

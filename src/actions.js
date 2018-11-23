@@ -38,6 +38,14 @@ import {
   SWITCH_EMAIL_UPDATE_SUCCESS_CLOSE,
   SWITCH_ACCOUNT_UPDATE_SUCCESS,
   SWITCH_ACCOUNT_UPDATE_SUCCESS_CLOSE,
+  CHANGE_UPDATE_TARIFFS_FIELD,
+  SWITCH_TARIFFS_UPDATE_SUCCESS,
+  SWITCH_TARIFFS_UPDATE_SUCCESS_CLOSE,
+  RESET_TARIFFS_FIELDS,
+  SWITCH_SETTINGS_SUCCESS,
+  SWITCH_SETTINGS_SUCCESS_CLOSE,
+  SWITCH_TARIFFS_SUCCESS,
+  SWITCH_TARIFFS_SUCCESS_CLOSE,
   BACKEND_URI
 } from "./constants.js";
 import { createTenantsStringArray } from "./tenantsSupportFunctions";
@@ -126,11 +134,11 @@ export const setUpdateAdminAccountPassRepeat = text => ({
   type: CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
   payload: text
 });
-export const resetEmailSettingsField = text => ({
+export const resetEmailSettingsField = () => ({
   type: RESET_EMAIL_SETTINGS_FIELDS,
   payload: ""
 });
-export const resetAccountSettingsField = text => ({
+export const resetAccountSettingsField = () => ({
   type: RESET_ACCOUNT_SETTINGS_FIELDS,
   payload: ""
 });
@@ -153,6 +161,28 @@ export const openAccountUpdateSuccessPopUp = () => ({
 export const closeAccountUpdateSuccessPopUp = () => ({
   type: SWITCH_ACCOUNT_UPDATE_SUCCESS_CLOSE,
   payload: false
+});
+
+//Tariffs
+
+export const setUpdateTariffs = text => ({
+  type: CHANGE_UPDATE_TARIFFS_FIELD,
+  payload: text
+});
+
+export const openUpdateTariffsSuccessPopUp = () => ({
+  type: SWITCH_TARIFFS_UPDATE_SUCCESS,
+  payload: true
+});
+
+export const closeUpdateTariffsSuccessPopUp = () => ({
+  type: SWITCH_TARIFFS_UPDATE_SUCCESS_CLOSE,
+  payload: false
+});
+
+export const resetTariffsField = () => ({
+  type: RESET_TARIFFS_FIELDS,
+  payload: ""
 });
 
 //Message part
@@ -214,6 +244,25 @@ export const closeDeleteSuccessPopUp = () => ({
 
 export const closeMessageSuccessPopUp = () => ({
   type: SWITCH_MESSAGE_SEND_SUCCESS_CLOSE,
+  payload: false
+});
+
+export const openSettingsSuccessPopUp = () => ({
+  type: SWITCH_SETTINGS_SUCCESS,
+  payload: true
+});
+
+export const closeSettingsSuccessPopUp = () => ({
+  type: SWITCH_SETTINGS_SUCCESS_CLOSE,
+  payload: false
+});
+export const openTariffsSuccessPopUp = () => ({
+  type: SWITCH_TARIFFS_SUCCESS,
+  payload: true
+});
+
+export const closeTariffsSuccessPopUp = () => ({
+  type: SWITCH_TARIFFS_SUCCESS_CLOSE,
   payload: false
 });
 
