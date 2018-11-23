@@ -10,12 +10,17 @@ import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { BACKEND_URI } from "../../constants.js";
+import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import Input from "@material-ui/core/Input";
+import InputLabel from "@material-ui/core/InputLabel";
 import {
   setUpdateAdminEmail,
   setUpdateAdminMailPass,
   setUpdateAdminAccountPassOld,
   setUpdateAdminAccountPassNew,
   setUpdateAdminAccountPassRepeat,
+  setUpdateAdminPhone,
   resetEmailSettingsField,
   resetAccountSettingsField,
   openEmailUpdateSuccessPopUp,
@@ -36,6 +41,7 @@ const mapStateToProps = state => {
       state.changeAdminInputs.updateAdminAccountPassNewField,
     updateAdminAccountPassRepeatField:
       state.changeAdminInputs.updateAdminAccountPassRepeatField,
+    updateAdminPhoneField: state.changeAdminInputs.updateAdminPhoneField,
 
     snackSettings: state.handleSnackbars.snackSettings
   };
@@ -52,6 +58,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(setUpdateAdminAccountPassNew(event.target.value)),
     onUpdateAdminAccountPassRepeat: event =>
       dispatch(setUpdateAdminAccountPassRepeat(event.target.value)),
+    onUpdateAdminPhone: event =>
+      dispatch(setUpdateAdminPhone(event.target.value)),
 
     onResetAdminEmailSettings: () => dispatch(resetEmailSettingsField()),
     onResetAdminAccountSettings: () => dispatch(resetAccountSettingsField()),
@@ -86,12 +94,18 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
+    marginTop: 50,
     overflowY: "scroll" // So the Typography noWrap works
-  },
-  toolbar: theme.mixins.toolbar
+  }
 });
 
 class Settings extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      error: ""
+    };
+  }
   updateEmailSettings = () => {
     fetch(`${BACKEND_URI}/updateemailcredentials`, {
       method: "put",
@@ -110,28 +124,29 @@ class Settings extends React.Component {
       .then(() => this.props.onResetAdminEmailSettings());
   };
   updateAccountSettings = () => {
-    fetch(`${BACKEND_URI}/changeaccountpassword`, {
-      method: "put",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        user: "admin",
-        currentPassword: this.props.updateAdminAccountPassOldField,
-        newPassword: this.props.updateAdminAccountPassNewField
+    if (
+      this.props.updateAdminAccountPassNewField ===
+      this.props.updateAdminAccountPassRepeatField
+    ) {
+      fetch(`${BACKEND_URI}/changeaccountpassword`, {
+        method: "put",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          user: "admin",
+          currentPassword: this.props.updateAdminAccountPassOldField,
+          newPassword: this.props.updateAdminAccountPassNewField
+        })
       })
-    })
-      .then(response => console.log(response))
-      .then(() => {
-        if (
-          this.props.updateAdminAccountPassNewField ===
-          this.props.updateAdminAccountPassRepeatField
-        ) {
-          this.props.onSettingsSuccess();
-          this.props.onAccountSettingsUpdateSuccess();
-          this.props.onResetAdminAccountSettings();
-        }
-      });
+        .then(response => console.log(response))
+        .then(() => this.props.onSettingsSuccess())
+        .then(() => this.props.onAccountSettingsUpdateSuccess())
+        .then(() => this.props.onResetAdminAccountSettings());
+      this.setState({ error: "" });
+    } else {
+      this.setState({ error: "Пароли не совпадают" });
+    }
   };
   render() {
     const {
@@ -141,23 +156,26 @@ class Settings extends React.Component {
       onUpdateAdminMailPass,
       onUpdateAdminAccountPassNew,
       onUpdateAdminAccountPassOld,
-      onUpdateAdminAccountPassRepeat
+      onUpdateAdminAccountPassRepeat,
+      onUpdateAdminPhone
     } = this.props;
 
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="flex-start"
-        >
+        <Grid container direction="column" justify="start">
           <Grid item xs={4}>
-            <Paper class="emailSettings">
-              <Typography variant="h4" gutterBottom>
-                Настройки Email
+            <Paper className="contactsSettings">
+              <Typography variant="h5" gutterBottom>
+                Настройки контактов
               </Typography>
+              <TextField
+                id="admin-new-phone"
+                label="Новый телефон"
+                margin="dense"
+                onChange={onUpdateAdminPhone}
+                value={this.props.updateAdminPhoneField}
+              />
               <TextField
                 id="admin-new-email"
                 label="Новый Email"
@@ -168,9 +186,10 @@ class Settings extends React.Component {
               />
               <TextField
                 id="admin-new-mail-pass"
-                label="Новый пароль"
+                label="Новый пароль почты"
                 margin="dense"
                 onChange={onUpdateAdminMailPass}
+                type="password"
                 value={this.props.updateAdminMailPassField}
               />
               <Button
@@ -183,39 +202,104 @@ class Settings extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={4}>
-            <Paper className="accountSettings">
-              <Typography variant="h4" gutterBottom>
-                Настройки Аккаунта
-              </Typography>
-              <TextField
-                id="admin-old-account-pass"
-                label="Старый пароль"
-                margin="dense"
-                onChange={onUpdateAdminAccountPassOld}
-                value={this.props.updateAdminAccountPassOldField}
-              />
-              <TextField
-                id="admin-new-account-pass"
-                label="Новый пароль"
-                margin="dense"
-                onChange={onUpdateAdminAccountPassNew}
-                value={this.props.updateAdminAccountPassNewField}
-              />
-              <TextField
-                id="admin-repeat-account-pass"
-                label="Повторите пароль"
-                margin="dense"
-                onChange={onUpdateAdminAccountPassRepeat}
-                value={this.props.updateAdminAccountPassRepeatField}
-              />
-              <Button
-                color="primary"
-                className={classes.button}
-                onClick={this.updateAccountSettings}
-              >
-                Применить
-              </Button>
-            </Paper>
+            {this.state.error === "" ? (
+              <Paper className="accountSettings">
+                <Typography variant="h5" gutterBottom>
+                  Настройки Аккаунта
+                </Typography>
+                <TextField
+                  id="admin-old-account-pass"
+                  label="Старый пароль"
+                  margin="dense"
+                  onChange={onUpdateAdminAccountPassOld}
+                  type="password"
+                  value={this.props.updateAdminAccountPassOldField}
+                />
+                <TextField
+                  id="admin-new-account-pass"
+                  label="Новый пароль"
+                  margin="dense"
+                  onChange={onUpdateAdminAccountPassNew}
+                  type="password"
+                  value={this.props.updateAdminAccountPassNewField}
+                />
+                <TextField
+                  id="admin-repeat-account-pass"
+                  label="Повторите пароль"
+                  margin="dense"
+                  onChange={onUpdateAdminAccountPassRepeat}
+                  type="password"
+                  value={this.props.updateAdminAccountPassRepeatField}
+                />
+                <Button
+                  color="primary"
+                  className={classes.button}
+                  onClick={this.updateAccountSettings}
+                >
+                  Применить
+                </Button>
+              </Paper>
+            ) : (
+              <Paper className="accountSettings">
+                <Typography variant="h5" gutterBottom>
+                  Настройки Аккаунта
+                </Typography>
+                <TextField
+                  id="admin-old-account-pass"
+                  label="Старый пароль"
+                  margin="dense"
+                  onChange={onUpdateAdminAccountPassOld}
+                  type="password"
+                  value={this.props.updateAdminAccountPassOldField}
+                />
+                <FormControl
+                  className={classes.formControl}
+                  error
+                  aria-describedby="component-error-text"
+                >
+                  <InputLabel htmlFor="admin-new-account-pass">
+                    Новый пароль
+                  </InputLabel>
+                  <Input
+                    id="admin-new-account-pass"
+                    value={this.props.updateAdminAccountPassNewField}
+                    onChange={onUpdateAdminAccountPassNew}
+                    margin="dense"
+                    type="password"
+                  />
+                  <FormHelperText id="component-error-text">
+                    Ошибка
+                  </FormHelperText>
+                </FormControl>
+
+                <FormControl
+                  className={classes.formControl}
+                  error
+                  aria-describedby="component-error-text"
+                >
+                  <InputLabel htmlFor="admin-repeat-account-pass">
+                    Повторите пароль
+                  </InputLabel>
+                  <Input
+                    id="admin-repeat-account-pass"
+                    value={this.props.updateAdminAccountPassRepeatField}
+                    onChange={onUpdateAdminAccountPassRepeat}
+                    margin="dense"
+                    type="password"
+                  />
+                  <FormHelperText id="component-error-text">
+                    Ошибка
+                  </FormHelperText>
+                </FormControl>
+                <Button
+                  color="primary"
+                  className={classes.button}
+                  onClick={this.updateAccountSettings}
+                >
+                  Применить
+                </Button>
+              </Paper>
+            )}
           </Grid>
         </Grid>
         <Snackbar
