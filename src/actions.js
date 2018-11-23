@@ -32,6 +32,7 @@ import {
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
+  CHANGE_UPDATE_ADMIN_PHONE_FIELD,
   RESET_EMAIL_SETTINGS_FIELDS,
   RESET_ACCOUNT_SETTINGS_FIELDS,
   SWITCH_EMAIL_UPDATE_SUCCESS,
@@ -132,6 +133,10 @@ export const setUpdateAdminAccountPassNew = text => ({
 });
 export const setUpdateAdminAccountPassRepeat = text => ({
   type: CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
+  payload: text
+});
+export const setUpdateAdminPhone = text => ({
+  type: CHANGE_UPDATE_ADMIN_PHONE_FIELD,
   payload: text
 });
 export const resetEmailSettingsField = () => ({

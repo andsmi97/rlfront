@@ -57,9 +57,9 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
+    marginTop: 50,
     overflowY: "scroll" // So the Typography noWrap works
-  },
-  toolbar: theme.mixins.toolbar
+  }
 });
 
 class Tariffs extends React.Component {
@@ -84,15 +84,10 @@ class Tariffs extends React.Component {
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid
-          container
-          direction="row"
-          justify="center"
-          alignItems="flex-start"
-        >
+        <Grid container direction="column" justify="start">
           <Grid item xs={4}>
-            <Paper class="TariffsSettings">
-              <Typography variant="h4" gutterBottom>
+            <Paper className="tariffsSettings">
+              <Typography variant="h5" gutterBottom>
                 Тарифы
               </Typography>
               <TextField

@@ -32,6 +32,7 @@ import {
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
+  CHANGE_UPDATE_ADMIN_PHONE_FIELD,
   RESET_EMAIL_SETTINGS_FIELDS,
   RESET_ACCOUNT_SETTINGS_FIELDS,
   CHANGE_UPDATE_TARIFFS_FIELD,
@@ -202,6 +203,10 @@ export const changeAdminInputs = (
     case CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD:
       return Object.assign({}, state, {
         updateAdminAccountPassRepeatField: action.payload
+      });
+    case CHANGE_UPDATE_ADMIN_PHONE_FIELD:
+      return Object.assign({}, state, {
+        updateAdminPhoneField: action.payload
       });
     case RESET_EMAIL_SETTINGS_FIELDS:
       return Object.assign({}, state, {

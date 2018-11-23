@@ -211,6 +211,28 @@ div[class^="MuiPaper-elevation2"],
   box-shadow: none;
 }
 
+.contactsSettings{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+.accountSettings{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+.tariffsSettings{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+
 
 /* Posts here */
 .quill{
