@@ -252,27 +252,21 @@ const initialStateSnackbars = {
 export const handleSnackbars = (state = initialStateSnackbars, action = {}) => {
   switch (action.type) {
     case SWITCH_INSERTION_SUCCESS:
-      return Object.assign({}, state, { snackInsert: action.payload });
-    case SWITCH_UPDATE_SUCCESS:
-      return Object.assign({}, state, { snackUpdate: action.payload });
-    case SWITCH_DELETE_SUCCESS:
-      return Object.assign({}, state, { snackDelete: action.payload });
-    case SWITCH_MESSAGE_SEND_SUCCESS:
-      return Object.assign({}, state, { snackMessageSend: action.payload });
     case SWITCH_INSERTION_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackInsert: action.payload });
+    case SWITCH_UPDATE_SUCCESS:
     case SWITCH_UPDATE_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackUpdate: action.payload });
+    case SWITCH_DELETE_SUCCESS:
     case SWITCH_DELETE_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackDelete: action.payload });
+    case SWITCH_MESSAGE_SEND_SUCCESS:
     case SWITCH_MESSAGE_SEND_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackMessageSend: action.payload });
     case SWITCH_SETTINGS_SUCCESS:
-      return Object.assign({}, state, { snackSettings: action.payload });
     case SWITCH_SETTINGS_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackSettings: action.payload });
     case SWITCH_TARIFFS_SUCCESS:
-      return Object.assign({}, state, { snackTariffs: action.payload });
     case SWITCH_TARIFFS_SUCCESS_CLOSE:
       return Object.assign({}, state, { snackTariffs: action.payload });
     default:

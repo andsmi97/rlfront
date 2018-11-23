@@ -8,16 +8,16 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import Snackbar from "@material-ui/core/Snackbar";
+import MySnackbarContentWrapper from "../../MySnackbarContentWrapper";
 import { BACKEND_URI } from "../../../constants.js";
 import { connect } from "react-redux";
 import {
-  openInsertSuccessPopUp,
-  openUpdateSuccessPopUp,
-  openDeleteSuccessPopUp,
-  closeInsertSuccessPopUp,
-  closeUpdateSuccessPopUp,
-  closeDeleteSuccessPopUp
-} from "./actions";
+  openDeletePostSuccessPopUp,
+  closeDeletePostSuccessPopUp
+} from "../actions";
+//postS actions
+import { selectEditPost } from "../actions";
 const styles = {
   card: {
     marginBottom: 20
@@ -29,30 +29,19 @@ const styles = {
 
 const mapStateToProps = state => {
   return {
-
-    snackInsert: state.postReducer.snackInsert,
-    snackUpdate: state.postReducer.snackUpdate,
-    snackDelete: state.postReducer.snackDelete
+    snackDelete: state.postsReducer.snackDelete
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
-    onInsertionSuccess: () => dispatch(openInsertSuccessPopUp()),
-    onUpdateSuccess: () => dispatch(openUpdateSuccessPopUp()),
-    onDeleteSuccess: () => dispatch(openDeleteSuccessPopUp()),
-    onInsertionSuccessClose: () => dispatch(closeInsertSuccessPopUp()),
-    onUpdateSuccessClose: () => dispatch(closeUpdateSuccessPopUp()),
-    onDeleteSuccessClose: () => dispatch(closeDeleteSuccessPopUp())
+    onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
+    onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
+    onUpdatePostClick: id => dispatch(selectEditPost(id))
   };
 };
 
 class Post extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state ={id:this.props.id}
-  }
   deletePost = () => {
-    // console.log(this.props.postID)
     fetch(`${BACKEND_URI}/deletepost`, {
       method: "delete",
       headers: {
@@ -64,7 +53,6 @@ class Post extends React.Component {
     })
       .then(response => console.log(response))
       .then(() => this.props.onDeleteSuccess());
-      // .then(() => this.props.onResetTenantDeleteFields());
   };
   render() {
     const { classes, title, body } = this.props;
@@ -93,13 +81,29 @@ class Post extends React.Component {
           <Button size="small" color="primary">
             Подробнее
           </Button>
-          <Button size="small" color="primary">
+          <Button
+            size="small"
+            color="primary"
+            onClick={() => this.props.onUpdatePostClick(this.props.postID)}
+          >
             Редактировать
           </Button>
           <Button size="small" color="secondary" onClick={this.deletePost}>
             Удалить
           </Button>
         </CardActions>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackDelete}
+          autoHideDuration={6000}
+          onClose={this.props.onDeleteSuccessClose}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onDeleteSuccessClose}
+            variant="success"
+            message="Новость Удалена"
+          />
+        </Snackbar>
       </Card>
     );
   }
