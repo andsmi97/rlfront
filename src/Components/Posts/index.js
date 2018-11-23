@@ -14,6 +14,8 @@ import { setTitleField, setBodyField, requestPosts } from "./actions";
 import ReactQuill from "react-quill";
 import { BACKEND_URI } from "../../constants";
 import Post from "./Post";
+import AddIcon from "@material-ui/icons/Add";
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -32,8 +34,13 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
     overflowY: "scroll", // So the Typography noWrap works
-    marginTop:40
+    marginTop: 40
   },
+  fab: {
+    position: "absolute",
+    bottom: theme.spacing.unit * 4,
+    right: theme.spacing.unit * 4
+  }
 });
 
 const mapStateToProps = state => {
@@ -51,6 +58,11 @@ const mapDispatchToProps = dispatch => {
   };
 };
 class Posts extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { screen: "EmailSender" }; // You can also pass a Quill Delta here
+  }
+
   onSubmitPost = () => {
     fetch(`${BACKEND_URI}/addpost`, {
       method: "POST",
@@ -65,12 +77,9 @@ class Posts extends React.Component {
     // .then(() => this.props.onInsertionSuccess())
     // .then(() => this.props.onResetTenantInsertFields());
   };
+
   componentDidMount() {
     this.props.onRequestPosts();
-  }
-  constructor(props) {
-    super(props);
-    this.state = { screen: "EmailSender" }; // You can also pass a Quill Delta here
   }
 
   modules = {
@@ -130,7 +139,14 @@ class Posts extends React.Component {
             </Paper>
             <Paper className="posts">
               {this.props.loadedPosts.map(post => {
-                return <Post title={post.title} body={post.body} postID={post._id} key={post._id} />;
+                return (
+                  <Post
+                    title={post.title}
+                    body={post.body}
+                    postID={post._id}
+                    key={post._id}
+                  />
+                );
               })}
             </Paper>
           </Grid>
@@ -151,6 +167,21 @@ class Posts extends React.Component {
             message="Сообщения отправлены"
           />
         </Snackbar>
+        {/* <Zoom
+          key={'primary'}
+          in={this.state.value === index}
+          timeout={transitionDuration}
+          style={{
+            transitionDelay: `${
+              this.state.value === index ? transitionDuration.exit : 0
+            }ms`
+          }}
+          unmountOnExit
+        > */}
+          <Button variant="fab" className={classes.fab} color="primary">
+           <AddIcon/>
+          </Button>
+        {/* </Zoom> */}
       </main>
     );
   }
