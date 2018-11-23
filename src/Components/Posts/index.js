@@ -10,12 +10,30 @@ import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { setTitleField, setBodyField, requestPosts } from "./actions";
+import {
+  setTitleField,
+  setBodyField,
+  requestPosts,
+  openInsertPostWindow,
+  closeInsertPostWindow,
+  openEditPostWindow,
+  closeEditPostWindow,
+  setEditTitleField,
+  setEditBodyField,
+  openInsertPostSuccessPopUp,
+  openUpdatePostSuccessPopUp,
+  openDeletePostSuccessPopUp,
+  closeInsertPostSuccessPopUp,
+  closeUpdatePostSuccessPopUp,
+  closeDeletePostSuccessPopUp,
+  resetInsertPostFields,
+  resetUpdatePostFields
+} from "./actions";
 import ReactQuill from "react-quill";
 import { BACKEND_URI } from "../../constants";
 import Post from "./Post";
 import AddIcon from "@material-ui/icons/Add";
-
+import CloseIcon from "@material-ui/icons/Close";
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -47,14 +65,37 @@ const mapStateToProps = state => {
   return {
     titleField: state.postsReducer.titleField,
     bodyField: state.postsReducer.bodyField,
-    loadedPosts: state.postsReducer.loadedPosts
+    loadedPosts: state.postsReducer.loadedPosts,
+    insertWindowOpened: state.postsReducer.insertWindowOpened,
+    editWindowOpended: state.postsReducer.editWindowOpended,
+    editTitleField: state.postsReducer.editTitleField,
+    editBodyField: state.postsReducer.editBodyField,
+    editPostID: state.postsReducer.editPostID,
+    snackInsert: state.postsReducer.snackInsert,
+    snackUpdate: state.postsReducer.snackUpdate,
+    snackDelete: state.postsReducer.snackDelete
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     onRequestPosts: () => dispatch(requestPosts()),
     onTitleChange: event => dispatch(setTitleField(event.target.value)),
-    onBodyChange: value => dispatch(setBodyField(value))
+    onEditTitleChange: event => dispatch(setEditTitleField(event.target.value)),
+    onBodyChange: value => dispatch(setBodyField(value)),
+    onEditBodyChange: value => dispatch(setEditBodyField(value)),
+    onOpenInsertPostWindow: () => dispatch(openInsertPostWindow()),
+    onCloseInsertPostWindow: () => dispatch(closeInsertPostWindow()),
+    onOpenEditPostWindow: () => dispatch(openEditPostWindow()),
+    onCloseEditPostWindow: () => dispatch(closeEditPostWindow()),
+
+    onInsertionSuccess: () => dispatch(openInsertPostSuccessPopUp()),
+    onUpdateSuccess: () => dispatch(openUpdatePostSuccessPopUp()),
+    onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
+    onInsertionSuccessClose: () => dispatch(closeInsertPostSuccessPopUp()),
+    onUpdateSuccessClose: () => dispatch(closeUpdatePostSuccessPopUp()),
+    onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
+    onResetInsertPostFields: () => dispatch(resetInsertPostFields()),
+    onResetUpdatePostFields: () => dispatch(resetUpdatePostFields())
   };
 };
 class Posts extends React.Component {
@@ -73,9 +114,26 @@ class Posts extends React.Component {
         title: this.props.titleField,
         body: this.props.bodyField
       })
-    }).then(response => console.log(response));
-    // .then(() => this.props.onInsertionSuccess())
-    // .then(() => this.props.onResetTenantInsertFields());
+    })
+      .then(response => console.log(response))
+      .then(() => this.props.onInsertionSuccess())
+      .then(() => this.props.onResetInsertPostFields());
+  };
+  onSubmitUpdatePost = () => {
+    fetch(`${BACKEND_URI}/updatepost`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id: this.props.editPostID,
+        title: this.props.editTitleField,
+        body: this.props.editBodyField
+      })
+    })
+      .then(response => console.log(response))
+      .then(() => this.props.onUpdateSuccess())
+      .then(() => this.props.onResetUpdatePostFields());
   };
 
   componentDidMount() {
@@ -103,7 +161,18 @@ class Posts extends React.Component {
   ];
 
   render() {
-    const { classes, onTitleChange, onBodyChange, bodyField } = this.props;
+    const {
+      classes,
+      onTitleChange,
+      onBodyChange,
+      bodyField,
+      onEditBodyChange,
+      onEditTitleChange,
+      editTitleField,
+      subjectField,
+      insertWindowOpened,
+      editWindowOpended
+    } = this.props;
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
@@ -114,29 +183,56 @@ class Posts extends React.Component {
           alignItems="flex-start"
         >
           <Grid item xs={8}>
-            <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
-              <TextField
-                id="standard-dense"
-                label="Заголовок новости"
-                value={this.props.subjectField}
-                margin="dense"
-                variant="filled"
-                onChange={onTitleChange}
-              />
-              <ReactQuill
-                modules={this.modules}
-                formats={this.formats}
-                value={bodyField}
-                onChange={onBodyChange}
-              />
-              <Button
-                color="primary"
-                className={classes.button}
-                onClick={this.onSubmitPost}
-              >
-                Добавить новость
-              </Button>
-            </Paper>
+            {insertWindowOpened && (
+              <Paper className="leftpaper  df jcc fdc mr2 p15">
+                <TextField
+                  id="insert-title-field"
+                  label="Заголовок новости"
+                  value={subjectField}
+                  margin="dense"
+                  variant="filled"
+                  onChange={onTitleChange}
+                />
+                <ReactQuill
+                  modules={this.modules}
+                  formats={this.formats}
+                  value={bodyField}
+                  onChange={onBodyChange}
+                />
+                <Button
+                  color="primary"
+                  className={classes.button}
+                  onClick={this.onSubmitPost}
+                >
+                  Добавить новость
+                </Button>
+              </Paper>
+            )}
+            {editWindowOpended && (
+              <Paper className="leftpaper df jcc fdc mr2 p15">
+                <TextField
+                  id="edit-title-field"
+                  label="Заголовок новости"
+                  value={editTitleField}
+                  margin="dense"
+                  variant="filled"
+                  onChange={onEditTitleChange}
+                />
+                <ReactQuill
+                  modules={this.modules}
+                  formats={this.formats}
+                  value={this.props.editBodyField}
+                  onChange={onEditBodyChange}
+                />
+                <Button
+                  color="primary"
+                  className={classes.button}
+                  onClick={this.onSubmitUpdatePost}
+                >
+                  Обновить новость
+                </Button>
+              </Paper>
+            )}
             <Paper className="posts">
               {this.props.loadedPosts.map(post => {
                 return (
@@ -167,21 +263,75 @@ class Posts extends React.Component {
             message="Сообщения отправлены"
           />
         </Snackbar>
-        {/* <Zoom
-          key={'primary'}
-          in={this.state.value === index}
-          timeout={transitionDuration}
-          style={{
-            transitionDelay: `${
-              this.state.value === index ? transitionDuration.exit : 0
-            }ms`
-          }}
-          unmountOnExit
-        > */}
-          <Button variant="fab" className={classes.fab} color="primary">
-           <AddIcon/>
+
+        {this.props.insertWindowOpened && !this.props.editWindowOpended && (
+          <Button
+            variant="fab"
+            className={classes.fab}
+            color="primary"
+            onClick={this.props.onCloseInsertPostWindow}
+          >
+            <CloseIcon />
           </Button>
-        {/* </Zoom> */}
+        )}
+        {!this.props.insertWindowOpened && this.props.editWindowOpended && (
+          <Button
+            variant="fab"
+            className={classes.fab}
+            color="primary"
+            onClick={this.props.onCloseEditPostWindow}
+          >
+            <CloseIcon />
+          </Button>
+        )}
+        {!this.props.insertWindowOpened && !this.props.editWindowOpended && (
+          <Button
+            variant="fab"
+            className={classes.fab}
+            color="primary"
+            onClick={this.props.onOpenInsertPostWindow}
+          >
+            <AddIcon />
+          </Button>
+        )}
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackInsert}
+          autoHideDuration={6000}
+          onClose={this.props.onInsertionSuccessClose}
+        >
+          {/* // ContentProps={{ "aria-describedby": "message-id" }} */}
+          <MySnackbarContentWrapper
+            onClose={this.props.onInsertionSuccessClose}
+            variant="success"
+            message="Новость добавлена"
+          />
+        </Snackbar>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackUpdate}
+          autoHideDuration={6000}
+          onClose={this.props.onUpdateSuccessClose}
+        >
+          {/* // ContentProps={{ "aria-describedby": "message-id" }} */}
+          <MySnackbarContentWrapper
+            onClose={this.props.onUpdateSuccessClose}
+            variant="success"
+            message="Новость обновлена"
+          />
+        </Snackbar>
+        <Snackbar
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+          open={this.props.snackDelete}
+          autoHideDuration={6000}
+          onClose={this.props.onDeleteSuccessClose}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.props.onDeleteSuccessClose}
+            variant="success"
+            message="Новость Удалена"
+          />
+        </Snackbar>
       </main>
     );
   }

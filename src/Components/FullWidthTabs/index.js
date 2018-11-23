@@ -60,6 +60,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(setUpdateHouseNumberField(event.target.value)),
     onDeleteHouseNumberChange: event =>
       dispatch(setDeleteHouseNumberField(event.target.value)),
+      
     onInsertionSuccess: () => dispatch(openInsertSuccessPopUp()),
     onUpdateSuccess: () => dispatch(openUpdateSuccessPopUp()),
     onDeleteSuccess: () => dispatch(openDeleteSuccessPopUp()),
