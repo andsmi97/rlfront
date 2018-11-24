@@ -27,16 +27,20 @@ const variantIcon = {
 
 const styles1 = theme => ({
   success: {
-    backgroundColor: green[600]
+    backgroundColor: green[600],
+    flexDirection: "row!important"
   },
   error: {
-    backgroundColor: theme.palette.error.dark
+    backgroundColor: theme.palette.error.dark,
+    flexDirection: "row!important"
   },
   info: {
-    backgroundColor: theme.palette.primary.dark
+    backgroundColor: theme.palette.primary.dark,
+    flexDirection: "row!important"
   },
   warning: {
-    backgroundColor: amber[700]
+    backgroundColor: amber[700],
+    flexDirection: "row!important"
   },
   icon: {
     fontSize: 20

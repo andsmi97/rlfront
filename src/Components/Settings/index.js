@@ -96,6 +96,18 @@ const styles = theme => ({
     minWidth: 0,
     marginTop: 50,
     overflowY: "scroll" // So the Typography noWrap works
+  },
+  paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginRight: "2%",
+    padding: "15px!important",
+    paddingTop: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    boxShadow: "none",
+    marginBottom: 15,
+    marginLeft: 15
   }
 });
 
@@ -151,7 +163,6 @@ class Settings extends React.Component {
   render() {
     const {
       classes,
-      theme,
       onUpdateAdminEmail,
       onUpdateAdminMailPass,
       onUpdateAdminAccountPassNew,
@@ -163,9 +174,9 @@ class Settings extends React.Component {
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid container direction="column" justify="start">
+        <Grid container direction="column" justify="flex-start">
           <Grid item xs={4}>
-            <Paper className="contactsSettings">
+            <Paper className={classes.paper}>
               <Typography variant="h5" gutterBottom>
                 Настройки контактов
               </Typography>
@@ -203,7 +214,7 @@ class Settings extends React.Component {
           </Grid>
           <Grid item xs={4}>
             {this.state.error === "" ? (
-              <Paper className="accountSettings">
+              <Paper className={classes.paper}>
                 <Typography variant="h5" gutterBottom>
                   Настройки Аккаунта
                 </Typography>
@@ -321,8 +332,7 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired
 };
 
 export default connect(

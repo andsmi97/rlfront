@@ -1,7 +1,6 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import MultipleSelect from "../MultipleSelect";
 import TextField from "@material-ui/core/TextField";
 // import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
@@ -29,6 +28,7 @@ import {
   resetInsertPostFields,
   resetUpdatePostFields
 } from "./actions";
+import { RENDER_NEW_POST, RENDER_UPDATE_POST } from "./constants";
 import ReactQuill from "react-quill";
 import { BACKEND_URI } from "../../constants";
 import Post from "./Post";
@@ -58,6 +58,18 @@ const styles = theme => ({
     position: "absolute",
     bottom: theme.spacing.unit * 4,
     right: theme.spacing.unit * 4
+  },
+  paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginRight: "2%",
+    padding: "15px!important",
+    paddingTop: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    boxShadow: "none"
+    // marginBottom: 15,
+    // marginLeft: 15
   }
 });
 
@@ -87,7 +99,6 @@ const mapDispatchToProps = dispatch => {
     onCloseInsertPostWindow: () => dispatch(closeInsertPostWindow()),
     onOpenEditPostWindow: () => dispatch(openEditPostWindow()),
     onCloseEditPostWindow: () => dispatch(closeEditPostWindow()),
-
     onInsertionSuccess: () => dispatch(openInsertPostSuccessPopUp()),
     onUpdateSuccess: () => dispatch(openUpdatePostSuccessPopUp()),
     onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
@@ -95,7 +106,10 @@ const mapDispatchToProps = dispatch => {
     onUpdateSuccessClose: () => dispatch(closeUpdatePostSuccessPopUp()),
     onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
     onResetInsertPostFields: () => dispatch(resetInsertPostFields()),
-    onResetUpdatePostFields: () => dispatch(resetUpdatePostFields())
+    onResetUpdatePostFields: () => dispatch(resetUpdatePostFields()),
+    renderNewPost: post => dispatch({ type: RENDER_NEW_POST, payload: post }),
+    renderUpdatePost: post =>
+      dispatch({ type: RENDER_UPDATE_POST, payload: post })
   };
 };
 class Posts extends React.Component {
@@ -115,7 +129,8 @@ class Posts extends React.Component {
         body: this.props.bodyField
       })
     })
-      .then(response => console.log(response))
+      .then(response => response.json())
+      .then(response => this.props.renderNewPost(response))
       .then(() => this.props.onInsertionSuccess())
       .then(() => this.props.onResetInsertPostFields());
   };
@@ -131,11 +146,20 @@ class Posts extends React.Component {
         body: this.props.editBodyField
       })
     })
-      .then(response => console.log(response))
+      .then(response => response.json())
+      .then(response => this.props.renderUpdatePost(response))
       .then(() => this.props.onUpdateSuccess())
-      .then(() => this.props.onResetUpdatePostFields());
+      .then(() => this.props.onResetUpdatePostFields())
+      .catch(error => console.log(error));
   };
-
+  scrollToMyRef = () => {
+    console.log("imhere");
+    window.scroll({
+      top: 0,
+      behavior: "smooth"
+    });
+    console.log("done");
+  };
   componentDidMount() {
     this.props.onRequestPosts();
   }
@@ -181,10 +205,11 @@ class Posts extends React.Component {
           direction="row"
           justify="center"
           alignItems="flex-start"
+          ref={0}
         >
           <Grid item xs={8}>
             {insertWindowOpened && (
-              <Paper className="leftpaper  df jcc fdc mr2 p15">
+              <Paper className={classes.paper}>
                 <TextField
                   id="insert-title-field"
                   label="Заголовок новости"
@@ -209,7 +234,7 @@ class Posts extends React.Component {
               </Paper>
             )}
             {editWindowOpended && (
-              <Paper className="leftpaper df jcc fdc mr2 p15">
+              <Paper className={classes.paper}>
                 <TextField
                   id="edit-title-field"
                   label="Заголовок новости"
@@ -233,7 +258,7 @@ class Posts extends React.Component {
                 </Button>
               </Paper>
             )}
-            <Paper className="posts">
+            <Paper className={classes.paper}>
               {this.props.loadedPosts.map(post => {
                 return (
                   <Post
@@ -245,9 +270,6 @@ class Posts extends React.Component {
                 );
               })}
             </Paper>
-          </Grid>
-          <Grid item xs={4}>
-            <MultipleSelect />
           </Grid>
         </Grid>
         <Snackbar
@@ -289,7 +311,9 @@ class Posts extends React.Component {
             variant="fab"
             className={classes.fab}
             color="primary"
-            onClick={this.props.onOpenInsertPostWindow}
+            onClick={() => {
+              this.props.onOpenInsertPostWindow();
+            }}
           >
             <AddIcon />
           </Button>

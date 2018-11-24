@@ -7,10 +7,16 @@ import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { BACKEND_URI } from "../../constants.js";
+import {
+  BACKEND_URI,
+  SENDING_EMAIL_PENDING,
+  SENDING_EMAIL_SUCCESS,
+  SENDING_EMAIL_ERROR
+} from "../../constants.js";
 import {
   setSubjectField,
   setMessageField,
@@ -39,8 +45,31 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
     overflowY: "scroll",
-    marginTop:40 // So the Typography noWrap works
+    marginTop: 40 // So the Typography noWrap works
   },
+  dropZone: {
+    position: "relative",
+    width: "100%",
+    height: "200px",
+    borderWidth: "2px",
+    borderColor: "rgba(102, 102, 102, 0.5)",
+    borderStyle: "dashed",
+    borderRadius: "5px",
+    fontFamily: "Roboto",
+    padding: "10px",
+    boxSizing: "border-box",
+    marginBottom: "10px"
+  },
+  paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginRight: "2%",
+    padding: "15px!important",
+    paddingTop: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    boxShadow: "none"
+  }
 });
 
 const mapStateToProps = state => {
@@ -49,7 +78,8 @@ const mapStateToProps = state => {
     messageField: state.changeEmailInputs.messageField,
     files: state.changeEmailInputs.files,
     selectedTenantsObject: state.requestTenants.selectedTenantsObject,
-    snackMessageSend: state.handleSnackbars.snackMessageSend
+    snackMessageSend: state.handleSnackbars.snackMessageSend,
+    isEmailPending: state.changeEmailInputs.isEmailPending
   };
 };
 
@@ -61,7 +91,11 @@ const mapDispatchToProps = dispatch => {
     onCancel: () => dispatch(removeSendingFiles()),
     onMessageSendSuccess: () => dispatch(openMessageSuccessPopUp()),
     onMessageSendSuccessClose: () => dispatch(closeMessageSuccessPopUp()),
-    onResetMessageFields: () => dispatch(resetEmailFields())
+    onResetMessageFields: () => dispatch(resetEmailFields()),
+    sendingEmailPending: () => dispatch({ type: SENDING_EMAIL_PENDING }),
+    sendingEmailSuccess: () => dispatch({ type: SENDING_EMAIL_SUCCESS }),
+    sendingEmailError: error =>
+      dispatch({ type: SENDING_EMAIL_ERROR, payload: error })
   };
 };
 
@@ -73,15 +107,18 @@ class EmailSender extends React.Component {
     });
     formData.append("subject", this.props.subjectField);
     formData.append("message", this.props.messageField);
-    Object.entries(this.props.selectedTenantsObject).forEach(tenant => {
-      formData.append(`${tenant[0]}name`, tenant[1].name);
-      formData.append(`${tenant[0]}email`, tenant[1].email);
+    this.props.selectedTenantsObject.forEach(tenant => {
+      formData.append(`${tenant.houseNumber}name`, tenant.name);
+      formData.append(`${tenant.houseNumber}email`, tenant.email);
     });
+    console.log(this.props.selectedTenantsObject);
+    this.props.sendingEmailPending();
     fetch(`${BACKEND_URI}/mail`, { method: "POST", body: formData })
-      .then(res => console.log(res))
+      .then(response => response.json())
+      .then(() => this.props.sendingEmailSuccess())
       .then(() => this.props.onMessageSendSuccess())
       .then(() => this.props.onResetMessageFields())
-      .catch(error => console.log(error));
+      .catch(error => this.props.sendingEmailError(error));
   };
 
   render() {
@@ -103,7 +140,7 @@ class EmailSender extends React.Component {
           alignItems="flex-start"
         >
           <Grid item xs={8}>
-            <Paper className="leftpaper w55 h100 df jcc fdc mr2 p15">
+            <Paper className={classes.paper}>
               <TextField
                 id="standard-dense"
                 label="Тема сообщения"
@@ -126,7 +163,7 @@ class EmailSender extends React.Component {
               <section>
                 <div>
                   <Dropzone
-                    className="dropzone"
+                    className={classes.dropZone}
                     onDrop={onDrop.bind(this)}
                     onFileDialogCancel={onCancel.bind(this)}
                   >
@@ -150,13 +187,19 @@ class EmailSender extends React.Component {
                   <aside />
                 )}
               </section>
-              <Button
-                color="primary"
-                className={classes.button}
-                onClick={this.onSubmit}
-              >
-                Отправить
-              </Button>
+              {this.props.isEmailPending ? (
+                <div>
+                  <CircularProgress className={classes.progress} />
+                </div>
+              ) : (
+                <Button
+                  color="primary"
+                  className={classes.button}
+                  onClick={this.onSubmit}
+                >
+                  Отправить
+                </Button>
+              )}
             </Paper>
           </Grid>
           <Grid item xs={4}>

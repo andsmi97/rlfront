@@ -5,7 +5,7 @@ import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-import CardMedia from "@material-ui/core/CardMedia";
+// import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -18,12 +18,25 @@ import {
 } from "../actions";
 //postS actions
 import { selectEditPost } from "../actions";
+import { RENDER_DELETE_POST } from "../constants";
 const styles = {
   card: {
     marginBottom: 20
   },
   media: {
     objectFit: "cover"
+  },
+  paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginRight: "2%",
+    padding: "15px!important",
+    paddingTop: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    boxShadow: "none",
+    // marginBottom: 15,
+    // marginLeft: 15
   }
 };
 
@@ -36,7 +49,9 @@ const mapDispatchToProps = dispatch => {
   return {
     onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
     onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
-    onUpdatePostClick: id => dispatch(selectEditPost(id))
+    onUpdatePostClick: id => dispatch(selectEditPost(id)),
+    renderDeletePost: post =>
+      dispatch({ type: RENDER_DELETE_POST, payload: post })
   };
 };
 
@@ -51,7 +66,8 @@ class Post extends React.Component {
         id: this.props.postID
       })
     })
-      .then(response => console.log(response))
+      .then(response => response.json())
+      .then(response => this.props.renderDeletePost(response))
       .then(() => this.props.onDeleteSuccess());
   };
   render() {
@@ -59,14 +75,14 @@ class Post extends React.Component {
     return (
       <Card className={classes.card}>
         <CardActionArea>
-          <CardMedia
+          {/* <CardMedia
             component="img"
             alt="Contemplative Reptile"
             className={classes.media}
             height="140"
             image="https://sun9-3.userapi.com/c635101/v635101442/2eb65/bByG-f1YjUU.jpg"
             title="Contemplative Reptile"
-          />
+          /> */}
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {title}
@@ -78,9 +94,9 @@ class Post extends React.Component {
           </CardContent>
         </CardActionArea>
         <CardActions className="jcfe">
-          <Button size="small" color="primary">
+          {/* <Button size="small" color="primary">
             Подробнее
-          </Button>
+          </Button> */}
           <Button
             size="small"
             color="primary"

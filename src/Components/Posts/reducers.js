@@ -16,7 +16,10 @@ import {
   SWITCH_DELETE_POST_SUCCESS,
   SWITCH_DELETE_POST_SUCCESS_CLOSE,
   RESET_INSERT_POST_FIELDS,
-  RESET_UPDATE_POST_FIELDS
+  RESET_UPDATE_POST_FIELDS,
+  RENDER_NEW_POST,
+  RENDER_UPDATE_POST,
+  RENDER_DELETE_POST
 
   // SELECT_LAST_POSTS_ON_LOAD
 } from "./constants";
@@ -38,6 +41,12 @@ const initialStatePosts = {
 const findPostByID = (id, state) => {
   // console.log(state.loadedPosts.filter(post => (post._id = id)));
   return state.loadedPosts.filter(post => post._id === id)[0];
+};
+const findPostIndexByID = (id, state) => {
+  return state.loadedPosts.reduce((acc, post, index) => {
+    if (post._id === id) return acc + index;
+    else return acc;
+  }, 0);
 };
 
 export const postsReducer = (state = initialStatePosts, action = {}) => {
@@ -91,7 +100,25 @@ export const postsReducer = (state = initialStatePosts, action = {}) => {
         editPostID: "",
         editWindowOpended: false
       });
-
+    case RENDER_NEW_POST:
+      return { ...state, loadedPosts: [action.payload, ...state.loadedPosts] };
+    case RENDER_UPDATE_POST:
+      return {
+        ...state,
+        loadedPosts: state.loadedPosts.map((post, index) => {
+          if (index === findPostIndexByID(action.payload._id, state)) {
+            return action.payload;
+          }
+          return post;
+        })
+      };
+    case RENDER_DELETE_POST:
+      return {
+        ...state,
+        loadedPosts: state.loadedPosts.filter(
+          post => post._id !== action.payload._id
+        )
+      };
     // case SELECT_LAST_POSTS_ON_LOAD:
     //   return Object.assign({}, state, {
     //     tenantsArray: action.payload,

@@ -40,13 +40,20 @@ import {
   SWITCH_SETTINGS_SUCCESS,
   SWITCH_SETTINGS_SUCCESS_CLOSE,
   SWITCH_TARIFFS_SUCCESS,
-  SWITCH_TARIFFS_SUCCESS_CLOSE
+  SWITCH_TARIFFS_SUCCESS_CLOSE,
+  ACTION_TENANT_PENDING,
+  ACTION_TENANT_SUCCESS,
+  ACTION_TENANTS_FAILED,
+  SENDING_EMAIL_PENDING,
+  SENDING_EMAIL_SUCCESS,
+  SENDING_EMAIL_ERROR
 } from "./constants.js";
 import { getTenantsObjectsFromSelected } from "./tenantsSupportFunctions";
 const initialStateEmail = {
   subjectField: "",
   messageField: "",
-  files: []
+  files: [],
+  isEmailPending: false
 };
 
 export const changeEmailInputs = (state = initialStateEmail, action = {}) => {
@@ -65,18 +72,30 @@ export const changeEmailInputs = (state = initialStateEmail, action = {}) => {
         messageField: "",
         files: []
       });
+    case SENDING_EMAIL_PENDING:
+      return Object.assign({}, state, { isEmailPending: true });
+    case SENDING_EMAIL_SUCCESS:
+      return Object.assign({}, state, {
+        isEmailPending: false
+      });
+    case SENDING_EMAIL_ERROR:
+      return Object.assign({}, state, {
+        error: action.payload,
+        isEmailPending: false
+      });
     default:
       return state;
   }
 };
 
 const initialStateTenants = {
-  tenants: {},
+  tenants: [],
   tenantsArray: [],
   selectedTenants: [],
   selectedTenantsObject: {},
   isPending: false,
-  error: ""
+  error: "",
+  isTenantActionPending: false
 };
 
 export const requestTenants = (state = initialStateTenants, action = {}) => {
@@ -109,6 +128,18 @@ export const requestTenants = (state = initialStateTenants, action = {}) => {
           action.payload,
           state.tenants
         )
+      });
+    case ACTION_TENANT_PENDING:
+      return Object.assign({}, state, { isTenantActionPending: true });
+    case ACTION_TENANT_SUCCESS:
+      return Object.assign({}, state, {
+        tenants: action.payload,
+        isTenantActionPending: false
+      });
+    case ACTION_TENANTS_FAILED:
+      return Object.assign({}, state, {
+        error: action.payload,
+        isTenantActionPending: false
       });
     default:
       return state;

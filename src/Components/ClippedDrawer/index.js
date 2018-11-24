@@ -53,18 +53,22 @@ const drawerWidth = 240;
 const styles = theme => ({
   root: {
     flexGrow: 1,
-    height: 440,
     zIndex: 1,
     overflow: "hidden",
     position: "relative",
-    display: "flex"
+    display: "flex",
+    height: "100%"
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1
   },
   drawerPaper: {
     position: "relative",
-    width: drawerWidth
+    width: drawerWidth,
+    padding: '5px'
+  },
+  typography: {
+    useNextVariants: true
   },
   content: {
     flexGrow: 1,

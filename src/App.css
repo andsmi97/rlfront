@@ -3,212 +3,14 @@
   padding: 0;
 }
 
-.App {
-  height: 100vh;
-}
-
-.App > div[class^="ClippedDrawer"],
-.App > div[class*=" ClippedDrawer"] {
-  height: 100%;
-}
-
-.App div[class^="FullWidthTabs"],
-.App div[class*=" FullWidthTabs"] {
-  width: 100%;
-}
-
-.App div[class^="MuiTypography-root"] div[class^="MuiTypography-body"],
-.App div[class*="MuiTypography-root"] div[class*="MuiTypography-body"] {
-  flex-direction: column;
-  align-items: center;
-}
-
-.App .ClippedDrawer-root-1 {
-  height: 100%;
-}
-
-.App .FullWidthTabs-root-307 {
-  width: 100%;
-}
-
-.App .MultipleSelect-root-219 {
-  flex-direction: column;
-  align-items: center;
-}
-
-.App .react-swipeable-view-container div[class*="MuiTypography-root"],
-.App .react-swipeable-view-container div[class*="MuiTypography-root"] {
-  display: flex;
-  flex-direction: column;
-}
-.df {
-  display: flex;
-}
-
-.jcc {
-  justify-content: center;
-}
-
-.aic {
-  align-items: center;
-}
-
-.fdc {
-  flex-direction: column;
-}
-
-.w55 {
-  /* width: 55%; */
-}
-
-.h100 {
-  height: 100%;
-}
-
-.w40 {
-  /* width: 40%; */
-}
-
-.mr2 {
-  margin-right: 2%;
-}
-
-.p15 {
-  padding: 15px !important;
-}
-
 .filestosend > ul {
   list-style: none;
-}
-
-@media (min-width: 960px) {
-  .App .MuiTab-root-317 {
-    min-width: 33%;
-  }
-}
-
-.dropzone {
-  position: relative;
-  width: 100%;
-  height: 200px;
-  border-width: 2px;
-  border-color: rgba(102, 102, 102, 0.5);
-  border-style: dashed;
-  border-radius: 5px;
-  font-family: Roboto;
-  padding: 10px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-}
-
-.nameselect {
-  width: 90%;
-}
-
-.fullwidthtabs {
-  width: 100%;
-}
-
-.right-buttons {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.right-buttons > div {
-  width: 100%;
-}
-
-.rightbuttons {
-  margin-top: 60px;
-  margin-bottom: 0px;
-  width: 90%;
-}
-
-@media (min-width: 1450px) {
-  .App .leftpaper {
-    /* width: 50%; */
-  }
-}
-
-@media (min-width: 1305px) {
-  .App .leftpaper {
-    /* width: 55%; */
-  }
-
-  .App .rightpart {
-    /* width: 35%; */
-  }
 }
 
 @media (min-width: 960px) {
   .App .tab {
     min-width: 72px;
   }
-}
-
-div[class^="MySnackbarContent"],
-div[class*="MySnackbarContent"] {
-  flex-direction: row !important;
-}
-
-div[class^="MultipleSelect-root"],
-div[class*="MultipleSelect-root"]
- {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-
-div[class^="FullWidthTabs-root"],
-div[class*="FullWidthTabs-root"]
- {
-  width: 90%;
-}
-
-
-div[class^="MuiPaper-elevation"],
-div[class*="MuiPaper-elevation"]
- {
-  padding: 5px;
-}
-
-div[class^="MuiTabs-flexContainer"],
-div[class*="MuiTabs-flexContainer"]
- {
-  height: 100%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-}
-
-
-div[class^="MultipleSelect-formControl"],
-div[class*="MultipleSelect-formControl"] 
-{
-  margin: 8px;
-  width: 90%;
-}
-
-
-div[class^="MuiInput-formControl"],
-div[class*="MuiInput-formControl"]
- {
-  margin-top: 20px;
-  padding-top: 10px;
-}
-
-div[class^="MuiPaper-elevation2"],
- div[class*="MuiPaper-elevation2"]{
-  padding-top: 20px;
-  background-color: rgba(255, 255, 255, 0);
-  box-shadow: none;
 }
 
 .contactsSettings{
@@ -232,8 +34,6 @@ div[class^="MuiPaper-elevation2"],
   margin-left: 15px;
 }
 
-
-
 /* Posts here */
 .quill{
   height: 400px;
@@ -248,3 +48,40 @@ div[class^="MuiPaper-elevation2"],
 .jcfe{
   justify-content: flex-end;
 }
+
+@media (min-width: 960px) {
+  .App .MuiTab-root-317 {
+    min-width: 33%;
+  }
+}
+
+/* div[class^="MuiTabs-flexContainer"],
+div[class*="MuiTabs-flexContainer"]
+ {
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+} */
+
+/* div[class^="MultipleSelect-formControl"],
+div[class*="MultipleSelect-formControl"] 
+{
+  margin: 8px;
+  width: 90%;
+} */
+
+/* div[class^="MuiInput-formControl"],
+div[class*="MuiInput-formControl"]
+ {
+  margin-top: 20px;
+  padding-top: 10px;
+} */
+
+/* div[class^="MuiPaper-elevation2"],
+ div[class*="MuiPaper-elevation2"]{
+  padding-top: 20px;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: none;
+} */
+

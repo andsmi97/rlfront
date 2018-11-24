@@ -59,6 +59,18 @@ const styles = theme => ({
     minWidth: 0,
     marginTop: 50,
     overflowY: "scroll" // So the Typography noWrap works
+  },
+  paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginRight: "2%",
+    padding: "15px!important",
+    paddingTop: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    boxShadow: "none",
+    marginBottom: 15,
+    marginLeft: 15
   }
 });
 
@@ -79,14 +91,14 @@ class Tariffs extends React.Component {
       .then(() => this.props.onResetTariffs());
   };
   render() {
-    const { classes, theme, onUpdateTariffs } = this.props;
+    const { classes, onUpdateTariffs } = this.props;
 
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Grid container direction="column" justify="start">
+        <Grid container direction="column" justify="flex-start">
           <Grid item xs={4}>
-            <Paper className="tariffsSettings">
+            <Paper className={classes.paper}>
               <Typography variant="h5" gutterBottom>
                 Тарифы
               </Typography>
@@ -126,8 +138,7 @@ class Tariffs extends React.Component {
 }
 
 Tariffs.propTypes = {
-  classes: PropTypes.object.isRequired,
-  theme: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired
 };
 
 export default connect(

@@ -31,12 +31,19 @@ const mapDispatchToProps = dispatch => {
 const styles = theme => ({
   root: {
     display: "flex",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    // flexDirection: "column",
+    alignItems: "center",
+    width: "100%",
+    // flexDirection: "row",
+    justifyContent: "center"
   },
   formControl: {
     margin: theme.spacing.unit,
     minWidth: 120,
-    maxWidth: 300
+    maxWidth: 300,
+    marginTop: 20,
+    paddingTop: 10
   },
   chips: {
     display: "flex",
@@ -44,6 +51,19 @@ const styles = theme => ({
   },
   chip: {
     margin: theme.spacing.unit / 4
+  },
+  selectedName: {
+    width: "90%"
+  },
+  paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    marginRight: "2%",
+    padding: "15px!important",
+    paddingTop: "20px",
+    backgroundColor: "rgba(255, 255, 255, 0)",
+    boxShadow: "none"
   }
 });
 
@@ -71,9 +91,9 @@ class MultipleSelect extends React.Component {
       tenantsArray
     } = this.props;
     return (
-      <Paper className="w40 h100 rightpart">
+      <Paper className={classes.paper}>
         <div className={classes.root}>
-          <FormControl className="nameselect">
+          <FormControl className={classes.selectedName}>
             <InputLabel htmlFor="select-multiple-chip">Получатели</InputLabel>
             <Select
               multiple

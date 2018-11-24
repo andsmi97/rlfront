@@ -27,10 +27,12 @@ const rootReducer = combineReducers({
   changeAdminInputs,
   changeTariffsInputs
 });
-const store = createStore(
-  rootReducer,
-  applyMiddleware(thunkMiddleware, logger)
-);
+let store = "";
+if (process.env.NODE_ENV === "production") {
+  store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
+}
+store = createStore(rootReducer, applyMiddleware(thunkMiddleware, logger));
+
 ReactDOM.render(
   <Provider store={store}>
     <App />
