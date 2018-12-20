@@ -51,7 +51,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
-    overflowY: "scroll", 
+    overflowY: "scroll",
     marginTop: 40
   },
   fab: {
@@ -116,13 +116,13 @@ const mapDispatchToProps = dispatch => {
 class Posts extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
-      screen: "EmailSender", 
-    previewImage: "",
-     insertFile: {},
-    previewEditImage: "", 
-    editFile: {} 
-  }; 
+    this.state = {
+      screen: "EmailSender",
+      previewImage: "",
+      insertFile: {},
+      previewEditImage: "",
+      editFile: {}
+    };
 
     this.onChangeInsertFile = this.onChangeInsertFile.bind(this);
   }
@@ -142,22 +142,36 @@ class Posts extends React.Component {
       .then(() => this.setState({ previewImage: "" }));
   };
   onSubmitUpdatePost = () => {
-    fetch(`${BACKEND_URI}/updatepost`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: this.props.editPostID,
-        title: this.props.editTitleField,
-        body: this.props.editBodyField
-      })
-    })
+
+    let form = new FormData();
+    form.append("file", this.state.editFile);
+    form.append("title", this.props.editTitleField);
+    form.append("body", this.props.editBodyField);
+    form.append("site", "ozerodom.ru");
+    form.append("id", this.props.editPostID);
+
+    fetch(`${BACKEND_URI}/updatepost`, { method: "POST", body: form })
       .then(response => response.json())
       .then(response => this.props.renderUpdatePost(response))
       .then(() => this.props.onUpdateSuccess())
       .then(() => this.props.onResetUpdatePostFields())
       .catch(error => console.log(error));
+    // fetch(`${BACKEND_URI}/updatepost`, {
+    //   method: "PATCH",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify({
+    //     id: this.props.editPostID,
+    //     title: this.props.editTitleField,
+    //     body: this.props.editBodyField
+    //   })
+    // })
+    //   .then(response => response.json())
+    //   .then(response => this.props.renderUpdatePost(response))
+    //   .then(() => this.props.onUpdateSuccess())
+    //   .then(() => this.props.onResetUpdatePostFields())
+    //   .catch(error => console.log(error));
   };
   scrollToMyRef = () => {
     console.log("imhere");
@@ -383,7 +397,6 @@ class Posts extends React.Component {
           autoHideDuration={6000}
           onClose={this.props.onInsertionSuccessClose}
         >
-
           <MySnackbarContentWrapper
             onClose={this.props.onInsertionSuccessClose}
             variant="success"
