@@ -2,7 +2,6 @@ import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
-// import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import { withStyles } from "@material-ui/core/styles";
@@ -52,7 +51,7 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.default,
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
-    overflowY: "scroll", // So the Typography noWrap works
+    overflowY: "scroll", 
     marginTop: 40
   },
   fab: {
@@ -69,8 +68,6 @@ const styles = theme => ({
     paddingTop: "20px",
     backgroundColor: "rgba(255, 255, 255, 0)",
     boxShadow: "none"
-    // marginBottom: 15,
-    // marginLeft: 15
   },
   img: {
     objectFit: "cover"
@@ -119,7 +116,13 @@ const mapDispatchToProps = dispatch => {
 class Posts extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { screen: "EmailSender", previewImage: "", insertFile: {} }; // You can also pass a Quill Delta here
+    this.state = { 
+      screen: "EmailSender", 
+    previewImage: "",
+     insertFile: {},
+    previewEditImage: "", 
+    editFile: {} 
+  }; 
 
     this.onChangeInsertFile = this.onChangeInsertFile.bind(this);
   }
@@ -132,16 +135,6 @@ class Posts extends React.Component {
     form.append("site", "ozerodom.ru");
 
     fetch(`${BACKEND_URI}/addpost`, { method: "POST", body: form })
-      // fetch(`${BACKEND_URI}/addpost`, {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json"
-      //   },
-      //   body: JSON.stringify({
-      //     title: this.props.titleField,
-      //     body: this.props.bodyField
-      //   })
-      // })
       .then(response => response.json())
       .then(response => this.props.renderNewPost(response))
       .then(() => this.props.onInsertionSuccess())
@@ -207,7 +200,21 @@ class Posts extends React.Component {
       reader.onload = ev => {
         this.setState({
           previewImage: ev.target.result
-          // insertFile: e.target.files[0]
+        });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  onChangeUpdateFile = e => {
+    if (e.target.files && e.target.files[0]) {
+      let reader = new FileReader();
+      this.setState({
+        editFile: e.target.files[0]
+      });
+      reader.onload = ev => {
+        this.setState({
+          previewEditImage: ev.target.result
         });
       };
       reader.readAsDataURL(e.target.files[0]);
@@ -284,6 +291,16 @@ class Posts extends React.Component {
                   variant="filled"
                   onChange={onEditTitleChange}
                 />
+                <Input type="file" onChange={this.onChangeEditFile} />
+                {this.state.previewEditImage && (
+                  <img
+                    src={this.state.previewEditImage}
+                    alt="upload"
+                    width="100%"
+                    height="400"
+                    className={classes.img}
+                  />
+                )}
                 <ReactQuill
                   modules={this.modules}
                   formats={this.formats}
@@ -366,7 +383,7 @@ class Posts extends React.Component {
           autoHideDuration={6000}
           onClose={this.props.onInsertionSuccessClose}
         >
-          {/* // ContentProps={{ "aria-describedby": "message-id" }} */}
+
           <MySnackbarContentWrapper
             onClose={this.props.onInsertionSuccessClose}
             variant="success"
@@ -379,7 +396,6 @@ class Posts extends React.Component {
           autoHideDuration={6000}
           onClose={this.props.onUpdateSuccessClose}
         >
-          {/* // ContentProps={{ "aria-describedby": "message-id" }} */}
           <MySnackbarContentWrapper
             onClose={this.props.onUpdateSuccessClose}
             variant="success"
