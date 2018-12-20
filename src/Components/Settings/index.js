@@ -21,6 +21,7 @@ import {
   setUpdateAdminAccountPassNew,
   setUpdateAdminAccountPassRepeat,
   setUpdateAdminPhone,
+  setUpdateAdminPhone2,
   resetEmailSettingsField,
   resetAccountSettingsField,
   openEmailUpdateSuccessPopUp,
@@ -42,7 +43,7 @@ const mapStateToProps = state => {
     updateAdminAccountPassRepeatField:
       state.changeAdminInputs.updateAdminAccountPassRepeatField,
     updateAdminPhoneField: state.changeAdminInputs.updateAdminPhoneField,
-
+    updateAdminPhone2Field: state.changeAdminInputs.updateAdminPhone2Field,
     snackSettings: state.handleSnackbars.snackSettings
   };
 };
@@ -60,6 +61,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(setUpdateAdminAccountPassRepeat(event.target.value)),
     onUpdateAdminPhone: event =>
       dispatch(setUpdateAdminPhone(event.target.value)),
+    onUpdateAdminPhone2: event =>
+      dispatch(setUpdateAdminPhone2(event.target.value)),
 
     onResetAdminEmailSettings: () => dispatch(resetEmailSettingsField()),
     onResetAdminAccountSettings: () => dispatch(resetAccountSettingsField()),
@@ -126,8 +129,10 @@ class Settings extends React.Component {
       },
       body: JSON.stringify({
         user: "admin",
+        phone: this.props.updateAdminPhoneField,
         email: this.props.updateAdminEmailField,
-        password: this.props.updateAdminMailPassField
+        password: this.props.updateAdminMailPassField,
+        phone2: this.props.updateAdminPhone2Field
       })
     })
       .then(response => console.log(response))
@@ -168,7 +173,8 @@ class Settings extends React.Component {
       onUpdateAdminAccountPassNew,
       onUpdateAdminAccountPassOld,
       onUpdateAdminAccountPassRepeat,
-      onUpdateAdminPhone
+      onUpdateAdminPhone,
+      onUpdateAdminPhone2
     } = this.props;
 
     return (
@@ -182,10 +188,17 @@ class Settings extends React.Component {
               </Typography>
               <TextField
                 id="admin-new-phone"
-                label="Новый телефон"
+                label="Первый телефон"
                 margin="dense"
                 onChange={onUpdateAdminPhone}
                 value={this.props.updateAdminPhoneField}
+              />
+              <TextField
+                id="admin-new-phone"
+                label="Второй телефон"
+                margin="dense"
+                onChange={onUpdateAdminPhone2}
+                value={this.props.updateAdminPhoneField2}
               />
               <TextField
                 id="admin-new-email"

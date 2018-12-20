@@ -14,6 +14,7 @@ import {
   changeAdminInputs,
   changeTariffsInputs
 } from "./reducers";
+import { authReducer } from "./Components/Auth/reducers.js";
 import { postsReducer } from "./Components/Posts/reducers.js";
 import { postReducer } from "./Components/Posts/Post/reducers.js";
 const logger = createLogger();
@@ -25,7 +26,8 @@ const rootReducer = combineReducers({
   postsReducer,
   postReducer,
   changeAdminInputs,
-  changeTariffsInputs
+  changeTariffsInputs,
+  authReducer
 });
 let store = "";
 if (process.env.NODE_ENV === "production") {

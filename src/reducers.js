@@ -29,6 +29,7 @@ import {
   RESET_TENANT_DELETE_FIELDS,
   CHANGE_UPDATE_ADMIN_EMAIL_FIELD,
   CHANGE_UPDATE_ADMIN_MAIL_PASS_FIELD,
+  CHANGE_UPDATE_ADMIN_PHONE2_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
   CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
@@ -205,6 +206,8 @@ export const changeTenantsInputs = (
 const initialStateSettingsFields = {
   updateAdminEmailField: "",
   updateAdminMailPassField: "",
+  updateAdminPhoneField:"",
+  updateAdminPhone2Field:"",
   updateAdminAccountPassOldField: "",
   updateAdminAccountPassNewField: "",
   updateAdminAccountPassRepeatField: ""
@@ -239,10 +242,15 @@ export const changeAdminInputs = (
       return Object.assign({}, state, {
         updateAdminPhoneField: action.payload
       });
+    case CHANGE_UPDATE_ADMIN_PHONE2_FIELD:
+      return Object.assign({}, state, {
+        updateAdminPhoneField2: action.payload
+      });
     case RESET_EMAIL_SETTINGS_FIELDS:
       return Object.assign({}, state, {
         updateAdminEmailField: "",
-        updateAdminMailPassField: ""
+        updateAdminMailPassField: "",
+        updateAdminPhoneField: ""
       });
     case RESET_ACCOUNT_SETTINGS_FIELDS:
       return Object.assign({}, state, {

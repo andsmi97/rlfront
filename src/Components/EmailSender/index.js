@@ -45,7 +45,7 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
     overflowY: "scroll",
-    marginTop: 40 // So the Typography noWrap works
+    marginTop: 60 // So the Typography noWrap works
   },
   dropZone: {
     position: "relative",
@@ -80,6 +80,7 @@ const mapStateToProps = state => {
     selectedTenantsObject: state.requestTenants.selectedTenantsObject,
     snackMessageSend: state.handleSnackbars.snackMessageSend,
     isEmailPending: state.changeEmailInputs.isEmailPending
+
   };
 };
 

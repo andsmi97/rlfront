@@ -1,4 +1,10 @@
-export const BACKEND_URI = "http://localhost:3001";
+let BACKEND_URI = "http://localhost:8080";
+// if (process.env.NODE_ENV === "production") {
+//   BACKEND_URI = "https://lesnayagavan.ru";
+// } else {
+//   BACKEND_URI = "http://localhost:8080";
+// }
+export { BACKEND_URI };
 
 export const CHANGE_SEARCH_FIELD = "CHANGE_SEARCH_FIELD";
 export const REQUEST_ROBOTS_PENDING = "REQUEST_ROBOTS_PENDING";
@@ -62,7 +68,7 @@ export const CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD =
   "CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD";
 export const CHANGE_UPDATE_ADMIN_PHONE_FIELD =
   "CHANGE_UPDATE_ADMIN_PHONE_FIELD";
-
+export const CHANGE_UPDATE_ADMIN_PHONE2_FIELD = "CHANGE_UPDATE_ADMIN_PHONE2_FIELD";
 export const RESET_EMAIL_SETTINGS_FIELDS = "RESET_EMAIL_SETTINGS_FIELDS";
 export const RESET_ACCOUNT_SETTINGS_FIELDS = "RESET_ACCOUNT_SETTINGS_FIELDS";
 

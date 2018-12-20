@@ -5,7 +5,7 @@ import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
-// import CardMedia from "@material-ui/core/CardMedia";
+import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -71,18 +71,18 @@ class Post extends React.Component {
       .then(() => this.props.onDeleteSuccess());
   };
   render() {
-    const { classes, title, body } = this.props;
+    const { classes, title, body, image } = this.props;
     return (
       <Card className={classes.card}>
         <CardActionArea>
-          {/* <CardMedia
+          <CardMedia
             component="img"
             alt="Contemplative Reptile"
             className={classes.media}
-            height="140"
-            image="https://sun9-3.userapi.com/c635101/v635101442/2eb65/bByG-f1YjUU.jpg"
+            height="400"
+            image={image}
             title="Contemplative Reptile"
-          /> */}
+          />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {title}

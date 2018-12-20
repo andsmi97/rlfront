@@ -82,7 +82,7 @@ class Tariffs extends React.Component {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        gas: "100"
+        gas: this.props.updateTariffsField
       })
     })
       .then(response => console.log(response))

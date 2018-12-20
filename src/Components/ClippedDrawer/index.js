@@ -12,11 +12,17 @@ import EmailIcon from "@material-ui/icons/Email";
 import MoneyIcon from "@material-ui/icons/MonetizationOn";
 import ContactIcon from "@material-ui/icons/ContactMail";
 import NewsIcon from "@material-ui/icons/FormatAlignLeft";
+import ImageIcon from "@material-ui/icons/Image";
 import Posts from "../Posts";
+import SectionImages from "../SectionImages";
 import { connect } from "react-redux";
 import "react-quill/dist/quill.snow.css";
 import Settings from "../Settings";
+import classNames from "classnames";
 import Tariffs from "../Tariffs";
+import Avatar from "@material-ui/core/Avatar";
+import logo from "./img/logo.png";
+import Auth from "../Auth";
 import {
   setSubjectField,
   setMessageField,
@@ -34,7 +40,8 @@ const mapStateToProps = state => {
     messageField: state.changeEmailInputs.messageField,
     files: state.changeEmailInputs.files,
     selectedTenantsObject: state.requestTenants.selectedTenantsObject,
-    snackMessageSend: state.handleSnackbars.snackMessageSend
+    snackMessageSend: state.handleSnackbars.snackMessageSend,
+    isResponseCorrect: state.authReducer.isResponseCorrect
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -65,7 +72,7 @@ const styles = theme => ({
   drawerPaper: {
     position: "relative",
     width: drawerWidth,
-    padding: '5px'
+    padding: "5px"
   },
   typography: {
     useNextVariants: true
@@ -76,6 +83,13 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
     overflowY: "scroll" // So the Typography noWrap works
+  },
+  avatar: {
+    margin: 10
+  },
+  bigAvatar: {
+    width: 60,
+    height: 60
   },
   toolbar: theme.mixins.toolbar
 });
@@ -130,51 +144,74 @@ class ClippedDrawer extends React.Component {
   onClickSettings = e => {
     this.setState({ screen: "Settings" });
   };
-
+  onClickSectionImages = () => {
+    this.setState({ screen: "SectionImages" });
+  };
+  onLoad = () => {
+    fetch();
+  };
+  componentDidMount() {}
   render() {
     const { classes } = this.props;
-    return (
-      <div className={classes.root}>
-        <AppBar position="absolute" className={classes.appBar}>
-          <Toolbar>
-            <Typography variant="title" color="inherit" noWrap>
-              Красное озеро
-            </Typography>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-          <div className={classes.toolbar} />
-          <ListItem button onClick={this.onClickEmailSender}>
-            <ListItemIcon>
-              <EmailIcon />
-            </ListItemIcon>
-            <ListItemText primary="Рассылка" />
-          </ListItem>
-          <ListItem button onClick={this.onClickNews}>
-            <ListItemIcon>
-              <NewsIcon />
-            </ListItemIcon>
-            <ListItemText primary="Новости" />
-          </ListItem>
-          <ListItem button onClick={this.onClickTariffs}>
-            <ListItemIcon>
-              <MoneyIcon />
-            </ListItemIcon>
-            <ListItemText primary="Тарифы" />
-          </ListItem>
-          <ListItem button onClick={this.onClickSettings}>
-            <ListItemIcon>
-              <ContactIcon />
-            </ListItemIcon>
-            <ListItemText primary="Настройки" />
-          </ListItem>
-        </Drawer>
-        {this.state.screen === "EmailSender" && <EmailSender />}
-        {this.state.screen === "News" && <Posts />}
-        {this.state.screen === "Tariffs" && <Tariffs />}
-        {this.state.screen === "Settings" && <Settings />}
-      </div>
-    );
+    if (this.props.isResponseCorrect) {
+      return (
+        <div className={classes.root}>
+          <AppBar position="absolute" className={classes.appBar}>
+            <Toolbar>
+              <Avatar
+                alt="Лесная гавань"
+                src={logo}
+                className={classNames(classes.avatar, classes.bigAvatar)}
+              />
+              <Typography variant="title" color="inherit" noWrap>
+                Лесная Гавань
+              </Typography>
+            </Toolbar>
+          </AppBar>
+          <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+            <div className={classes.toolbar} />
+            <ListItem />
+            <ListItem button onClick={this.onClickEmailSender}>
+              <ListItemIcon>
+                <EmailIcon />
+              </ListItemIcon>
+              <ListItemText primary="Рассылка" />
+            </ListItem>
+            <ListItem button onClick={this.onClickNews}>
+              <ListItemIcon>
+                <NewsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Новости" />
+            </ListItem>
+            <ListItem button onClick={this.onClickTariffs}>
+              <ListItemIcon>
+                <MoneyIcon />
+              </ListItemIcon>
+              <ListItemText primary="Тарифы" />
+            </ListItem>
+            <ListItem button onClick={this.onClickSectionImages}>
+              <ListItemIcon>
+                <ImageIcon />
+              </ListItemIcon>
+              <ListItemText primary="Содержимое" />
+            </ListItem>
+            <ListItem button onClick={this.onClickSettings}>
+              <ListItemIcon>
+                <ContactIcon />
+              </ListItemIcon>
+              <ListItemText primary="Настройки" />
+            </ListItem>
+          </Drawer>
+          {this.state.screen === "EmailSender" && <EmailSender />}
+          {this.state.screen === "News" && <Posts />}
+          {this.state.screen === "Tariffs" && <Tariffs />}
+          {this.state.screen === "Settings" && <Settings />}
+          {this.state.screen === "SectionImages" && <SectionImages />}
+        </div>
+      );
+    } else {
+      return <Auth />;
+    }
   }
 }
 

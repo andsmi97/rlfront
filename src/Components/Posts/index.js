@@ -4,6 +4,7 @@ import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 // import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
 import { withStyles } from "@material-ui/core/styles";
 import Snackbar from "@material-ui/core/Snackbar";
 import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
@@ -70,6 +71,9 @@ const styles = theme => ({
     boxShadow: "none"
     // marginBottom: 15,
     // marginLeft: 15
+  },
+  img: {
+    objectFit: "cover"
   }
 });
 
@@ -115,24 +119,34 @@ const mapDispatchToProps = dispatch => {
 class Posts extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { screen: "EmailSender" }; // You can also pass a Quill Delta here
+    this.state = { screen: "EmailSender", previewImage: "", insertFile: {} }; // You can also pass a Quill Delta here
+
+    this.onChangeInsertFile = this.onChangeInsertFile.bind(this);
   }
 
   onSubmitPost = () => {
-    fetch(`${BACKEND_URI}/addpost`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title: this.props.titleField,
-        body: this.props.bodyField
-      })
-    })
+    let form = new FormData();
+    form.append("file", this.state.insertFile);
+    form.append("title", this.props.titleField);
+    form.append("body", this.props.bodyField);
+    form.append("site", "ozerodom.ru");
+
+    fetch(`${BACKEND_URI}/addpost`, { method: "POST", body: form })
+      // fetch(`${BACKEND_URI}/addpost`, {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json"
+      //   },
+      //   body: JSON.stringify({
+      //     title: this.props.titleField,
+      //     body: this.props.bodyField
+      //   })
+      // })
       .then(response => response.json())
       .then(response => this.props.renderNewPost(response))
       .then(() => this.props.onInsertionSuccess())
-      .then(() => this.props.onResetInsertPostFields());
+      .then(() => this.props.onResetInsertPostFields())
+      .then(() => this.setState({ previewImage: "" }));
   };
   onSubmitUpdatePost = () => {
     fetch(`${BACKEND_URI}/updatepost`, {
@@ -184,6 +198,22 @@ class Posts extends React.Component {
     "video"
   ];
 
+  onChangeInsertFile = e => {
+    if (e.target.files && e.target.files[0]) {
+      let reader = new FileReader();
+      this.setState({
+        insertFile: e.target.files[0]
+      });
+      reader.onload = ev => {
+        this.setState({
+          previewImage: ev.target.result
+          // insertFile: e.target.files[0]
+        });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
   render() {
     const {
       classes,
@@ -218,6 +248,17 @@ class Posts extends React.Component {
                   variant="filled"
                   onChange={onTitleChange}
                 />
+                <Input type="file" onChange={this.onChangeInsertFile} />
+                {this.state.previewImage && (
+                  <img
+                    src={this.state.previewImage}
+                    alt="upload"
+                    width="100%"
+                    height="400"
+                    className={classes.img}
+                  />
+                )}
+
                 <ReactQuill
                   modules={this.modules}
                   formats={this.formats}
@@ -265,6 +306,7 @@ class Posts extends React.Component {
                     title={post.title}
                     body={post.body}
                     postID={post._id}
+                    image={post.image}
                     key={post._id}
                   />
                 );
