@@ -1,32 +1,87 @@
-.App {
-  text-align: center;
+* {
+  margin: 0;
+  padding: 0;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+.filestosend > ul {
+  list-style: none;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+@media (min-width: 960px) {
+  .App .tab {
+    min-width: 72px;
+  }
+}
+
+.contactsSettings{
   display: flex;
   flex-direction: column;
-  align-items: center;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+.accountSettings{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+.tariffsSettings{
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+
+/* Posts here */
+.quill{
+  height: 400px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+.posts{
+  margin-right: 20px;
+  padding: 15px!important;
+}
+.jcfe{
+  justify-content: flex-end;
+}
+
+@media (min-width: 960px) {
+  .App .MuiTab-root-317 {
+    min-width: 33%;
+  }
+}
+
+/* div[class^="MuiTabs-flexContainer"],
+div[class*="MuiTabs-flexContainer"]
+ {
+  height: 100%;
+  width: 100%;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
+  align-items: center;
+} */
 
-.App-link {
-  color: #61dafb;
-}
+/* div[class^="MultipleSelect-formControl"],
+div[class*="MultipleSelect-formControl"] 
+{
+  margin: 8px;
+  width: 90%;
+} */
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* div[class^="MuiInput-formControl"],
+div[class*="MuiInput-formControl"]
+ {
+  margin-top: 20px;
+  padding-top: 10px;
+} */
+
+/* div[class^="MuiPaper-elevation2"],
+ div[class*="MuiPaper-elevation2"]{
+  padding-top: 20px;
+  background-color: rgba(255, 255, 255, 0);
+  box-shadow: none;
+} */
+
