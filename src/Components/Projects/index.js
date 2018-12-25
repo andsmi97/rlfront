@@ -12,31 +12,33 @@ import PropTypes from "prop-types";
 import {
   setTitleField,
   setBodyField,
-  requestPosts,
-  openInsertPostWindow,
-  closeInsertPostWindow,
-  openEditPostWindow,
-  closeEditPostWindow,
+  requestProjects,
+  openInsertProjectWindow,
+  closeInsertProjectWindow,
+  openEditProjectWindow,
+  closeEditProjectWindow,
   setEditTitleField,
   setEditBodyField,
-  openInsertPostSuccessPopUp,
-  openUpdatePostSuccessPopUp,
-  openDeletePostSuccessPopUp,
-  closeInsertPostSuccessPopUp,
-  closeUpdatePostSuccessPopUp,
-  closeDeletePostSuccessPopUp,
-  resetInsertPostFields,
-  resetUpdatePostFields
+  openInsertProjectSuccessPopUp,
+  openUpdateProjectSuccessPopUp,
+  openDeleteProjectSuccessPopUp,
+  closeInsertProjectSuccessPopUp,
+  closeUpdateProjectSuccessPopUp,
+  closeDeleteProjectSuccessPopUp,
+  resetInsertProjectFields,
+  resetUpdateProjectFields
 } from "./actions";
 import {
-  RENDER_NEW_POST,
-  RENDER_UPDATE_POST,
+  RENDER_NEW_PROJECT,
+  RENDER_UPDATE_PROJECT,
+  SET_PREVIEW_IMAGE_2,
   SET_PREVIEW_IMAGE_1,
-  SET_UPLOAD_FILE_1
+  SET_UPLOAD_FILE_1,
+  SET_UPLOAD_FILE_2
 } from "./constants";
 import ReactQuill from "react-quill";
 import { BACKEND_URI } from "../../constants";
-import Post from "./Post";
+import Project from "./Project";
 import AddIcon from "@material-ui/icons/Add";
 import CloseIcon from "@material-ui/icons/Close";
 const styles = theme => ({
@@ -81,44 +83,56 @@ const styles = theme => ({
 
 const mapStateToProps = state => {
   return {
-    titleField: state.postsReducer.titleField,
-    bodyField: state.postsReducer.bodyField,
-    loadedPosts: state.postsReducer.loadedPosts,
-    insertWindowOpened: state.postsReducer.insertWindowOpened,
-    editWindowOpended: state.postsReducer.editWindowOpended,
-    editTitleField: state.postsReducer.editTitleField,
-    editBodyField: state.postsReducer.editBodyField,
-    editPostID: state.postsReducer.editPostID,
-    snackInsert: state.postsReducer.snackInsert,
-    snackUpdate: state.postsReducer.snackUpdate,
-    snackDelete: state.postsReducer.snackDelete,
-    editFile1: state.postsReducer.editFile1,
-    previewEditImage1: state.postsReducer.previewEditImage1,
-    editImage1: state.postsReducer.editImage1
+    titleField: state.projectsReducer.titleField,
+    bodyField: state.projectsReducer.bodyField,
+    loadedProjects: state.projectsReducer.loadedProjects,
+    insertWindowOpened: state.projectsReducer.insertWindowOpened,
+    editWindowOpended: state.projectsReducer.editWindowOpended,
+    editTitleField: state.projectsReducer.editTitleField,
+    editBodyField: state.projectsReducer.editBodyField,
+    editProjectID: state.projectsReducer.editProjectID,
+    editImage1: state.projectsReducer.editImage1,
+    editImage2: state.projectsReducer.editImage2,
+    snackInsert: state.projectsReducer.snackInsert,
+    snackUpdate: state.projectsReducer.snackUpdate,
+    snackDelete: state.projectsReducer.snackDelete,
+    editFile2: state.projectsReducer.editFile2,
+    editFile1: state.projectsReducer.editFile1,
+    previewEditImage1: state.projectsReducer.previewEditImage1,
+    previewEditImage2: state.projectsReducer.previewEditImage2
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
-    onRequestPosts: () => dispatch(requestPosts()),
+    onRequestProjects: () => dispatch(requestProjects()),
     onTitleChange: event => dispatch(setTitleField(event.target.value)),
     onEditTitleChange: event => dispatch(setEditTitleField(event.target.value)),
     onBodyChange: value => dispatch(setBodyField(value)),
     onEditBodyChange: value => dispatch(setEditBodyField(value)),
-    onOpenInsertPostWindow: () => dispatch(openInsertPostWindow()),
-    onCloseInsertPostWindow: () => dispatch(closeInsertPostWindow()),
-    onOpenEditPostWindow: () => dispatch(openEditPostWindow()),
-    onCloseEditPostWindow: () => dispatch(closeEditPostWindow()),
-    onInsertionSuccess: () => dispatch(openInsertPostSuccessPopUp()),
-    onUpdateSuccess: () => dispatch(openUpdatePostSuccessPopUp()),
-    onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
-    onInsertionSuccessClose: () => dispatch(closeInsertPostSuccessPopUp()),
-    onUpdateSuccessClose: () => dispatch(closeUpdatePostSuccessPopUp()),
-    onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
-    onResetInsertPostFields: () => dispatch(resetInsertPostFields()),
-    onResetUpdatePostFields: () => dispatch(resetUpdatePostFields()),
-    renderNewPost: post => dispatch({ type: RENDER_NEW_POST, payload: post }),
-    renderUpdatePost: post =>
-      dispatch({ type: RENDER_UPDATE_POST, payload: post }),
+    onOpenInsertProjectWindow: () => dispatch(openInsertProjectWindow()),
+    onCloseInsertProjectWindow: () => dispatch(closeInsertProjectWindow()),
+    onOpenEditProjectWindow: () => dispatch(openEditProjectWindow()),
+    onCloseEditProjectWindow: () => dispatch(closeEditProjectWindow()),
+    onInsertionSuccess: () => dispatch(openInsertProjectSuccessPopUp()),
+    onUpdateSuccess: () => dispatch(openUpdateProjectSuccessPopUp()),
+    onDeleteSuccess: () => dispatch(openDeleteProjectSuccessPopUp()),
+    onInsertionSuccessClose: () => dispatch(closeInsertProjectSuccessPopUp()),
+    onUpdateSuccessClose: () => dispatch(closeUpdateProjectSuccessPopUp()),
+    onDeleteSuccessClose: () => dispatch(closeDeleteProjectSuccessPopUp()),
+    onResetInsertProjectFields: () => dispatch(resetInsertProjectFields()),
+    onResetUpdateProjectFields: () => dispatch(resetUpdateProjectFields()),
+    renderNewProject: project =>
+      dispatch({ type: RENDER_NEW_PROJECT, payload: project }),
+    renderUpdateProject: project =>
+      dispatch({
+        type: RENDER_UPDATE_PROJECT,
+        payload: project
+      }),
+    setPreviewImage2: e =>
+      dispatch({
+        type: SET_PREVIEW_IMAGE_2,
+        payload: e.target.result
+      }),
     setPreviewImage1: e =>
       dispatch({
         type: SET_PREVIEW_IMAGE_1,
@@ -128,79 +142,73 @@ const mapDispatchToProps = dispatch => {
       dispatch({
         type: SET_UPLOAD_FILE_1,
         payload: e.target.files[0]
+      }),
+    setUploadFile2: e =>
+      dispatch({
+        type: SET_UPLOAD_FILE_2,
+        payload: e.target.files[0]
       })
   };
 };
-class Posts extends React.Component {
+class Projects extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       screen: "EmailSender",
-      previewImage: "",
-      insertFile: {},
-      previewEditImage: "",
-      editFile: {}
+      previewImage1: "",
+      previewImage2: "",
+      insertFile1: {},
+      insertFile2: {},
+      previewEditImage1: "",
+      previewEditImage2: "",
+      editFile: {},
+      edit2File: {}
     };
-
-    this.onChangeInsertFile = this.onChangeInsertFile.bind(this);
+    this.onChangeInsertFile1 = this.onChangeInsertFile1.bind(this);
+    this.onChangeInsertFile2 = this.onChangeInsertFile2.bind(this);
   }
 
-  onSubmitPost = () => {
+  onSubmitProject = () => {
     let form = new FormData();
-    form.append("file", this.state.insertFile);
+    form.append("file1", this.state.insertFile1);
+    form.append("file2", this.state.insertFile2);
     form.append("title", this.props.titleField);
     form.append("body", this.props.bodyField);
     form.append("site", "ozerodom.ru");
-
-    fetch(`${BACKEND_URI}/addpost`, { method: "POST", body: form })
+    fetch(`${BACKEND_URI}/addproject`, { method: "POST", body: form })
       .then(response => response.json())
-      .then(response => this.props.renderNewPost(response))
+      .then(response => this.props.renderNewProject(response))
       .then(() => this.props.onInsertionSuccess())
-      .then(() => this.props.onResetInsertPostFields())
-      .then(() => this.setState({ previewImage: "" }));
+      .then(() => this.props.onResetInsertProjectFields())
+      .then(() => this.setState({ previewImage: "", preview2Image: "" }));
   };
-  onSubmitUpdatePost = () => {
+
+  onSubmitUpdateProject = () => {
     let form = new FormData();
-    form.append("file", this.state.editFile);
+    form.append("file1", this.props.editFile1);
+    form.append("file2", this.props.editFile2);
+    form.append("image1", this.props.editImage1);
+    form.append("image2", this.props.editImage2);
     form.append("title", this.props.editTitleField);
     form.append("body", this.props.editBodyField);
-    form.append("image1", this.props.editImage1);
     form.append("site", "ozerodom.ru");
-    form.append("id", this.props.editPostID);
-
-    fetch(`${BACKEND_URI}/updatepost`, { method: "POST", body: form })
+    form.append("id", this.props.editProjectID);
+    fetch(`${BACKEND_URI}/updateproject`, { method: "PATCH", body: form })
       .then(response => response.json())
-      .then(response => this.props.renderUpdatePost(response))
+      .then(response => this.props.renderUpdateProject(response))
       .then(() => this.props.onUpdateSuccess())
-      .then(() => this.props.onResetUpdatePostFields())
+      .then(() => this.props.onResetUpdateProjectFields())
       .catch(error => console.log(error));
-    // fetch(`${BACKEND_URI}/updatepost`, {
-    //   method: "PATCH",
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     id: this.props.editPostID,
-    //     title: this.props.editTitleField,
-    //     body: this.props.editBodyField
-    //   })
-    // })
-    //   .then(response => response.json())
-    //   .then(response => this.props.renderUpdatePost(response))
-    //   .then(() => this.props.onUpdateSuccess())
-    //   .then(() => this.props.onResetUpdatePostFields())
-    //   .catch(error => console.log(error));
   };
+
   scrollToMyRef = () => {
-    console.log("imhere");
     window.scroll({
       top: 0,
       behavior: "smooth"
     });
-    console.log("done");
   };
   componentDidMount() {
-    this.props.onRequestPosts();
+    this.props.onRequestProjects();
   }
 
   modules = {
@@ -223,11 +231,11 @@ class Posts extends React.Component {
     "video"
   ];
 
-  onChangeInsertFile = e => {
+  onChangeInsertFile1 = e => {
     if (e.target.files && e.target.files[0]) {
       let reader = new FileReader();
       this.setState({
-        insertFile: e.target.files[0]
+        insertFile1: e.target.files[0]
       });
       reader.onload = ev => {
         this.setState({
@@ -237,8 +245,22 @@ class Posts extends React.Component {
       reader.readAsDataURL(e.target.files[0]);
     }
   };
+  onChangeInsertFile2 = e => {
+    if (e.target.files && e.target.files[0]) {
+      let reader = new FileReader();
+      this.setState({
+        insertFile2: e.target.files[0]
+      });
+      reader.onload = ev => {
+        this.setState({
+          preview2Image: ev.target.result
+        });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
 
-  onChangeUpdateFile = e => {
+  onChangeUpdateFile1 = e => {
     if (e.target.files && e.target.files[0]) {
       let reader = new FileReader();
       this.props.setUploadFile1(e);
@@ -246,6 +268,17 @@ class Posts extends React.Component {
         this.props.setPreviewImage1(ev);
       };
       reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  onChangeUpdateFile2 = e => {
+    if (e.target.files && e.target.files[0]) {
+      let reader = new FileReader();
+      this.props.setUploadFile2(e);
+      reader.onload = ev => {
+        this.props.setPreviewImage2(ev);
+      };
+      reader.readAsDataURL(e.target.files[0]);
+      this.setState(this.state);
     }
   };
 
@@ -262,7 +295,9 @@ class Posts extends React.Component {
       insertWindowOpened,
       editWindowOpended,
       editImage1,
-      previewEditImage1
+      editImage2,
+      previewEditImage1,
+      previewEditImage2
     } = this.props;
     return (
       <main className={classes.content}>
@@ -279,16 +314,26 @@ class Posts extends React.Component {
               <Paper className={classes.paper}>
                 <TextField
                   id="insert-title-field"
-                  label="Заголовок новости"
+                  label="Название проекта"
                   value={subjectField}
                   margin="dense"
                   variant="filled"
                   onChange={onTitleChange}
                 />
-                <Input type="file" onChange={this.onChangeInsertFile} />
-                {this.state.previewImage && (
+                <Input type="file" onChange={this.onChangeInsertFile1} />
+                {this.state.setPreviewImage1 && (
                   <img
-                    src={this.state.previewImage}
+                    src={this.state.previewImage1}
+                    alt="upload"
+                    width="100%"
+                    height="400"
+                    className={classes.img}
+                  />
+                )}
+                <Input type="file" onChange={this.onChangeInsertFile2} />
+                {this.state.previewImage2 && (
+                  <img
+                    src={this.state.preview2Image}
                     alt="upload"
                     width="100%"
                     height="400"
@@ -305,9 +350,9 @@ class Posts extends React.Component {
                 <Button
                   color="primary"
                   className={classes.button}
-                  onClick={this.onSubmitPost}
+                  onClick={this.onSubmitProject}
                 >
-                  Добавить новость
+                  Добавить проект
                 </Button>
               </Paper>
             )}
@@ -315,13 +360,13 @@ class Posts extends React.Component {
               <Paper className={classes.paper}>
                 <TextField
                   id="edit-title-field"
-                  label="Заголовок новости"
+                  label="Название проекта"
                   value={editTitleField}
                   margin="dense"
                   variant="filled"
                   onChange={onEditTitleChange}
                 />
-                <Input type="file" onChange={this.onChangeEditFile} />
+                <Input type="file" onChange={this.onChangeUpdateFile1} />
                 {previewEditImage1 ? (
                   <img
                     src={previewEditImage1}
@@ -339,6 +384,25 @@ class Posts extends React.Component {
                     className={classes.img}
                   />
                 )}
+
+                <Input type="file" onChange={this.onChangeUpdateFile2} />
+                {previewEditImage2 ? (
+                  <img
+                    src={previewEditImage2}
+                    alt="upload"
+                    width="100%"
+                    height="400"
+                    className={classes.img}
+                  />
+                ) : (
+                  <img
+                    src={editImage2}
+                    alt="upload"
+                    width="100%"
+                    height="400"
+                    className={classes.img}
+                  />
+                )}
                 <ReactQuill
                   modules={this.modules}
                   formats={this.formats}
@@ -348,21 +412,22 @@ class Posts extends React.Component {
                 <Button
                   color="primary"
                   className={classes.button}
-                  onClick={this.onSubmitUpdatePost}
+                  onClick={this.onSubmitUpdateProject}
                 >
-                  Обновить новость
+                  Обновить проект
                 </Button>
               </Paper>
             )}
             <Paper className={classes.paper}>
-              {this.props.loadedPosts.map(post => {
+              {this.props.loadedProjects.map(project => {
                 return (
-                  <Post
-                    title={post.title}
-                    body={post.body}
-                    postID={post._id}
-                    image={post.image}
-                    key={post._id}
+                  <Project
+                    title={project.title}
+                    body={project.body}
+                    projectID={project._id}
+                    image={project.image1}
+                    image1={project.image2}
+                    key={project._id}
                   />
                 );
               })}
@@ -388,7 +453,7 @@ class Posts extends React.Component {
             variant="fab"
             className={classes.fab}
             color="primary"
-            onClick={this.props.onCloseInsertPostWindow}
+            onClick={this.props.onCloseInsertProjectWindow}
           >
             <CloseIcon />
           </Button>
@@ -398,7 +463,7 @@ class Posts extends React.Component {
             variant="fab"
             className={classes.fab}
             color="primary"
-            onClick={this.props.onCloseEditPostWindow}
+            onClick={this.props.onCloseEditProjectWindow}
           >
             <CloseIcon />
           </Button>
@@ -409,7 +474,7 @@ class Posts extends React.Component {
             className={classes.fab}
             color="primary"
             onClick={() => {
-              this.props.onOpenInsertPostWindow();
+              this.props.onOpenInsertProjectWindow();
             }}
           >
             <AddIcon />
@@ -424,7 +489,7 @@ class Posts extends React.Component {
           <MySnackbarContentWrapper
             onClose={this.props.onInsertionSuccessClose}
             variant="success"
-            message="Новость добавлена"
+            message="Проект добавлен"
           />
         </Snackbar>
         <Snackbar
@@ -436,7 +501,7 @@ class Posts extends React.Component {
           <MySnackbarContentWrapper
             onClose={this.props.onUpdateSuccessClose}
             variant="success"
-            message="Новость обновлена"
+            message="Проект обновлен"
           />
         </Snackbar>
         <Snackbar
@@ -448,7 +513,7 @@ class Posts extends React.Component {
           <MySnackbarContentWrapper
             onClose={this.props.onDeleteSuccessClose}
             variant="success"
-            message="Новость Удалена"
+            message="Проект удален"
           />
         </Snackbar>
       </main>
@@ -456,11 +521,11 @@ class Posts extends React.Component {
   }
 }
 
-Posts.propTypes = {
+Projects.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(withStyles(styles)(Posts));
+)(withStyles(styles)(Projects));

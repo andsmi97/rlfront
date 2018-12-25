@@ -19,8 +19,9 @@ import {
   RESET_UPDATE_POST_FIELDS,
   RENDER_NEW_POST,
   RENDER_UPDATE_POST,
-  RENDER_DELETE_POST
-
+  RENDER_DELETE_POST,
+  SET_PREVIEW_IMAGE_1,
+  SET_UPLOAD_FILE_1
   // SELECT_LAST_POSTS_ON_LOAD
 } from "./constants.js";
 const initialStatePosts = {
@@ -33,6 +34,8 @@ const initialStatePosts = {
   editTitleField: "",
   editBodyField: "",
   editPostID: "",
+  editFile1:{},
+  previewEditImage1:"",
   snackInsert: false,
   snackUpdate: false,
   snackDelete: false
@@ -75,6 +78,7 @@ export const postsReducer = (state = initialStatePosts, action = {}) => {
         editPostID: action.payload,
         editBodyField: findPostByID(action.payload, state).body,
         editTitleField: findPostByID(action.payload, state).title,
+        editImage1: findPostByID(action.payload, state).image,
         editWindowOpended: true,
         insertWindowOpened: false
       });
@@ -112,6 +116,10 @@ export const postsReducer = (state = initialStatePosts, action = {}) => {
           return post;
         })
       };
+    case SET_PREVIEW_IMAGE_1:
+      return Object.assign({}, state, { previewEditImage1: action.payload });
+    case SET_UPLOAD_FILE_1:
+      return Object.assign({}, state, { editFile1: action.payload });
     case RENDER_DELETE_POST:
       return {
         ...state,

@@ -13,7 +13,9 @@ import MoneyIcon from "@material-ui/icons/MonetizationOn";
 import ContactIcon from "@material-ui/icons/ContactMail";
 import NewsIcon from "@material-ui/icons/FormatAlignLeft";
 import ImageIcon from "@material-ui/icons/Image";
+import ProjectIcon from "@material-ui/icons/Home";
 import Posts from "../Posts";
+import Projects from "../Projects";
 import SectionImages from "../SectionImages";
 import { connect } from "react-redux";
 import "react-quill/dist/quill.snow.css";
@@ -147,6 +149,9 @@ class ClippedDrawer extends React.Component {
   onClickSectionImages = () => {
     this.setState({ screen: "SectionImages" });
   };
+  onClickProjects = () => {
+    this.setState({ screen: "Projects" });
+  };
   onLoad = () => {
     fetch();
   };
@@ -183,6 +188,12 @@ class ClippedDrawer extends React.Component {
               </ListItemIcon>
               <ListItemText primary="Новости" />
             </ListItem>
+            <ListItem button onClick={this.onClickProjects}>
+              <ListItemIcon>
+                <ProjectIcon />
+              </ListItemIcon>
+              <ListItemText primary="Проекты" />
+            </ListItem>
             <ListItem button onClick={this.onClickTariffs}>
               <ListItemIcon>
                 <MoneyIcon />
@@ -207,6 +218,7 @@ class ClippedDrawer extends React.Component {
           {this.state.screen === "Tariffs" && <Tariffs />}
           {this.state.screen === "Settings" && <Settings />}
           {this.state.screen === "SectionImages" && <SectionImages />}
+          {this.state.screen === "Projects" && <Projects />}
         </div>
       );
     } else {
