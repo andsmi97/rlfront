@@ -1,6 +1,6 @@
 import {
   CHANGE_TITLE_FIELD,
-  CHANGE_BODY_FIELD,
+  CHANGE_POST_BODY_FIELD,
   REQUEST_POSTS_PENDING,
   REQUEST_POSTS_FAILED,
   REQUEST_POSTS_SUCCESS,
@@ -11,7 +11,7 @@ import {
   CLOSE_EDIT_POST_WINDOW,
   SELECT_EDIT_POST,
   CHANGE_EDIT_TITLE_FIELD,
-  CHANGE_EDIT_BODY_FIELD,
+  CHANGE_EDIT_POST_BODY_FIELD,
   SWITCH_INSERTION_POST_SUCCESS,
   SWITCH_UPDATE_POST_SUCCESS,
   SWITCH_DELETE_POST_SUCCESS,
@@ -27,8 +27,8 @@ export const setTitleField = text => ({
   payload: text
 });
 
-export const setBodyField = text => ({
-  type: CHANGE_BODY_FIELD,
+export const setPostBodyField = text => ({
+  type: CHANGE_POST_BODY_FIELD,
   payload: text
 });
 
@@ -37,8 +37,8 @@ export const setEditTitleField = text => ({
   payload: text
 });
 
-export const setEditBodyField = text => ({
-  type: CHANGE_EDIT_BODY_FIELD,
+export const setEditPostBodyField = text => ({
+  type: CHANGE_EDIT_POST_BODY_FIELD,
   payload: text
 });
 

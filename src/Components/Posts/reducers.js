@@ -1,6 +1,6 @@
 import {
   CHANGE_TITLE_FIELD,
-  CHANGE_BODY_FIELD,
+  CHANGE_POST_BODY_FIELD,
   REQUEST_POSTS_SUCCESS,
   OPEN_INSERT_POST_WINDOW,
   CLOSE_INSERT_POST_WINDOW,
@@ -8,7 +8,7 @@ import {
   CLOSE_EDIT_POST_WINDOW,
   SELECT_EDIT_POST,
   CHANGE_EDIT_TITLE_FIELD,
-  CHANGE_EDIT_BODY_FIELD,
+  CHANGE_EDIT_POST_BODY_FIELD,
   SWITCH_INSERTION_POST_SUCCESS,
   SWITCH_INSERTION_POST_SUCCESS_CLOSE,
   SWITCH_UPDATE_POST_SUCCESS,
@@ -20,7 +20,7 @@ import {
   RENDER_NEW_POST,
   RENDER_UPDATE_POST,
   RENDER_DELETE_POST,
-  SET_PREVIEW_IMAGE_1,
+  SET_PREVIEW_POST_IMAGE_1,
   SET_UPLOAD_FILE_1
   // SELECT_LAST_POSTS_ON_LOAD
 } from "./constants.js";
@@ -56,11 +56,11 @@ export const postsReducer = (state = initialStatePosts, action = {}) => {
   switch (action.type) {
     case CHANGE_TITLE_FIELD:
       return Object.assign({}, state, { titleField: action.payload });
-    case CHANGE_BODY_FIELD:
+    case CHANGE_POST_BODY_FIELD:
       return Object.assign({}, state, { bodyField: action.payload });
     case CHANGE_EDIT_TITLE_FIELD:
       return Object.assign({}, state, { editTitleField: action.payload });
-    case CHANGE_EDIT_BODY_FIELD:
+    case CHANGE_EDIT_POST_BODY_FIELD:
       return Object.assign({}, state, { editBodyField: action.payload });
     case REQUEST_POSTS_SUCCESS:
       return Object.assign({}, state, {
@@ -116,7 +116,7 @@ export const postsReducer = (state = initialStatePosts, action = {}) => {
           return post;
         })
       };
-    case SET_PREVIEW_IMAGE_1:
+    case SET_PREVIEW_POST_IMAGE_1:
       return Object.assign({}, state, { previewEditImage1: action.payload });
     case SET_UPLOAD_FILE_1:
       return Object.assign({}, state, { editFile1: action.payload });

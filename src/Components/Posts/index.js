@@ -11,14 +11,14 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
   setTitleField,
-  setBodyField,
+  setPostBodyField,
   requestPosts,
   openInsertPostWindow,
   closeInsertPostWindow,
   openEditPostWindow,
   closeEditPostWindow,
   setEditTitleField,
-  setEditBodyField,
+  setEditPostBodyField,
   openInsertPostSuccessPopUp,
   openUpdatePostSuccessPopUp,
   openDeletePostSuccessPopUp,
@@ -31,7 +31,7 @@ import {
 import {
   RENDER_NEW_POST,
   RENDER_UPDATE_POST,
-  SET_PREVIEW_IMAGE_1,
+  SET_PREVIEW_POST_IMAGE_1,
   SET_UPLOAD_FILE_1
 } from "./constants";
 import ReactQuill from "react-quill";
@@ -102,8 +102,8 @@ const mapDispatchToProps = dispatch => {
     onRequestPosts: () => dispatch(requestPosts()),
     onTitleChange: event => dispatch(setTitleField(event.target.value)),
     onEditTitleChange: event => dispatch(setEditTitleField(event.target.value)),
-    onBodyChange: value => dispatch(setBodyField(value)),
-    onEditBodyChange: value => dispatch(setEditBodyField(value)),
+    onBodyChange: value => dispatch(setPostBodyField(value)),
+    onEditPostBodyChange: value => dispatch(setEditPostBodyField(value)),
     onOpenInsertPostWindow: () => dispatch(openInsertPostWindow()),
     onCloseInsertPostWindow: () => dispatch(closeInsertPostWindow()),
     onOpenEditPostWindow: () => dispatch(openEditPostWindow()),
@@ -121,7 +121,7 @@ const mapDispatchToProps = dispatch => {
       dispatch({ type: RENDER_UPDATE_POST, payload: post }),
     setPreviewImage1: e =>
       dispatch({
-        type: SET_PREVIEW_IMAGE_1,
+        type: SET_PREVIEW_POST_IMAGE_1,
         payload: e.target.result
       }),
     setUploadFile1: e =>
@@ -161,14 +161,13 @@ class Posts extends React.Component {
   };
   onSubmitUpdatePost = () => {
     let form = new FormData();
-    form.append("file", this.state.editFile);
+    form.append("file", this.props.editFile1);
     form.append("title", this.props.editTitleField);
     form.append("body", this.props.editBodyField);
-    form.append("image1", this.props.editImage1);
+    form.append("image", this.props.editImage1);
     form.append("site", "ozerodom.ru");
     form.append("id", this.props.editPostID);
-
-    fetch(`${BACKEND_URI}/updatepost`, { method: "POST", body: form })
+    fetch(`${BACKEND_URI}/updatepost`, { method: "PATCH", body: form })
       .then(response => response.json())
       .then(response => this.props.renderUpdatePost(response))
       .then(() => this.props.onUpdateSuccess())
@@ -255,7 +254,7 @@ class Posts extends React.Component {
       onTitleChange,
       onBodyChange,
       bodyField,
-      onEditBodyChange,
+      onEditPostBodyChange,
       onEditTitleChange,
       editTitleField,
       subjectField,
@@ -321,7 +320,7 @@ class Posts extends React.Component {
                   variant="filled"
                   onChange={onEditTitleChange}
                 />
-                <Input type="file" onChange={this.onChangeEditFile} />
+                <Input type="file" onChange={this.onChangeUpdateFile} />
                 {previewEditImage1 ? (
                   <img
                     src={previewEditImage1}
@@ -343,7 +342,7 @@ class Posts extends React.Component {
                   modules={this.modules}
                   formats={this.formats}
                   value={this.props.editBodyField}
-                  onChange={onEditBodyChange}
+                  onChange={onEditPostBodyChange}
                 />
                 <Button
                   color="primary"

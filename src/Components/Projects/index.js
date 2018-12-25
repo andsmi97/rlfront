@@ -180,7 +180,7 @@ class Projects extends React.Component {
       .then(response => this.props.renderNewProject(response))
       .then(() => this.props.onInsertionSuccess())
       .then(() => this.props.onResetInsertProjectFields())
-      .then(() => this.setState({ previewImage: "", preview2Image: "" }));
+      .then(() => this.setState({ previewImage1: "", previewImage2: "" }));
   };
 
   onSubmitUpdateProject = () => {
@@ -239,7 +239,7 @@ class Projects extends React.Component {
       });
       reader.onload = ev => {
         this.setState({
-          previewImage: ev.target.result
+          previewImage1: ev.target.result
         });
       };
       reader.readAsDataURL(e.target.files[0]);
@@ -253,7 +253,7 @@ class Projects extends React.Component {
       });
       reader.onload = ev => {
         this.setState({
-          preview2Image: ev.target.result
+          previewImage2: ev.target.result
         });
       };
       reader.readAsDataURL(e.target.files[0]);
@@ -321,7 +321,7 @@ class Projects extends React.Component {
                   onChange={onTitleChange}
                 />
                 <Input type="file" onChange={this.onChangeInsertFile1} />
-                {this.state.setPreviewImage1 && (
+                {this.state.previewImage1 && (
                   <img
                     src={this.state.previewImage1}
                     alt="upload"
@@ -333,7 +333,7 @@ class Projects extends React.Component {
                 <Input type="file" onChange={this.onChangeInsertFile2} />
                 {this.state.previewImage2 && (
                   <img
-                    src={this.state.preview2Image}
+                    src={this.state.previewImage2}
                     alt="upload"
                     width="100%"
                     height="400"
