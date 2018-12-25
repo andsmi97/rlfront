@@ -1,16 +1,11 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-
-// import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
-
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import ReactDragList from "react-drag-list";
 import Typography from "@material-ui/core/Typography";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
 import SectionImage from "./SectionImage";
 import { BACKEND_URI } from "../../constants";
 
@@ -117,7 +112,7 @@ class SectionImages extends React.Component {
     this.onDragEndGenPlan = this.onDragEndGenPlan.bind(this);
     this.onDragEndGallery = this.onDragEndGallery.bind(this);
     this.onDragEndPath = this.onDragEndPath.bind(this);
-    // this.onDragEnd = this.onDragEnd.bind(this);
+    
   }
 
   getSectionImages = () => {

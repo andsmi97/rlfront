@@ -58,12 +58,6 @@ const findProjectIndexByID = (id, state) => {
     else return acc;
   }, 0);
 };
-const getFirstProjectImageByID = (id, state) => {
-  return state.loadedProjects.filter(project => project._id === id)[0].image1;
-};
-const getSecondProjectImageByID = (id, state) => {
-  return state.loadedProjects.filter(project => project._id === id)[0].image2;
-};
 export const projectsReducer = (state = initialStateprojects, action = {}) => {
   switch (action.type) {
     case CHANGE_TITLE_FIELD:

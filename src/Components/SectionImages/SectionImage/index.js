@@ -88,7 +88,7 @@ class SectionImage extends React.Component {
         photo: this.props.item.content
       })
     }).then(response => response.json());
-    // .then(response => this.props.renderDeletePost(response))
+    // .then(response => this.props.renderDeletePhoto(response))
     // .then(() => this.props.onDeleteSuccess());
   };
   //TODO CHANGE UPDATE
@@ -98,13 +98,12 @@ class SectionImage extends React.Component {
     formData.append("site", "ozerodom.ru");
     formData.append("section", this.props.item.section);
     formData.append("oldPhoto", this.props.item.content);
-    // this.props.sendingEmailPending();
     fetch(`${BACKEND_URI}/updatePhoto`, {
       method: "POST",
       body: formData
     }).then(response => response.json());
-    // .then(response => this.props.renderDeletePost(response))
-    // .then(() => this.props.onDeleteSuccess());
+    // .then(response => this.props.renderUpdatePhoto(response))
+    // .then(() => this.props.onUpdateSuccess());
   };
 
 
