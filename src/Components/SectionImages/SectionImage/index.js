@@ -11,13 +11,10 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import CardMedia from "@material-ui/core/CardMedia";
 import IconButton from "@material-ui/core/IconButton";
-import {
-  openDeletePostSuccessPopUp,
-  closeDeletePostSuccessPopUp
-} from "../actions";
+
 //postS actions
 import { selectEditPost } from "../actions";
-import { RENDER_DELETE_POST } from "../constants";
+import { RENDER_DELETE_PHOTO, RENDER_UPDATE_PHOTO } from "../constants";
 const styles = theme => ({
   content: {
     flexGrow: 1,
@@ -60,18 +57,20 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
-    onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
-    onUpdatePostClick: id => dispatch(selectEditPost(id)),
-    renderDeletePost: post =>
-      dispatch({ type: RENDER_DELETE_POST, payload: post })
+    renderDeletePhoto: response =>
+      dispatch({ type: RENDER_DELETE_PHOTO, payload: response }),
+    renderUpdatePhoto: response =>
+      dispatch({
+        type: RENDER_UPDATE_PHOTO,
+        payload: response
+      })
   };
 };
 
 class SectionImage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: {} };
+    this.state = { file: {}, image: props.item.content };
     this.updatePhoto = this.updatePhoto.bind(this);
     this.deletePhoto = this.deletePhoto.bind(this);
   }
@@ -87,8 +86,14 @@ class SectionImage extends React.Component {
         section: this.props.item.section,
         photo: this.props.item.content
       })
-    }).then(response => response.json());
-    // .then(response => this.props.renderDeletePhoto(response))
+    })
+      .then(response => response.json())
+      .then(() =>
+        this.props.renderDeletePhoto({
+          section: this.props.item.section,
+          image: this.props.item.content
+        })
+      );
     // .then(() => this.props.onDeleteSuccess());
   };
   //TODO CHANGE UPDATE
@@ -101,11 +106,17 @@ class SectionImage extends React.Component {
     fetch(`${BACKEND_URI}/updatePhoto`, {
       method: "POST",
       body: formData
-    }).then(response => response.json());
-    // .then(response => this.props.renderUpdatePhoto(response))
-    // .then(() => this.props.onUpdateSuccess());
+    })
+      .then(response => response.json())
+      .then(image => {
+        this.props.renderUpdatePhoto({
+          section: this.props.item.section,
+          oldImage: this.props.item.content,
+          newImage: image
+        });
+        // this.setState({ image });
+      });
   };
-
 
   onFileChange = event => {
     let file = event.target.files[0];

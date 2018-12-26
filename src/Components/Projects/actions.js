@@ -55,12 +55,6 @@ export const requestProjects = () => dispatch => {
   })
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_PROJECTS_SUCCESS, payload: data }))
-    .then(data =>
-      dispatch({
-        type: SELECT_LAST_PROJECTS_ON_LOAD,
-        payload: data.payload
-      })
-    )
     .catch(error => dispatch({ type: REQUEST_PROJECTS_FAILED, payload: error }));
 };
 

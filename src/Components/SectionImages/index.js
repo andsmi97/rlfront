@@ -8,13 +8,14 @@ import Typography from "@material-ui/core/Typography";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import SectionImage from "./SectionImage";
 import { BACKEND_URI } from "../../constants";
+import { requestSectionImages } from "./actions";
+import { REORDER_SECTION, ADD_SECTION_IMAGE } from "./constants";
 
 // a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
-  const result = Array.from(list);
+  const result = [...list];
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
-
   return result;
 };
 
@@ -92,27 +93,31 @@ const styles = theme => ({
 });
 
 const mapStateToProps = state => {
-  return {};
+  return {
+    carousel: state.sectionImagesReducer.carousel,
+    advertising: state.sectionImagesReducer.advertising,
+    genPlan: state.sectionImagesReducer.genPlan,
+    gallery: state.sectionImagesReducer.gallery,
+    path: state.sectionImagesReducer.path
+  };
 };
 const mapDispatchToProps = dispatch => {
-  return {};
+  return {
+    onRequestSectionsImages: () => dispatch(requestSectionImages()),
+    reorderSection: (section, order) =>
+      dispatch({ type: REORDER_SECTION, payload: { section, order } }),
+    addSectionImage: (section, item) =>
+      dispatch({ type: ADD_SECTION_IMAGE, payload: { section, item } })
+  };
 };
 class SectionImages extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      carousel: [],
-      advertising: [],
-      genPlan: [],
-      gallery: [],
-      path: []
-    };
-    this.onDragEndCarousel = this.onDragEndCarousel.bind(this);
-    this.onDragEndAdvertising = this.onDragEndAdvertising.bind(this);
-    this.onDragEndGenPlan = this.onDragEndGenPlan.bind(this);
-    this.onDragEndGallery = this.onDragEndGallery.bind(this);
-    this.onDragEndPath = this.onDragEndPath.bind(this);
-    
+    // this.onDragEndCarousel = this.onDragEndCarousel.bind(this);
+    // this.onDragEndAdvertising = this.onDragEndAdvertising.bind(this);
+    // this.onDragEndGenPlan = this.onDragEndGenPlan.bind(this);
+    // this.onDragEndGallery = this.onDragEndGallery.bind(this);
+    // this.onDragEndPath = this.onDragEndPath.bind(this);
   }
 
   getSectionImages = () => {
@@ -164,24 +169,20 @@ class SectionImages extends React.Component {
             };
           })
         });
-      })
-      .then(() => console.log(this.state.images));
+      });
   };
 
-  onDragEndCarousel(result) {
+  onDragEndCarousel = result => {
     // dropped outside the list
     if (!result.destination) {
       return;
     }
-
     const carousel = reorder(
-      this.state.carousel,
+      this.props.carousel,
       result.source.index,
       result.destination.index
     );
-    console.log(carousel);
-    this.setState({ carousel });
-
+    this.props.reorderSection("carousel", carousel);
     fetch(`${BACKEND_URI}/reorderPhotos`, {
       method: "PATCH",
       headers: {
@@ -195,21 +196,20 @@ class SectionImages extends React.Component {
     })
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
-  }
+  };
 
-  onDragEndAdvertising(result) {
+  onDragEndAdvertising = result => {
     // dropped outside the list
     if (!result.destination) {
       return;
     }
 
     const advertising = reorder(
-      this.state.advertising,
+      this.props.advertising,
       result.source.index,
       result.destination.index
     );
-
-    this.setState({ advertising });
+    this.props.reorderSection("advertising", advertising);
     fetch(`${BACKEND_URI}/reorderPhotos`, {
       method: "PATCH",
       headers: {
@@ -223,21 +223,20 @@ class SectionImages extends React.Component {
     })
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
-  }
+  };
 
-  onDragEndGallery(result) {
+  onDragEndGallery = result => {
     // dropped outside the list
     if (!result.destination) {
       return;
     }
 
     const gallery = reorder(
-      this.state.gallery,
+      this.props.gallery,
       result.source.index,
       result.destination.index
     );
-
-    this.setState({ gallery });
+    this.props.reorderSection("gallery", gallery);
     fetch(`${BACKEND_URI}/reorderPhotos`, {
       method: "PATCH",
       headers: {
@@ -251,21 +250,20 @@ class SectionImages extends React.Component {
     })
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
-  }
+  };
 
-  onDragEndPath(result) {
+  onDragEndPath = result => {
     // dropped outside the list
     if (!result.destination) {
       return;
     }
 
     const path = reorder(
-      this.state.path,
+      this.props.path,
       result.source.index,
       result.destination.index
     );
-
-    this.setState({ path });
+    this.props.reorderSection("path", path);
     fetch(`${BACKEND_URI}/reorderPhotos`, {
       method: "PATCH",
       headers: {
@@ -279,21 +277,20 @@ class SectionImages extends React.Component {
     })
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
-  }
+  };
 
-  onDragEndGenPlan(result) {
+  onDragEndGenPlan = result => {
     // dropped outside the list
     if (!result.destination) {
       return;
     }
 
     const genPlan = reorder(
-      this.state.genPlan,
+      this.props.genPlan,
       result.source.index,
       result.destination.index
     );
-
-    this.setState({ genPlan });
+    this.props.reorderSection("genPlan", genPlan);
     fetch(`${BACKEND_URI}/reorderPhotos`, {
       method: "PATCH",
       headers: {
@@ -307,7 +304,7 @@ class SectionImages extends React.Component {
     })
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
-  }
+  };
 
   addCarouselPhoto = event => {
     let formData = new FormData();
@@ -318,8 +315,19 @@ class SectionImages extends React.Component {
     fetch(`${BACKEND_URI}/addimg`, {
       method: "POST",
       body: formData
-    }).then(response => response.json());
-    // .then(response => this.props.renderDeletePost(response))
+    })
+      .then(response => response.json())
+      .then(response =>
+        this.props.addSectionImage("carousel", {
+          ...response,
+          id:
+            Number(
+              this.props.carousel.reduce((acc, item) =>
+                item.id < acc ? acc : item.id
+              )
+            ) + 1
+        })
+      );
     // .then(() => this.props.onDeleteSuccess());
   };
 
@@ -332,7 +340,9 @@ class SectionImages extends React.Component {
     fetch(`${BACKEND_URI}/addimg`, {
       method: "POST",
       body: formData
-    }).then(response => response.json());
+    })
+      .then(response => response.json())
+      .then(response => this.props.addSectionImage("genPlan", response));
     // .then(response => this.props.renderDeletePost(response))
     // .then(() => this.props.onDeleteSuccess());
   };
@@ -345,19 +355,21 @@ class SectionImages extends React.Component {
     fetch(`${BACKEND_URI}/addimg`, {
       method: "POST",
       body: formData
-    }).then(response => response.json());
+    })
+      .then(response => response.json())
+      .then(response => this.props.addSectionImage("gallery", response));
     // .then(response => this.props.renderDeletePost(response))
     // .then(() => this.props.onDeleteSuccess());
   };
 
   componentDidMount() {
-    this.getSectionImages();
+    this.props.onRequestSectionsImages();
   }
 
   render() {
     // this.getSectionImages();
     // let { images } = this.state;
-    let { classes } = this.props;
+    let { classes, carousel, genPlan, gallery, path } = this.props;
     // let array = images.carousel;
     return (
       <main className={classes.content}>
@@ -379,7 +391,7 @@ class SectionImages extends React.Component {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {this.state.carousel.map((item, index) => (
+                  {carousel.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={item.id}
@@ -395,7 +407,7 @@ class SectionImages extends React.Component {
                             provided.draggableProps.style
                           )}
                         >
-                          <SectionImage item={item} />
+                          <SectionImage key={item.id} item={item} />
                         </div>
                       )}
                     </Draggable>
@@ -430,7 +442,7 @@ class SectionImages extends React.Component {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {this.state.genPlan.map((item, index) => (
+                  {genPlan.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={item.id}
@@ -481,7 +493,7 @@ class SectionImages extends React.Component {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {this.state.gallery.map((item, index) => (
+                  {gallery.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={item.id}
@@ -531,7 +543,7 @@ class SectionImages extends React.Component {
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {this.state.path.map((item, index) => (
+                  {path.map((item, index) => (
                     <Draggable
                       key={item.id}
                       draggableId={item.id}

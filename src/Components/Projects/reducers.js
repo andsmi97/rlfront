@@ -49,7 +49,6 @@ const initialStateprojects = {
 };
 
 const findProjectByID = (id, state) => {
-  // console.log(state.loadedProjects.filter(project => (project._id = id)));
   return state.loadedProjects.filter(project => project._id === id)[0];
 };
 const findProjectIndexByID = (id, state) => {

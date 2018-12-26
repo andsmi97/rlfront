@@ -19,6 +19,7 @@ import { postsReducer } from "./Components/Posts/reducers.js";
 import { projectsReducer } from "./Components/Projects/reducers.js";
 import { postReducer } from "./Components/Posts/Post/reducers.js";
 import { projectReducer } from "./Components/Projects/Project/reducers.js";
+import { sectionImagesReducer } from "./Components/SectionImages/reducers.js";
 const logger = createLogger();
 const rootReducer = combineReducers({
   changeEmailInputs,
@@ -31,7 +32,8 @@ const rootReducer = combineReducers({
   changeTariffsInputs,
   authReducer,
   projectsReducer,
-  projectReducer
+  projectReducer,
+  sectionImagesReducer
 });
 let store = "";
 if (process.env.NODE_ENV === "production") {
