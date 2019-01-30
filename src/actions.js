@@ -2,60 +2,36 @@ import {
   REQUEST_TENANTS_FAILED,
   REQUEST_TENANTS_SUCCESS,
   REQUEST_TENANTS_PENDING,
-  CHANGE_SENDING_FILES,
-  REMOVE_SENDING_FILES,
-  CHANGE_INSERT_NAME_FIELD,
-  CHANGE_INSERT_EMAIL_FIELD,
-  CHANGE_INSERT_HOUSENUMBER_FIELD,
-  CHANGE_UPDATE_NAME_FIELD,
-  CHANGE_UPDATE_EMAIL_FIELD,
-  CHANGE_UPDATE_HOUSENUMBER_FIELD,
-  CHANGE_DELETE_HOUSENUMBER_FIELD,
-  CHANGE_MESSAGE_FIELD,
-  CHANGE_SUBJECT_FIELD,
   CHANGE_SELECTED_TENANTS,
   SELECT_ALL_TENANTS_ON_LOAD,
-  SWITCH_INSERTION_SUCCESS,
-  SWITCH_UPDATE_SUCCESS,
-  SWITCH_DELETE_SUCCESS,
-  SWITCH_MESSAGE_SEND_SUCCESS,
-  SWITCH_INSERTION_SUCCESS_CLOSE,
-  SWITCH_UPDATE_SUCCESS_CLOSE,
-  SWITCH_DELETE_SUCCESS_CLOSE,
-  SWITCH_MESSAGE_SEND_SUCCESS_CLOSE,
-  RESET_EMAIL_FIELDS,
-  RESET_TENANT_INSERT_FIELDS,
-  RESET_TENANT_UPDATE_FIELDS,
-  RESET_TENANT_DELETE_FIELDS,
-  CHANGE_UPDATE_ADMIN_EMAIL_FIELD,
-  CHANGE_UPDATE_ADMIN_MAIL_PASS_FIELD,
-  CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD,
-  CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
-  CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
-  CHANGE_UPDATE_ADMIN_PHONE_FIELD,
-  CHANGE_UPDATE_ADMIN_PHONE2_FIELD,
-  RESET_EMAIL_SETTINGS_FIELDS,
-  RESET_ACCOUNT_SETTINGS_FIELDS,
-  SWITCH_EMAIL_UPDATE_SUCCESS,
-  SWITCH_EMAIL_UPDATE_SUCCESS_CLOSE,
-  SWITCH_ACCOUNT_UPDATE_SUCCESS,
-  SWITCH_ACCOUNT_UPDATE_SUCCESS_CLOSE,
-  CHANGE_UPDATE_TARIFFS_FIELD,
-  SWITCH_TARIFFS_UPDATE_SUCCESS,
-  SWITCH_TARIFFS_UPDATE_SUCCESS_CLOSE,
-  RESET_TARIFFS_FIELDS,
-  SWITCH_SETTINGS_SUCCESS,
-  SWITCH_SETTINGS_SUCCESS_CLOSE,
-  SWITCH_TARIFFS_SUCCESS,
-  SWITCH_TARIFFS_SUCCESS_CLOSE,
-  BACKEND_URI
+  SELECT_ALL_TENANTS,
+  RESET_ALL_TENANTS,
+  BACKEND_URI,
+  AUTH_PENDING,
+  AUTH_SUCCESS,
+  AUTH_FAILED,
+  SNACK_STATUS_CLOSE,
+  SNACK_STATUS_OPEN,
+  ALERT_STATUS_CLOSE,
+  ALERT_STATUS_OPEN,
+  ALERT_STATUS_ACCEPT
 } from "./constants.js";
+import {
+  ON_CORRECT_RESPONSE,
+  ON_WRONG_RESPONSE
+} from "./Components/Auth/constants";
 import { createTenantsStringArray } from "./tenantsSupportFunctions";
 
 //APP part
 export const requestTenants = () => dispatch => {
+  const token = window.localStorage.getItem("token");
   dispatch({ type: REQUEST_TENANTS_PENDING });
-  fetch(`${BACKEND_URI}/tenants`)
+  fetch(`${BACKEND_URI}/tenants`, {
+    method: "get",
+    headers: {
+      Authorization: token
+    }
+  })
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_TENANTS_SUCCESS, payload: data }))
     .then(data =>
@@ -72,224 +48,55 @@ export const changeTenants = tenants => ({
   payload: tenants
 });
 
-export const selectAllTenants = tenants => ({
-  type: SELECT_ALL_TENANTS_ON_LOAD,
-  payload: Object.values(tenants).map(tenant => tenant.name)
-});
-//Tenant part
-export const setInsertNameField = text => ({
-  type: CHANGE_INSERT_NAME_FIELD,
-  payload: text
-});
+export const selectAllTenants = () => ({ type: SELECT_ALL_TENANTS });
+export const resetAllTenants = () => ({ type: RESET_ALL_TENANTS });
 
-export const setInsertEmailField = text => ({
-  type: CHANGE_INSERT_EMAIL_FIELD,
-  payload: text
-});
-
-export const setInsertHouseNumberField = text => ({
-  type: CHANGE_INSERT_HOUSENUMBER_FIELD,
-  payload: text
-});
-
-export const setUpdateNameField = text => ({
-  type: CHANGE_UPDATE_NAME_FIELD,
-  payload: text
-});
-
-export const setUpdateEmailField = text => ({
-  type: CHANGE_UPDATE_EMAIL_FIELD,
-  payload: text
-});
-
-export const setUpdateHouseNumberField = text => ({
-  type: CHANGE_UPDATE_HOUSENUMBER_FIELD,
-  payload: text
-});
-
-export const setDeleteHouseNumberField = text => ({
-  type: CHANGE_DELETE_HOUSENUMBER_FIELD,
-  payload: text
-});
-
-//Admin settings
-
-export const setUpdateAdminEmail = text => ({
-  type: CHANGE_UPDATE_ADMIN_EMAIL_FIELD,
-  payload: text
-});
-
-export const setUpdateAdminMailPass = text => ({
-  type: CHANGE_UPDATE_ADMIN_MAIL_PASS_FIELD,
-  payload: text
-});
-
-export const setUpdateAdminAccountPassOld = text => ({
-  type: CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_OLD_FIELD,
-  payload: text
-});
-export const setUpdateAdminAccountPassNew = text => ({
-  type: CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_NEW_FIELD,
-  payload: text
-});
-export const setUpdateAdminAccountPassRepeat = text => ({
-  type: CHANGE_UPDATE_ADMIN_ACCOUNT_PASS_REPEAT_FIELD,
-  payload: text
-});
-export const setUpdateAdminPhone = text => ({
-  type: CHANGE_UPDATE_ADMIN_PHONE_FIELD,
-  payload: text
-});
-export const setUpdateAdminPhone2 = text => ({
-  type: CHANGE_UPDATE_ADMIN_PHONE2_FIELD,
-  payload: text
-});
-
-export const resetEmailSettingsField = () => ({
-  type: RESET_EMAIL_SETTINGS_FIELDS,
-  payload: ""
-});
-export const resetAccountSettingsField = () => ({
-  type: RESET_ACCOUNT_SETTINGS_FIELDS,
-  payload: ""
-});
-
-export const openEmailUpdateSuccessPopUp = () => ({
-  type: SWITCH_EMAIL_UPDATE_SUCCESS,
-  payload: true
-});
-
-export const closeEmailUpdateSuccessPopUp = () => ({
-  type: SWITCH_EMAIL_UPDATE_SUCCESS_CLOSE,
+export const closeSnack = () => ({
+  type: SNACK_STATUS_CLOSE,
   payload: false
 });
 
-export const openAccountUpdateSuccessPopUp = () => ({
-  type: SWITCH_ACCOUNT_UPDATE_SUCCESS,
-  payload: true
+export const openSnack = (type, message) => ({
+  type: SNACK_STATUS_OPEN,
+  payload: { message, type, status: true }
 });
 
-export const closeAccountUpdateSuccessPopUp = () => ({
-  type: SWITCH_ACCOUNT_UPDATE_SUCCESS_CLOSE,
+export const closeAlert = () => ({
+  type: ALERT_STATUS_CLOSE,
   payload: false
 });
-
-//Tariffs
-
-export const setUpdateTariffs = text => ({
-  type: CHANGE_UPDATE_TARIFFS_FIELD,
-  payload: text
+export const acceptAlert = () => ({
+  type: ALERT_STATUS_ACCEPT,
+  payload: { status: false, alertFunction: () => {} }
 });
 
-export const openUpdateTariffsSuccessPopUp = () => ({
-  type: SWITCH_TARIFFS_UPDATE_SUCCESS,
-  payload: true
+export const openAlert = (message, alertFunction) => ({
+  type: ALERT_STATUS_OPEN,
+  payload: { message, alertFunction, status: true }
 });
-
-export const closeUpdateTariffsSuccessPopUp = () => ({
-  type: SWITCH_TARIFFS_UPDATE_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const resetTariffsField = () => ({
-  type: RESET_TARIFFS_FIELDS,
-  payload: ""
-});
-
-//Message part
-export const setMessageField = text => ({
-  type: CHANGE_MESSAGE_FIELD,
-  payload: text
-});
-
-export const setSubjectField = text => ({
-  type: CHANGE_SUBJECT_FIELD,
-  payload: text
-});
-
-export const setSendingFiles = files => ({
-  type: CHANGE_SENDING_FILES,
-  payload: files
-});
-
-export const removeSendingFiles = () => ({
-  type: REMOVE_SENDING_FILES,
-  payload: []
-});
-
-//Snackbars part
-export const openInsertSuccessPopUp = () => ({
-  type: SWITCH_INSERTION_SUCCESS,
-  payload: true
-});
-
-export const openUpdateSuccessPopUp = () => ({
-  type: SWITCH_UPDATE_SUCCESS,
-  payload: true
-});
-
-export const openDeleteSuccessPopUp = () => ({
-  type: SWITCH_DELETE_SUCCESS,
-  payload: true
-});
-
-export const openMessageSuccessPopUp = () => ({
-  type: SWITCH_MESSAGE_SEND_SUCCESS,
-  payload: true
-});
-
-export const closeInsertSuccessPopUp = () => ({
-  type: SWITCH_INSERTION_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const closeUpdateSuccessPopUp = () => ({
-  type: SWITCH_UPDATE_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const closeDeleteSuccessPopUp = () => ({
-  type: SWITCH_DELETE_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const closeMessageSuccessPopUp = () => ({
-  type: SWITCH_MESSAGE_SEND_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const openSettingsSuccessPopUp = () => ({
-  type: SWITCH_SETTINGS_SUCCESS,
-  payload: true
-});
-
-export const closeSettingsSuccessPopUp = () => ({
-  type: SWITCH_SETTINGS_SUCCESS_CLOSE,
-  payload: false
-});
-export const openTariffsSuccessPopUp = () => ({
-  type: SWITCH_TARIFFS_SUCCESS,
-  payload: true
-});
-
-export const closeTariffsSuccessPopUp = () => ({
-  type: SWITCH_TARIFFS_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const resetEmailFields = () => ({
-  type: RESET_EMAIL_FIELDS,
-  payload: ""
-});
-export const resetInsertTenantFields = () => ({
-  type: RESET_TENANT_INSERT_FIELDS,
-  payload: ""
-});
-export const resetUpdateTenantFields = () => ({
-  type: RESET_TENANT_UPDATE_FIELDS,
-  payload: ""
-});
-export const resetDeleteTenantFields = () => ({
-  type: RESET_TENANT_DELETE_FIELDS,
-  payload: ""
-});
+//auth
+export const authenticate = () => dispatch => {
+  const token = window.localStorage.getItem("token");
+  if (token) {
+    dispatch({ type: AUTH_PENDING, payload: true });
+    fetch(`${BACKEND_URI}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data && data.success === "true") {
+          dispatch({ type: ON_CORRECT_RESPONSE, payload: true });
+        }
+        return data;
+      })
+      .then(data => dispatch({ type: AUTH_SUCCESS, payload: data }))
+      .catch(error => {
+        dispatch({ type: AUTH_FAILED, payload: error });
+        dispatch({ type: ON_WRONG_RESPONSE, payload: error });
+      });
+  }
+};

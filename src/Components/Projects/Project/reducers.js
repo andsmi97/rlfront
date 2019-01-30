@@ -19,18 +19,16 @@ const initialStateSnackbars = {
 export const projectReducer = (state = initialStateSnackbars, action = {}) => {
   switch (action.type) {
     case SET_EDIT_WINDOW_PROJECT_ID:
-      return Object.assign({}, state, {
-        editableProjectID: action.payload
-      });
+      return { ...state, editableProjectID: action.payload };
     case SWITCH_INSERTION_SUCCESS:
     case SWITCH_INSERTION_SUCCESS_CLOSE:
-      return Object.assign({}, state, { snackInsert: action.payload });
+      return { ...state, snackInsert: action.payload };
     case SWITCH_DELETE_SUCCESS:
     case SWITCH_DELETE_SUCCESS_CLOSE:
-      return Object.assign({}, state, { snackDelete: action.payload });
+      return { ...state, snackDelete: action.payload };
     case SWITCH_UPDATE_SUCCESS:
     case SWITCH_UPDATE_SUCCESS_CLOSE:
-      return Object.assign({}, state, { snackUpdate: action.payload });
+      return { ...state, snackUpdate: action.payload };
     default:
       return state;
   }

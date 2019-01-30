@@ -5,8 +5,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import { withStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
+
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
@@ -19,15 +18,10 @@ import {
   closeEditProjectWindow,
   setEditTitleField,
   setEditBodyField,
-  openInsertProjectSuccessPopUp,
-  openUpdateProjectSuccessPopUp,
-  openDeleteProjectSuccessPopUp,
-  closeInsertProjectSuccessPopUp,
-  closeUpdateProjectSuccessPopUp,
-  closeDeleteProjectSuccessPopUp,
   resetInsertProjectFields,
   resetUpdateProjectFields
 } from "./actions";
+import { openSnack } from "../../actions";
 import {
   RENDER_NEW_PROJECT,
   RENDER_UPDATE_PROJECT,
@@ -41,6 +35,7 @@ import { BACKEND_URI } from "../../constants";
 import Project from "./Project";
 import AddIcon from "@material-ui/icons/Add";
 import CloseIcon from "@material-ui/icons/Close";
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -93,9 +88,6 @@ const mapStateToProps = state => {
     editProjectID: state.projectsReducer.editProjectID,
     editImage1: state.projectsReducer.editImage1,
     editImage2: state.projectsReducer.editImage2,
-    snackInsert: state.projectsReducer.snackInsert,
-    snackUpdate: state.projectsReducer.snackUpdate,
-    snackDelete: state.projectsReducer.snackDelete,
     editFile2: state.projectsReducer.editFile2,
     editFile1: state.projectsReducer.editFile1,
     previewEditImage1: state.projectsReducer.previewEditImage1,
@@ -113,12 +105,7 @@ const mapDispatchToProps = dispatch => {
     onCloseInsertProjectWindow: () => dispatch(closeInsertProjectWindow()),
     onOpenEditProjectWindow: () => dispatch(openEditProjectWindow()),
     onCloseEditProjectWindow: () => dispatch(closeEditProjectWindow()),
-    onInsertionSuccess: () => dispatch(openInsertProjectSuccessPopUp()),
-    onUpdateSuccess: () => dispatch(openUpdateProjectSuccessPopUp()),
-    onDeleteSuccess: () => dispatch(openDeleteProjectSuccessPopUp()),
-    onInsertionSuccessClose: () => dispatch(closeInsertProjectSuccessPopUp()),
-    onUpdateSuccessClose: () => dispatch(closeUpdateProjectSuccessPopUp()),
-    onDeleteSuccessClose: () => dispatch(closeDeleteProjectSuccessPopUp()),
+    onSuccess: (type, message) => dispatch(openSnack(type, message)),
     onResetInsertProjectFields: () => dispatch(resetInsertProjectFields()),
     onResetUpdateProjectFields: () => dispatch(resetUpdateProjectFields()),
     renderNewProject: project =>
@@ -164,26 +151,34 @@ class Projects extends React.Component {
       editFile: {},
       edit2File: {}
     };
-    this.onChangeInsertFile1 = this.onChangeInsertFile1.bind(this);
-    this.onChangeInsertFile2 = this.onChangeInsertFile2.bind(this);
+    // this.onChangeInsertFile1 = this.onChangeInsertFile1.bind(this);
+    // this.onChangeInsertFile2 = this.onChangeInsertFile2.bind(this);
   }
 
   onSubmitProject = () => {
+    const token = window.localStorage.getItem("token");
     let form = new FormData();
     form.append("file1", this.state.insertFile1);
     form.append("file2", this.state.insertFile2);
     form.append("title", this.props.titleField);
     form.append("body", this.props.bodyField);
     form.append("site", "ozerodom.ru");
-    fetch(`${BACKEND_URI}/addproject`, { method: "POST", body: form })
+    fetch(`${BACKEND_URI}/addproject`, {
+      method: "POST",
+      body: form,
+      headers: {
+        Authorization: token
+      }
+    })
       .then(response => response.json())
       .then(response => this.props.renderNewProject(response))
-      .then(() => this.props.onInsertionSuccess())
+      .then(() => this.props.onSuccess("success","Проект добавлен"))
       .then(() => this.props.onResetInsertProjectFields())
       .then(() => this.setState({ previewImage1: "", previewImage2: "" }));
   };
 
   onSubmitUpdateProject = () => {
+    const token = window.localStorage.getItem("token");
     let form = new FormData();
     form.append("file1", this.props.editFile1);
     form.append("file2", this.props.editFile2);
@@ -193,10 +188,16 @@ class Projects extends React.Component {
     form.append("body", this.props.editBodyField);
     form.append("site", "ozerodom.ru");
     form.append("id", this.props.editProjectID);
-    fetch(`${BACKEND_URI}/updateproject`, { method: "PATCH", body: form })
+    fetch(`${BACKEND_URI}/updateproject`, {
+      method: "PATCH",
+      body: form,
+      headers: {
+        Authorization: token
+      }
+    })
       .then(response => response.json())
       .then(response => this.props.renderUpdateProject(response))
-      .then(() => this.props.onUpdateSuccess())
+      .then(() => this.props.onSuccess("success","Проект обновлен"))
       .then(() => this.props.onResetUpdateProjectFields())
       .catch(error => console.log(error));
   };
@@ -434,88 +435,41 @@ class Projects extends React.Component {
             </Paper>
           </Grid>
         </Grid>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackMessageSend}
-          autoHideDuration={6000}
-          onClose={this.props.onMessageSendSuccessClose}
-          ContentProps={{ "aria-describedby": "message-id" }}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onMessageSendSuccessClose}
-            variant="success"
-            message="Сообщения отправлены"
-          />
-        </Snackbar>
-
-        {this.props.insertWindowOpened && !this.props.editWindowOpended && (
-          <Button
-            variant="fab"
-            className={classes.fab}
-            color="primary"
-            onClick={this.props.onCloseInsertProjectWindow}
-          >
-            <CloseIcon />
-          </Button>
-        )}
-        {!this.props.insertWindowOpened && this.props.editWindowOpended && (
-          <Button
-            variant="fab"
-            className={classes.fab}
-            color="primary"
-            onClick={this.props.onCloseEditProjectWindow}
-          >
-            <CloseIcon />
-          </Button>
-        )}
-        {!this.props.insertWindowOpened && !this.props.editWindowOpended && (
-          <Button
-            variant="fab"
-            className={classes.fab}
-            color="primary"
-            onClick={() => {
-              this.props.onOpenInsertProjectWindow();
-            }}
-          >
-            <AddIcon />
-          </Button>
-        )}
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackInsert}
-          autoHideDuration={6000}
-          onClose={this.props.onInsertionSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onInsertionSuccessClose}
-            variant="success"
-            message="Проект добавлен"
-          />
-        </Snackbar>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackUpdate}
-          autoHideDuration={6000}
-          onClose={this.props.onUpdateSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onUpdateSuccessClose}
-            variant="success"
-            message="Проект обновлен"
-          />
-        </Snackbar>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackDelete}
-          autoHideDuration={6000}
-          onClose={this.props.onDeleteSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onDeleteSuccessClose}
-            variant="success"
-            message="Проект удален"
-          />
-        </Snackbar>
+        {this.props.insertWindowOpened &&
+          !this.props.editWindowOpended && (
+            <Button
+              variant="fab"
+              className={classes.fab}
+              color="primary"
+              onClick={this.props.onCloseInsertProjectWindow}
+            >
+              <CloseIcon />
+            </Button>
+          )}
+        {!this.props.insertWindowOpened &&
+          this.props.editWindowOpended && (
+            <Button
+              variant="fab"
+              className={classes.fab}
+              color="primary"
+              onClick={this.props.onCloseEditProjectWindow}
+            >
+              <CloseIcon />
+            </Button>
+          )}
+        {!this.props.insertWindowOpened &&
+          !this.props.editWindowOpended && (
+            <Button
+              variant="fab"
+              className={classes.fab}
+              color="primary"
+              onClick={() => {
+                this.props.onOpenInsertProjectWindow();
+              }}
+            >
+              <AddIcon />
+            </Button>
+          )}
       </main>
     );
   }

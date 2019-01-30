@@ -7,9 +7,14 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
-import FullWidthTabs from "../FullWidthTabs";
 import Paper from "@material-ui/core/Paper";
-import { changeTenants, requestTenants, selectAllTenants } from "../../actions";
+import Button from "@material-ui/core/Button";
+import {
+  changeTenants,
+  requestTenants,
+  selectAllTenants,
+  resetAllTenants
+} from "../../actions";
 import { connect } from "react-redux";
 const mapStateToProps = state => {
   return {
@@ -24,7 +29,8 @@ const mapDispatchToProps = dispatch => {
   return {
     onTenantChange: event => dispatch(changeTenants(event.target.value)),
     onRequestTenants: () => dispatch(requestTenants()),
-    onSelectAllTenants: tenants => dispatch(selectAllTenants(tenants))
+    onSelectAllTenants: tenants => dispatch(selectAllTenants(tenants)),
+    onResetTenants: () => dispatch(resetAllTenants())
   };
 };
 
@@ -32,10 +38,8 @@ const styles = theme => ({
   root: {
     display: "flex",
     flexWrap: "wrap",
-    // flexDirection: "column",
     alignItems: "center",
     width: "100%",
-    // flexDirection: "row",
     justifyContent: "center"
   },
   formControl: {
@@ -88,7 +92,9 @@ class MultipleSelect extends React.Component {
       classes,
       onTenantChange,
       selectedTenants,
-      tenantsArray
+      tenantsArray,
+      onSelectAllTenants,
+      onResetTenants
     } = this.props;
     return (
       <Paper className={classes.paper}>
@@ -116,7 +122,20 @@ class MultipleSelect extends React.Component {
               ))}
             </Select>
           </FormControl>
-          <FullWidthTabs />
+          <Button
+            color="primary"
+            className={classes.button}
+            onClick={onSelectAllTenants}
+          >
+            Выбрать всех
+          </Button>
+          <Button
+            color="primary"
+            className={classes.button}
+            onClick={onResetTenants}
+          >
+            Сбросить выбор
+          </Button>
         </div>
       </Paper>
     );

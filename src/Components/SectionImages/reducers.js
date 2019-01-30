@@ -1,10 +1,7 @@
 import {
-  RENDER_NEW_PHOTO,
   RENDER_UPDATE_PHOTO,
   RENDER_DELETE_PHOTO,
   REQUEST_SECTION_IMAGES_SUCCESS,
-  REQUEST_SECTION_IMAGES_PENDING,
-  REQUEST_SECTION_IMAGES_FAILED,
   REORDER_SECTION,
   ADD_SECTION_IMAGE
 } from "./constants.js";
@@ -16,23 +13,6 @@ const initialStateSections = {
   path: []
 };
 
-const findImageIndex = (image, state, section) => {
-  return state[section].reduce((acc, item, index) => {
-    return item.content === image ? index : acc;
-  }, -1);
-};
-
-const replaceImage = (section, findImage, insertImage, state) => {
-  let changedArray = Array.from(state[section]);
-  let index = findImageIndex(findImage, state, section);
-  if (index !== -1) {
-    changedArray[index].content = insertImage;
-  }
-  return changedArray;
-};
-const removeImage = (array, removeImage) => {
-  return array.filter(image => image !== removeImage);
-};
 export const sectionImagesReducer = (
   state = initialStateSections,
   action = {}
@@ -47,14 +27,16 @@ export const sectionImagesReducer = (
         ]
       };
     case RENDER_UPDATE_PHOTO:
-      return Object.assign({}, state, {
-        [action.payload.section]: state[action.payload.section].map(item => {
-          if (item.content === action.payload.oldImage) {
-            item.content = action.payload.newImage;
-          }
-          return item;
+      return {
+        ...state,
+        [action.payload.section]: action.payload.photos.map((image, index) => {
+          return {
+            id: `${index}`,
+            content: image,
+            section: action.payload.section
+          };
         })
-      });
+      };
     case RENDER_DELETE_PHOTO:
       return {
         ...state,

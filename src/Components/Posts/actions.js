@@ -12,12 +12,6 @@ import {
   SELECT_EDIT_POST,
   CHANGE_EDIT_TITLE_FIELD,
   CHANGE_EDIT_POST_BODY_FIELD,
-  SWITCH_INSERTION_POST_SUCCESS,
-  SWITCH_UPDATE_POST_SUCCESS,
-  SWITCH_DELETE_POST_SUCCESS,
-  SWITCH_INSERTION_POST_SUCCESS_CLOSE,
-  SWITCH_UPDATE_POST_SUCCESS_CLOSE,
-  SWITCH_DELETE_POST_SUCCESS_CLOSE,
   RESET_INSERT_POST_FIELDS,
   RESET_UPDATE_POST_FIELDS
 } from "./constants";
@@ -43,11 +37,13 @@ export const setEditPostBodyField = text => ({
 });
 
 export const requestPosts = () => dispatch => {
+  const token = window.localStorage.getItem("token");
   dispatch({ type: REQUEST_POSTS_PENDING });
   fetch(`${BACKEND_URI}/getposts`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: token
     },
     body: JSON.stringify({
       date: Date.now()
@@ -87,37 +83,6 @@ export const closeEditPostWindow = () => ({
 export const selectEditPost = id => ({
   type: SELECT_EDIT_POST,
   payload: id
-});
-
-//CHANGE
-export const openInsertPostSuccessPopUp = () => ({
-  type: SWITCH_INSERTION_POST_SUCCESS,
-  payload: true
-});
-
-export const openUpdatePostSuccessPopUp = () => ({
-  type: SWITCH_UPDATE_POST_SUCCESS,
-  payload: true
-});
-
-export const openDeletePostSuccessPopUp = () => ({
-  type: SWITCH_DELETE_POST_SUCCESS,
-  payload: true
-});
-
-export const closeInsertPostSuccessPopUp = () => ({
-  type: SWITCH_INSERTION_POST_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const closeUpdatePostSuccessPopUp = () => ({
-  type: SWITCH_UPDATE_POST_SUCCESS_CLOSE,
-  payload: false
-});
-
-export const closeDeletePostSuccessPopUp = () => ({
-  type: SWITCH_DELETE_POST_SUCCESS_CLOSE,
-  payload: false
 });
 
 export const resetInsertPostFields = () => ({

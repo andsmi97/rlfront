@@ -6,11 +6,13 @@ import {
 import { BACKEND_URI } from "../../constants";
 
 export const requestSectionImages = () => dispatch => {
+  const token = window.localStorage.getItem("token");
   dispatch({ type: REQUEST_SECTION_IMAGES_PENDING });
   fetch(`${BACKEND_URI}/siteContent`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: token
     },
     body: JSON.stringify({
       site: "ozerodom.ru"
@@ -23,28 +25,4 @@ export const requestSectionImages = () => dispatch => {
     .catch(error =>
       dispatch({ type: REQUEST_SECTION_IMAGES_FAILED, payload: error })
     );
-
-  // .then(response => {
-  //   this.setState({
-  //     carousel: response.carousel.map((image, index) => {
-  //       return { id: `item-${index}`, content: image, section: "carousel" };
-  //     }),
-  //     advertising: response.advertising.map((image, index) => {
-  //       return {
-  //         id: `item-${index}`,
-  //         content: image,
-  //         section: "advertising"
-  //       };
-  //     }),
-  //     genPlan: response.genPlan.map((image, index) => {
-  //       return { id: `item-${index}`, content: image, section: "genPlan" };
-  //     }),
-  //     gallery: response.gallery.map((image, index) => {
-  //       return { id: `item-${index}`, content: image, section: "gallery" };
-  //     }),
-  //     path: response.path.map((image, index) => {
-  //       return { id: `item-${index}`, content: image, section: "path" };
-  //     })
-  //   });
-  // })
 };

@@ -4,7 +4,6 @@ import {
   REQUEST_PROJECTS_PENDING,
   REQUEST_PROJECTS_FAILED,
   REQUEST_PROJECTS_SUCCESS,
-  SELECT_LAST_PROJECTS_ON_LOAD,
   OPEN_INSERT_PROJECT_WINDOW,
   CLOSE_INSERT_PROJECT_WINDOW,
   OPEN_EDIT_PROJECT_WINDOW,
@@ -43,11 +42,13 @@ export const setEditBodyField = text => ({
 });
 
 export const requestProjects = () => dispatch => {
+  const token = window.localStorage.getItem("token");
   dispatch({ type: REQUEST_PROJECTS_PENDING });
   fetch(`${BACKEND_URI}/getprojects`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
+      Authorization: token
     },
     body: JSON.stringify({
       date: Date.now()
@@ -55,7 +56,9 @@ export const requestProjects = () => dispatch => {
   })
     .then(response => response.json())
     .then(data => dispatch({ type: REQUEST_PROJECTS_SUCCESS, payload: data }))
-    .catch(error => dispatch({ type: REQUEST_PROJECTS_FAILED, payload: error }));
+    .catch(error =>
+      dispatch({ type: REQUEST_PROJECTS_FAILED, payload: error })
+    );
 };
 
 export const openInsertProjectWindow = () => ({

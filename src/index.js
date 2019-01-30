@@ -6,34 +6,34 @@ import { createStore, applyMiddleware, combineReducers } from "redux";
 import { createLogger } from "redux-logger";
 import thunkMiddleware from "redux-thunk";
 import { Provider } from "react-redux";
-import {
-  changeEmailInputs,
-  changeTenantsInputs,
-  requestTenants,
-  handleSnackbars,
-  changeAdminInputs,
-  changeTariffsInputs
-} from "./reducers";
-import { authReducer } from "./Components/Auth/reducers.js";
-import { postsReducer } from "./Components/Posts/reducers.js";
-import { projectsReducer } from "./Components/Projects/reducers.js";
-import { postReducer } from "./Components/Posts/Post/reducers.js";
-import { projectReducer } from "./Components/Projects/Project/reducers.js";
-import { sectionImagesReducer } from "./Components/SectionImages/reducers.js";
+import { requestTenants } from "./reducers";
+import { appReducer } from "./reducers";
+
+import { emailReducer } from "./Components/EmailSender/reducers";
+import { tariffsReducer } from "./Components/Tariffs/reducers";
+import { settingsReducer } from "./Components/Settings/reducers";
+import { authReducer } from "./Components/Auth/reducers";
+import { postsReducer } from "./Components/Posts/reducers";
+import { projectsReducer } from "./Components/Projects/reducers";
+import { tenantsReducer } from "./Components/Tenants/reducers";
+import { postReducer } from "./Components/Posts/Post/reducers";
+import { projectReducer } from "./Components/Projects/Project/reducers";
+import { sectionImagesReducer } from "./Components/SectionImages/reducers";
+
 const logger = createLogger();
 const rootReducer = combineReducers({
-  changeEmailInputs,
-  changeTenantsInputs,
+  emailReducer,
   requestTenants,
-  handleSnackbars,
   postsReducer,
   postReducer,
-  changeAdminInputs,
-  changeTariffsInputs,
+  settingsReducer,
+  tariffsReducer,
   authReducer,
   projectsReducer,
   projectReducer,
-  sectionImagesReducer
+  sectionImagesReducer,
+  tenantsReducer,
+  appReducer
 });
 let store = "";
 if (process.env.NODE_ENV === "production") {

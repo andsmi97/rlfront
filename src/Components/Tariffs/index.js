@@ -4,54 +4,29 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import { withStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import { connect } from "react-redux";
 import { BACKEND_URI } from "../../constants.js";
-import {
-  setUpdateTariffs,
-  openUpdateTariffsSuccessPopUp,
-  closeUpdateTariffsSuccessPopUp,
-  resetTariffsField,
-  openTariffsSuccessPopUp,
-  closeTariffsSuccessPopUp
-} from "../../actions";
+import { openSnack } from "../../actions";
+import { setUpdateTariffs, resetTariffsField, requestTariffs } from "./actions";
 
 const mapStateToProps = state => {
   return {
-    updateTariffsField: state.changeTariffsInputs.updateTariffsField,
-    snackTariffs: state.handleSnackbars.snackTariffs
+    tariffField: state.tariffsReducer.tariffField,
+    snackTariffs: state.tariffsReducer.snackTariffs
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     onUpdateTariffs: event => dispatch(setUpdateTariffs(event.target.value)),
-
     onResetTariffs: () => dispatch(resetTariffsField()),
-
-    onUpdateTariffsSuccess: () => dispatch(openUpdateTariffsSuccessPopUp()),
-    onUpdateTariffsSuccessClose: () =>
-      dispatch(closeUpdateTariffsSuccessPopUp()),
-
-    onTariffsSuccess: () => dispatch(openTariffsSuccessPopUp()),
-    onTariffsSuccessClose: () => dispatch(closeTariffsSuccessPopUp())
+    onRequestTariffs: () => dispatch(requestTariffs()),
+    openSnack: (type, message) => dispatch(openSnack(type, message))
   };
 };
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    height: 440,
-    zIndex: 1,
-    overflow: "hidden",
-    position: "relative",
-    display: "flex"
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1
-  },
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
@@ -76,22 +51,23 @@ const styles = theme => ({
 
 class Tariffs extends React.Component {
   updateTariffs = () => {
+    const token = window.localStorage.getItem("token");
     fetch(`${BACKEND_URI}/changetariffs`, {
       method: "put",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: token
       },
       body: JSON.stringify({
-        gas: this.props.updateTariffsField
+        gas: this.props.tariffField
       })
-    })
-      .then(response => console.log(response))
-      .then(() => this.props.onTariffsSuccess())
-      .then(() => this.props.onUpdateTariffsSuccess())
-      .then(() => this.props.onResetTariffs());
+    }).then(() => this.props.openSnack("success", "Тарифы обновлены"));
   };
+  componentDidMount() {
+    this.props.onRequestTariffs();
+  }
   render() {
-    const { classes, onUpdateTariffs } = this.props;
+    const { classes, onUpdateTariffs, tariffField } = this.props;
 
     return (
       <main className={classes.content}>
@@ -107,7 +83,8 @@ class Tariffs extends React.Component {
                 label="Новый тариф"
                 margin="dense"
                 onChange={onUpdateTariffs}
-                value={this.props.updateTariffsField}
+                value={tariffField}
+                type="number"
               />
               <Button
                 color="primary"
@@ -119,19 +96,6 @@ class Tariffs extends React.Component {
             </Paper>
           </Grid>
         </Grid>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackTariffs}
-          autoHideDuration={6000}
-          onClose={this.props.onTariffsSuccessClose}
-          ContentProps={{ "aria-describedby": "message-id" }}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onTariffsSuccessClose}
-            variant="success"
-            message="Тарифы изменены"
-          />
-        </Snackbar>
       </main>
     );
   }

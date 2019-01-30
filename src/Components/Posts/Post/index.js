@@ -8,15 +8,9 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../../MySnackbarContentWrapper";
 import { BACKEND_URI } from "../../../constants.js";
 import { connect } from "react-redux";
-import {
-  openDeletePostSuccessPopUp,
-  closeDeletePostSuccessPopUp
-} from "../actions";
-//postS actions
+import { openSnack, openAlert } from "../../../actions";
 import { selectEditPost } from "../actions";
 import { RENDER_DELETE_POST } from "../constants";
 const styles = {
@@ -34,9 +28,10 @@ const styles = {
     padding: "15px!important",
     paddingTop: "20px",
     backgroundColor: "rgba(255, 255, 255, 0)",
-    boxShadow: "none",
-    // marginBottom: 15,
-    // marginLeft: 15
+    boxShadow: "none"
+  },
+  jcfe: {
+    justifyContent: "flex-end"
   }
 };
 
@@ -47,8 +42,9 @@ const mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
-    onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
+    openSnack: (type, message) => dispatch(openSnack(type, message)),
+    openAlert: (message, alertFunction) =>
+      dispatch(openAlert(message, alertFunction)),
     onUpdatePostClick: id => dispatch(selectEditPost(id)),
     renderDeletePost: post =>
       dispatch({ type: RENDER_DELETE_POST, payload: post })
@@ -56,33 +52,57 @@ const mapDispatchToProps = dispatch => {
 };
 
 class Post extends React.Component {
+  // deletePost = () => {
+  //   const { id, onSuccess, renderDeletePost } = this.props;
+  //   const token = window.localStorage.getItem("token");
+  //   fetch(`${BACKEND_URI}/deletepost`, {
+  //     method: "delete",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: token
+  //     },
+
+  //     body: JSON.stringify({ id })
+  //   })
+  //     .then(response => response.json())
+  //     .then(response => renderDeletePost(response))
+  //     .then(() => onSuccess("success", "Новость удалена"));
+  // };
+
   deletePost = () => {
-    fetch(`${BACKEND_URI}/deletepost`, {
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        id: this.props.postID
+    console.log("deleteing");
+    this.props.openAlert("Вы действительно хотите удалить новость?", () => {
+      const { id, openSnack, renderDeletePost } = this.props;
+      const token = window.localStorage.getItem("token");
+      fetch(`${BACKEND_URI}/deletepost`, {
+        method: "delete",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token
+        },
+        body: JSON.stringify({ id })
       })
-    })
-      .then(response => response.json())
-      .then(response => this.props.renderDeletePost(response))
-      .then(() => this.props.onDeleteSuccess());
+        .then(response => response.json())
+        .then(response => renderDeletePost(response))
+        .then(() => openSnack("success", "Новость удалена"));
+    });
   };
+
   render() {
-    const { classes, title, body, image } = this.props;
+    const { classes, title, body, image, onUpdatePostClick, id } = this.props;
     return (
       <Card className={classes.card}>
         <CardActionArea>
-          <CardMedia
-            component="img"
-            alt="Contemplative Reptile"
-            className={classes.media}
-            height="400"
-            image={image}
-            title="Contemplative Reptile"
-          />
+          {image && (
+            <CardMedia
+              component="img"
+              alt="Contemplative Reptile"
+              className={classes.media}
+              height="400"
+              image={image}
+              title="Contemplative Reptile"
+            />
+          )}
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               {title}
@@ -93,14 +113,11 @@ class Post extends React.Component {
             />
           </CardContent>
         </CardActionArea>
-        <CardActions className="jcfe">
-          {/* <Button size="small" color="primary">
-            Подробнее
-          </Button> */}
+        <CardActions className={classes.jcfe}>
           <Button
             size="small"
             color="primary"
-            onClick={() => this.props.onUpdatePostClick(this.props.postID)}
+            onClick={() => onUpdatePostClick(id)}
           >
             Редактировать
           </Button>
@@ -108,18 +125,6 @@ class Post extends React.Component {
             Удалить
           </Button>
         </CardActions>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackDelete}
-          autoHideDuration={6000}
-          onClose={this.props.onDeleteSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onDeleteSuccessClose}
-            variant="success"
-            message="Новость Удалена"
-          />
-        </Snackbar>
       </Card>
     );
   }

@@ -5,8 +5,6 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import { withStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import {
@@ -19,20 +17,17 @@ import {
   closeEditPostWindow,
   setEditTitleField,
   setEditPostBodyField,
-  openInsertPostSuccessPopUp,
-  openUpdatePostSuccessPopUp,
-  openDeletePostSuccessPopUp,
-  closeInsertPostSuccessPopUp,
-  closeUpdatePostSuccessPopUp,
-  closeDeletePostSuccessPopUp,
   resetInsertPostFields,
   resetUpdatePostFields
 } from "./actions";
+import { openSnack } from "../../actions";
 import {
   RENDER_NEW_POST,
   RENDER_UPDATE_POST,
   SET_PREVIEW_POST_IMAGE_1,
-  SET_UPLOAD_FILE_1
+  SET_UPLOAD_FILE_1,
+  SET_DELETE_IMAGE,
+  SET_DELETE_TO_FALSE
 } from "./constants";
 import ReactQuill from "react-quill";
 import { BACKEND_URI } from "../../constants";
@@ -89,12 +84,10 @@ const mapStateToProps = state => {
     editTitleField: state.postsReducer.editTitleField,
     editBodyField: state.postsReducer.editBodyField,
     editPostID: state.postsReducer.editPostID,
-    snackInsert: state.postsReducer.snackInsert,
-    snackUpdate: state.postsReducer.snackUpdate,
-    snackDelete: state.postsReducer.snackDelete,
     editFile1: state.postsReducer.editFile1,
     previewEditImage1: state.postsReducer.previewEditImage1,
-    editImage1: state.postsReducer.editImage1
+    editImage1: state.postsReducer.editImage1,
+    deleteEditImage: state.postsReducer.deleteEditImage
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -108,12 +101,7 @@ const mapDispatchToProps = dispatch => {
     onCloseInsertPostWindow: () => dispatch(closeInsertPostWindow()),
     onOpenEditPostWindow: () => dispatch(openEditPostWindow()),
     onCloseEditPostWindow: () => dispatch(closeEditPostWindow()),
-    onInsertionSuccess: () => dispatch(openInsertPostSuccessPopUp()),
-    onUpdateSuccess: () => dispatch(openUpdatePostSuccessPopUp()),
-    onDeleteSuccess: () => dispatch(openDeletePostSuccessPopUp()),
-    onInsertionSuccessClose: () => dispatch(closeInsertPostSuccessPopUp()),
-    onUpdateSuccessClose: () => dispatch(closeUpdatePostSuccessPopUp()),
-    onDeleteSuccessClose: () => dispatch(closeDeletePostSuccessPopUp()),
+    onSuccess: (type, message) => dispatch(openSnack(type, message)),
     onResetInsertPostFields: () => dispatch(resetInsertPostFields()),
     onResetUpdatePostFields: () => dispatch(resetUpdatePostFields()),
     renderNewPost: post => dispatch({ type: RENDER_NEW_POST, payload: post }),
@@ -128,7 +116,14 @@ const mapDispatchToProps = dispatch => {
       dispatch({
         type: SET_UPLOAD_FILE_1,
         payload: e.target.files[0]
-      })
+      }),
+    setDeleteImage: () =>
+      dispatch({
+        type: SET_DELETE_IMAGE
+      }),
+    setDeleteToFalse: () => {
+      dispatch({ type: SET_DELETE_TO_FALSE });
+    }
   };
 };
 class Posts extends React.Component {
@@ -142,53 +137,52 @@ class Posts extends React.Component {
       editFile: {}
     };
 
-    this.onChangeInsertFile = this.onChangeInsertFile.bind(this);
+    // this.onChangeInsertFile = this.onChangeInsertFile.bind(this);
   }
 
   onSubmitPost = () => {
+    const token = window.localStorage.getItem("token");
     let form = new FormData();
     form.append("file", this.state.insertFile);
     form.append("title", this.props.titleField);
     form.append("body", this.props.bodyField);
     form.append("site", "ozerodom.ru");
 
-    fetch(`${BACKEND_URI}/addpost`, { method: "POST", body: form })
+    fetch(`${BACKEND_URI}/addpost`, {
+      method: "POST",
+      body: form,
+      headers: {
+        Authorization: token
+      }
+    })
       .then(response => response.json())
       .then(response => this.props.renderNewPost(response))
-      .then(() => this.props.onInsertionSuccess())
+      .then(() => this.props.onSuccess("success", "Новость добавлена"))
       .then(() => this.props.onResetInsertPostFields())
       .then(() => this.setState({ previewImage: "" }));
   };
-  onSubmitUpdatePost = () => {
+  onUpdatePost = () => {
+    const token = window.localStorage.getItem("token");
     let form = new FormData();
     form.append("file", this.props.editFile1);
     form.append("title", this.props.editTitleField);
     form.append("body", this.props.editBodyField);
     form.append("image", this.props.editImage1);
+    form.append("deleteimage", this.props.deleteEditImage);
     form.append("site", "ozerodom.ru");
     form.append("id", this.props.editPostID);
-    fetch(`${BACKEND_URI}/updatepost`, { method: "PATCH", body: form })
+    fetch(`${BACKEND_URI}/updatepost`, {
+      method: "PATCH",
+      body: form,
+      headers: {
+        Authorization: token
+      }
+    })
       .then(response => response.json())
       .then(response => this.props.renderUpdatePost(response))
-      .then(() => this.props.onUpdateSuccess())
+      .then(() => this.props.onSuccess("success", "Новость обновлена"))
       .then(() => this.props.onResetUpdatePostFields())
       .catch(error => console.log(error));
-    // fetch(`${BACKEND_URI}/updatepost`, {
-    //   method: "PATCH",
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify({
-    //     id: this.props.editPostID,
-    //     title: this.props.editTitleField,
-    //     body: this.props.editBodyField
-    //   })
-    // })
-    //   .then(response => response.json())
-    //   .then(response => this.props.renderUpdatePost(response))
-    //   .then(() => this.props.onUpdateSuccess())
-    //   .then(() => this.props.onResetUpdatePostFields())
-    //   .catch(error => console.log(error));
   };
   scrollToMyRef = () => {
     console.log("imhere");
@@ -238,6 +232,7 @@ class Posts extends React.Component {
   };
 
   onChangeUpdateFile = e => {
+    this.props.setDeleteToFalse();
     if (e.target.files && e.target.files[0]) {
       let reader = new FileReader();
       this.props.setUploadFile1(e);
@@ -261,8 +256,13 @@ class Posts extends React.Component {
       insertWindowOpened,
       editWindowOpended,
       editImage1,
-      previewEditImage1
+      previewEditImage1,
+      loadedPosts,
+      onCloseInsertPostWindow,
+      onOpenInsertPostWindow,
+      onCloseEditPostWindow
     } = this.props;
+    const { previewImage } = this.state;
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
@@ -285,9 +285,9 @@ class Posts extends React.Component {
                   onChange={onTitleChange}
                 />
                 <Input type="file" onChange={this.onChangeInsertFile} />
-                {this.state.previewImage && (
+                {previewImage && (
                   <img
-                    src={this.state.previewImage}
+                    src={previewImage}
                     alt="upload"
                     width="100%"
                     height="400"
@@ -322,13 +322,15 @@ class Posts extends React.Component {
                 />
                 <Input type="file" onChange={this.onChangeUpdateFile} />
                 {previewEditImage1 ? (
-                  <img
-                    src={previewEditImage1}
-                    alt="upload"
-                    width="100%"
-                    height="400"
-                    className={classes.img}
-                  />
+                  this.props.deleteEditImage && (
+                    <img
+                      src={previewEditImage1}
+                      alt="upload"
+                      width="100%"
+                      height="400"
+                      className={classes.img}
+                    />
+                  )
                 ) : (
                   <img
                     src={editImage1}
@@ -337,6 +339,23 @@ class Posts extends React.Component {
                     height="400"
                     className={classes.img}
                   />
+                )}
+                {this.props.deleteEditImage ? (
+                  <Button
+                    color="primary"
+                    className={classes.button}
+                    onClick={this.props.setDeleteImage}
+                  >
+                    Восстановить изображение
+                  </Button>
+                ) : (
+                  <Button
+                    color="primary"
+                    className={classes.button}
+                    onClick={this.props.setDeleteImage}
+                  >
+                    Удалить изображение
+                  </Button>
                 )}
                 <ReactQuill
                   modules={this.modules}
@@ -347,19 +366,19 @@ class Posts extends React.Component {
                 <Button
                   color="primary"
                   className={classes.button}
-                  onClick={this.onSubmitUpdatePost}
+                  onClick={this.onUpdatePost}
                 >
                   Обновить новость
                 </Button>
               </Paper>
             )}
             <Paper className={classes.paper}>
-              {this.props.loadedPosts.map(post => {
+              {loadedPosts.map(post => {
                 return (
                   <Post
                     title={post.title}
                     body={post.body}
-                    postID={post._id}
+                    id={post._id}
                     image={post.image}
                     key={post._id}
                   />
@@ -368,88 +387,41 @@ class Posts extends React.Component {
             </Paper>
           </Grid>
         </Grid>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackMessageSend}
-          autoHideDuration={6000}
-          onClose={this.props.onMessageSendSuccessClose}
-          ContentProps={{ "aria-describedby": "message-id" }}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onMessageSendSuccessClose}
-            variant="success"
-            message="Сообщения отправлены"
-          />
-        </Snackbar>
-
-        {this.props.insertWindowOpened && !this.props.editWindowOpended && (
-          <Button
-            variant="fab"
-            className={classes.fab}
-            color="primary"
-            onClick={this.props.onCloseInsertPostWindow}
-          >
-            <CloseIcon />
-          </Button>
-        )}
-        {!this.props.insertWindowOpened && this.props.editWindowOpended && (
-          <Button
-            variant="fab"
-            className={classes.fab}
-            color="primary"
-            onClick={this.props.onCloseEditPostWindow}
-          >
-            <CloseIcon />
-          </Button>
-        )}
-        {!this.props.insertWindowOpened && !this.props.editWindowOpended && (
-          <Button
-            variant="fab"
-            className={classes.fab}
-            color="primary"
-            onClick={() => {
-              this.props.onOpenInsertPostWindow();
-            }}
-          >
-            <AddIcon />
-          </Button>
-        )}
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackInsert}
-          autoHideDuration={6000}
-          onClose={this.props.onInsertionSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onInsertionSuccessClose}
-            variant="success"
-            message="Новость добавлена"
-          />
-        </Snackbar>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackUpdate}
-          autoHideDuration={6000}
-          onClose={this.props.onUpdateSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onUpdateSuccessClose}
-            variant="success"
-            message="Новость обновлена"
-          />
-        </Snackbar>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackDelete}
-          autoHideDuration={6000}
-          onClose={this.props.onDeleteSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onDeleteSuccessClose}
-            variant="success"
-            message="Новость Удалена"
-          />
-        </Snackbar>
+        {insertWindowOpened &&
+          !editWindowOpended && (
+            <Button
+              variant="fab"
+              className={classes.fab}
+              color="primary"
+              onClick={onCloseInsertPostWindow}
+            >
+              <CloseIcon />
+            </Button>
+          )}
+        {!insertWindowOpened &&
+          editWindowOpended && (
+            <Button
+              variant="fab"
+              className={classes.fab}
+              color="primary"
+              onClick={onCloseEditPostWindow}
+            >
+              <CloseIcon />
+            </Button>
+          )}
+        {!insertWindowOpened &&
+          !editWindowOpended && (
+            <Button
+              variant="fab"
+              className={classes.fab}
+              color="primary"
+              onClick={() => {
+                onOpenInsertPostWindow();
+              }}
+            >
+              <AddIcon />
+            </Button>
+          )}
       </main>
     );
   }

@@ -5,8 +5,6 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { BACKEND_URI } from "../../constants.js";
@@ -24,27 +22,23 @@ import {
   setUpdateAdminPhone2,
   resetEmailSettingsField,
   resetAccountSettingsField,
-  openEmailUpdateSuccessPopUp,
-  closeEmailUpdateSuccessPopUp,
-  openAccountUpdateSuccessPopUp,
-  closeAccountUpdateSuccessPopUp,
-  openSettingsSuccessPopUp,
-  closeSettingsSuccessPopUp
-} from "../../actions";
+  requestSettings
+} from "./actions";
+
+import { openSnack } from "../../actions";
 
 const mapStateToProps = state => {
   return {
-    updateAdminEmailField: state.changeAdminInputs.updateAdminEmailField,
-    updateAdminMailPassField: state.changeAdminInputs.updateAdminMailPassField,
+    updateAdminEmailField: state.settingsReducer.updateAdminEmailField,
+    updateAdminMailPassField: state.settingsReducer.updateAdminMailPassField,
     updateAdminAccountPassOldField:
-      state.changeAdminInputs.updateAdminAccountPassOldField,
+      state.settingsReducer.updateAdminAccountPassOldField,
     updateAdminAccountPassNewField:
-      state.changeAdminInputs.updateAdminAccountPassNewField,
+      state.settingsReducer.updateAdminAccountPassNewField,
     updateAdminAccountPassRepeatField:
-      state.changeAdminInputs.updateAdminAccountPassRepeatField,
-    updateAdminPhoneField: state.changeAdminInputs.updateAdminPhoneField,
-    updateAdminPhone2Field: state.changeAdminInputs.updateAdminPhone2Field,
-    snackSettings: state.handleSnackbars.snackSettings
+      state.settingsReducer.updateAdminAccountPassRepeatField,
+    updateAdminPhoneField: state.settingsReducer.updateAdminPhoneField,
+    updateAdminPhone2Field: state.settingsReducer.updateAdminPhone2Field
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -63,20 +57,10 @@ const mapDispatchToProps = dispatch => {
       dispatch(setUpdateAdminPhone(event.target.value)),
     onUpdateAdminPhone2: event =>
       dispatch(setUpdateAdminPhone2(event.target.value)),
-
+    onRequestSettings: () => dispatch(requestSettings()),
     onResetAdminEmailSettings: () => dispatch(resetEmailSettingsField()),
     onResetAdminAccountSettings: () => dispatch(resetAccountSettingsField()),
-
-    onEmailSettingsUpdateSuccess: () => dispatch(openEmailUpdateSuccessPopUp()),
-    onEmailSettingsUpdateSuccessClose: () =>
-      dispatch(closeEmailUpdateSuccessPopUp()),
-    onAccountSettingsUpdateSuccess: () =>
-      dispatch(openAccountUpdateSuccessPopUp()),
-    onAccountSettingsUpdateSuccessClose: () =>
-      dispatch(closeAccountUpdateSuccessPopUp()),
-
-    onSettingsSuccess: () => dispatch(openSettingsSuccessPopUp()),
-    onSettingsSuccessClose: () => dispatch(closeSettingsSuccessPopUp())
+    openSnack: (type, message) => dispatch(openSnack(type, message))
   };
 };
 
@@ -111,6 +95,12 @@ const styles = theme => ({
     boxShadow: "none",
     marginBottom: 15,
     marginLeft: 15
+  },
+  accountSettings: {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "15px",
+    marginLeft: "15px"
   }
 });
 
@@ -121,11 +111,16 @@ class Settings extends React.Component {
       error: ""
     };
   }
+  componentDidMount() {
+    this.props.onRequestSettings();
+  }
   updateEmailSettings = () => {
+    const token = window.localStorage.getItem("token");
     fetch(`${BACKEND_URI}/updateemailcredentials`, {
       method: "put",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: token
       },
       body: JSON.stringify({
         user: "admin",
@@ -135,20 +130,21 @@ class Settings extends React.Component {
         phone2: this.props.updateAdminPhone2Field
       })
     })
-      .then(response => console.log(response))
-      .then(() => this.props.onSettingsSuccess())
-      .then(() => this.props.onEmailSettingsUpdateSuccess())
-      .then(() => this.props.onResetAdminEmailSettings());
+      .then(() => this.props.onSuccess("success", "Данные обновлены"))
+      // .then(() => this.props.onEmailSettingsUpdateSuccess())
+      .catch(err => console.log(err));
   };
   updateAccountSettings = () => {
     if (
       this.props.updateAdminAccountPassNewField ===
       this.props.updateAdminAccountPassRepeatField
     ) {
+      const token = window.localStorage.getItem("token");
       fetch(`${BACKEND_URI}/changeaccountpassword`, {
         method: "put",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: token
         },
         body: JSON.stringify({
           user: "admin",
@@ -157,7 +153,7 @@ class Settings extends React.Component {
         })
       })
         .then(response => console.log(response))
-        .then(() => this.props.onSettingsSuccess())
+        .then(() => this.props.openSnack("success", "Настройки изменены"))
         .then(() => this.props.onAccountSettingsUpdateSuccess())
         .then(() => this.props.onResetAdminAccountSettings());
       this.setState({ error: "" });
@@ -194,11 +190,11 @@ class Settings extends React.Component {
                 value={this.props.updateAdminPhoneField}
               />
               <TextField
-                id="admin-new-phone"
+                id="admin-new-phone2"
                 label="Второй телефон"
                 margin="dense"
                 onChange={onUpdateAdminPhone2}
-                value={this.props.updateAdminPhoneField2}
+                value={this.props.updateAdminPhone2Field}
               />
               <TextField
                 id="admin-new-email"
@@ -264,7 +260,7 @@ class Settings extends React.Component {
                 </Button>
               </Paper>
             ) : (
-              <Paper className="accountSettings">
+              <Paper className={classes.accountSettings}>
                 <Typography variant="h5" gutterBottom>
                   Настройки Аккаунта
                 </Typography>
@@ -326,19 +322,6 @@ class Settings extends React.Component {
             )}
           </Grid>
         </Grid>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackSettings}
-          autoHideDuration={6000}
-          onClose={this.props.onSettingsSuccessClose}
-          ContentProps={{ "aria-describedby": "message-id" }}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onSettingsSuccessClose}
-            variant="success"
-            message="Настройки изменены"
-          />
-        </Snackbar>
       </main>
     );
   }

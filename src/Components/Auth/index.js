@@ -7,10 +7,13 @@ import PropTypes from "prop-types";
 import { BACKEND_URI } from "../../constants.js";
 import { setPasswordField } from "./actions";
 import { ON_CORRECT_RESPONSE, ON_WRONG_RESPONSE } from "./constants.js";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const mapStateToProps = state => {
   return {
-    passwordField: state.authReducer.passwordField
+    passwordField: state.authReducer.passwordField,
+    error: state.authReducer.error,
+    pending: state.appReducer.authPending
   };
 };
 const mapDispatchToProps = dispatch => {
@@ -19,7 +22,8 @@ const mapDispatchToProps = dispatch => {
       dispatch(setPasswordField(event.target.value)),
     onCorrectResponse: () =>
       dispatch({ type: ON_CORRECT_RESPONSE, payload: true }),
-    onWrongResponse: () => dispatch({ type: ON_WRONG_RESPONSE, payload: true })
+    onWrongResponse: err => dispatch({ type: ON_WRONG_RESPONSE, payload: err }),
+    
   };
 };
 
@@ -35,37 +39,73 @@ const styles = theme => ({
 });
 
 class Auth extends React.Component {
-  login = () => {
+  saveAuthTokenInSessions = token => {
+    window.localStorage.setItem("token", token);
+  };
+  onSubmitSignIn = () => {
     fetch(`${BACKEND_URI}/login`, {
       method: "post",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user: "admin",
+        username: "admin",
         password: this.props.passwordField
       })
     })
       .then(response => response.json())
-      .then(response => {
-        response !== null ? this.props.onCorrectResponse() : this.props.onWrongResponse();
+      .then(data => {
+        if (data && data.success === "true") {
+          this.saveAuthTokenInSessions(data.token);
+          this.props.onCorrectResponse();
+        }else{
+          this.props.onWrongResponse("Введены неправильные данные");
+        }
       })
-      .catch(err => console.log(err));
+      .catch(err => this.props.openSnack('error','Возникла ошибка, повторите позже'));
   };
   render() {
-    const { classes, onUpdatePasswordField } = this.props;
+    const { classes, onUpdatePasswordField, error, pending } = this.props;
 
-    return (
+    return pending ? (
+      <div className={classes.root}>
+        <CircularProgress className={classes.progress} />
+      </div>
+    ) : (
       <div className={classes.root}>
         <TextField
-          id="password"
-          label="Пароль"
+          id="user"
+          label="Логин"
           margin="dense"
-          type="password"
+          type="username"
+          value="admin"
           onChange={onUpdatePasswordField}
-          value={this.props.passwordField}
         />
-        <Button color="primary" className={classes.button} onClick={this.login}>
+        {!error ? (
+          <TextField
+            id="password"
+            label="Пароль"
+            margin="dense"
+            type="password"
+            onChange={onUpdatePasswordField}
+            value={this.props.passwordField}
+          />
+        ) : (
+          <TextField
+            error
+            id="standard-error"
+            label={error}
+            margin="dense"
+            type="password"
+            defaultValue={this.props.passwordField}
+            onChange={onUpdatePasswordField}
+            className={classes.textField}
+          />
+        )}
+        {error}
+        <Button
+          color="primary"
+          className={classes.button}
+          onClick={this.onSubmitSignIn}
+        >
           Войти
         </Button>
       </div>

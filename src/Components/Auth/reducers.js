@@ -16,30 +16,25 @@ const initialStatePassword = {
 export const authReducer = (state = initialStatePassword, action = {}) => {
   switch (action.type) {
     case CHANGE_PASSWORD_FIELD:
-      return Object.assign({}, state, {
-        passwordField: action.payload
-      });
+      return {
+        ...state,
+        passwordField: action.payload,
+        error: ""
+      };
     case SENDING_PASSWORD_PENDING:
-      return Object.assign({}, state, {
-        isPasswordPending: true
-      });
+      return { ...state, isPasswordPending: true };
     case SENDING_PASSWORD_SUCCESS:
-      return Object.assign({}, state, {
-        isPasswordPending: false
-      });
+      return { ...state, isPasswordPending: false };
     case SENDING_PASSWORD_ERROR:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         error: action.payload,
         isPasswordPending: false
-      });
+      };
     case ON_CORRECT_RESPONSE:
-      return Object.assign({}, state, {
-        isResponseCorrect: true
-      });
+      return { ...state, isResponseCorrect: true };
     case ON_WRONG_RESPONSE:
-      return Object.assign({}, state, {
-        isResponseCorrect: false
-      });
+      return { ...state, isResponseCorrect: false };
     default:
       return state;
   }

@@ -111,255 +111,171 @@ const mapDispatchToProps = dispatch => {
   };
 };
 class SectionImages extends React.Component {
-  constructor(props) {
-    super(props);
-    // this.onDragEndCarousel = this.onDragEndCarousel.bind(this);
-    // this.onDragEndAdvertising = this.onDragEndAdvertising.bind(this);
-    // this.onDragEndGenPlan = this.onDragEndGenPlan.bind(this);
-    // this.onDragEndGallery = this.onDragEndGallery.bind(this);
-    // this.onDragEndPath = this.onDragEndPath.bind(this);
-  }
-
-  getSectionImages = () => {
-    fetch(`${BACKEND_URI}/siteContent`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        site: "ozerodom.ru"
-      })
-    })
-      .then(response => response.json())
-      .then(response => {
-        this.setState({
-          carousel: response.carousel.map((image, index) => {
-            return {
-              id: `item-${index}`,
-              content: image,
-              section: "carousel"
-            };
-          }),
-          advertising: response.advertising.map((image, index) => {
-            return {
-              id: `item-${index}`,
-              content: image,
-              section: "advertising"
-            };
-          }),
-          genPlan: response.genPlan.map((image, index) => {
-            return {
-              id: `item-${index}`,
-              content: image,
-              section: "genPlan"
-            };
-          }),
-          gallery: response.gallery.map((image, index) => {
-            return {
-              id: `item-${index}`,
-              content: image,
-              section: "gallery"
-            };
-          }),
-          path: response.path.map((image, index) => {
-            return {
-              id: `item-${index}`,
-              content: image,
-              section: "path"
-            };
-          })
-        });
-      });
-  };
-
-  onDragEndCarousel = result => {
+  onDragEnd = (result, section) => {
+    const token = window.localStorage.getItem("token");
     // dropped outside the list
     if (!result.destination) {
       return;
     }
-    const carousel = reorder(
-      this.props.carousel,
+    const newOrder = reorder(
+      this.props[section],
       result.source.index,
       result.destination.index
     );
-    this.props.reorderSection("carousel", carousel);
+    this.props.reorderSection(section, newOrder);
     fetch(`${BACKEND_URI}/reorderPhotos`, {
       method: "PATCH",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Authorization: token
       },
       body: JSON.stringify({
         site: "ozerodom.ru",
-        section: "carousel",
-        photos: carousel.map(item => item.content)
+        section: section,
+        photos: newOrder.map(item => item.content)
       })
     })
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
   };
 
-  onDragEndAdvertising = result => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
+  // onDragEndAdvertising = result => {
+  //   const token = window.localStorage.getItem("token");
+  //   // dropped outside the list
+  //   if (!result.destination) {
+  //     return;
+  //   }
 
-    const advertising = reorder(
-      this.props.advertising,
-      result.source.index,
-      result.destination.index
-    );
-    this.props.reorderSection("advertising", advertising);
-    fetch(`${BACKEND_URI}/reorderPhotos`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        site: "ozerodom.ru",
-        section: "advertising",
-        photos: advertising.map(item => item.content)
-      })
-    })
-      .then(response => response.json())
-      .catch(() => console.log("Возникла ошибка изменения порядка"));
-  };
+  //   const advertising = reorder(
+  //     this.props.advertising,
+  //     result.source.index,
+  //     result.destination.index
+  //   );
+  //   this.props.reorderSection("advertising", advertising);
+  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
+  //     method: "PATCH",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: token
+  //     },
+  //     body: JSON.stringify({
+  //       site: "ozerodom.ru",
+  //       section: "advertising",
+  //       photos: advertising.map(item => item.content)
+  //     })
+  //   })
+  //     .then(response => response.json())
+  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
+  // };
 
-  onDragEndGallery = result => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
+  // onDragEndGallery = result => {
+  //   const token = window.localStorage.getItem("token");
+  //   // dropped outside the list
+  //   if (!result.destination) {
+  //     return;
+  //   }
 
-    const gallery = reorder(
-      this.props.gallery,
-      result.source.index,
-      result.destination.index
-    );
-    this.props.reorderSection("gallery", gallery);
-    fetch(`${BACKEND_URI}/reorderPhotos`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        site: "ozerodom.ru",
-        section: "gallery",
-        photos: gallery.map(item => item.content)
-      })
-    })
-      .then(response => response.json())
-      .catch(() => console.log("Возникла ошибка изменения порядка"));
-  };
+  //   const gallery = reorder(
+  //     this.props.gallery,
+  //     result.source.index,
+  //     result.destination.index
+  //   );
+  //   this.props.reorderSection("gallery", gallery);
+  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
+  //     method: "PATCH",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: token
+  //     },
+  //     body: JSON.stringify({
+  //       site: "ozerodom.ru",
+  //       section: "gallery",
+  //       photos: gallery.map(item => item.content)
+  //     })
+  //   })
+  //     .then(response => response.json())
+  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
+  // };
 
-  onDragEndPath = result => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
+  // onDragEndPath = result => {
+  //   const token = window.localStorage.getItem("token");
+  //   // dropped outside the list
+  //   if (!result.destination) {
+  //     return;
+  //   }
 
-    const path = reorder(
-      this.props.path,
-      result.source.index,
-      result.destination.index
-    );
-    this.props.reorderSection("path", path);
-    fetch(`${BACKEND_URI}/reorderPhotos`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        site: "ozerodom.ru",
-        section: "path",
-        photos: path.map(item => item.content)
-      })
-    })
-      .then(response => response.json())
-      .catch(() => console.log("Возникла ошибка изменения порядка"));
-  };
+  //   const path = reorder(
+  //     this.props.path,
+  //     result.source.index,
+  //     result.destination.index
+  //   );
+  //   this.props.reorderSection("path", path);
+  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
+  //     method: "PATCH",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: token
+  //     },
+  //     body: JSON.stringify({
+  //       site: "ozerodom.ru",
+  //       section: "path",
+  //       photos: path.map(item => item.content)
+  //     })
+  //   })
+  //     .then(response => response.json())
+  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
+  // };
 
-  onDragEndGenPlan = result => {
-    // dropped outside the list
-    if (!result.destination) {
-      return;
-    }
+  // onDragEndGenPlan = result => {
+  //   const token = window.localStorage.getItem("token");
+  //   // dropped outside the list
+  //   if (!result.destination) {
+  //     return;
+  //   }
 
-    const genPlan = reorder(
-      this.props.genPlan,
-      result.source.index,
-      result.destination.index
-    );
-    this.props.reorderSection("genPlan", genPlan);
-    fetch(`${BACKEND_URI}/reorderPhotos`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        site: "ozerodom.ru",
-        section: "genPlan",
-        photos: genPlan.map(item => item.content)
-      })
-    })
-      .then(response => response.json())
-      .catch(() => console.log("Возникла ошибка изменения порядка"));
-  };
+  //   const genPlan = reorder(
+  //     this.props.genPlan,
+  //     result.source.index,
+  //     result.destination.index
+  //   );
 
-  addCarouselPhoto = event => {
+  //   this.props.reorderSection("genPlan", genPlan);
+  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
+  //     method: "PATCH",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: token
+  //     },
+  //     body: JSON.stringify({
+  //       site: "ozerodom.ru",
+  //       section: "genPlan",
+  //       photos: genPlan.map(item => item.content)
+  //     })
+  //   })
+  //     .then(response => response.json())
+  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
+  // };
+
+  addPhoto = (event, section) => {
+    const token = window.localStorage.getItem("token");
     let formData = new FormData();
     formData.append(`file`, event.target.files[0]);
     formData.append("site", "ozerodom.ru");
-    formData.append("section", "carousel");
-    // this.props.sendingEmailPending();
+    formData.append("section", section);
     fetch(`${BACKEND_URI}/addimg`, {
       method: "POST",
-      body: formData
+      body: formData,
+      headers: {
+        Authorization: token
+      }
     })
       .then(response => response.json())
       .then(response =>
-        this.props.addSectionImage("carousel", {
+        this.props.addSectionImage(section, {
           ...response,
-          id:
-            Number(
-              this.props.carousel.reduce((acc, item) =>
-                item.id < acc ? acc : item.id
-              )
-            ) + 1
+          id: Math.max(...this.props[section].map(item => item.id)) + 1
         })
       );
-    // .then(() => this.props.onDeleteSuccess());
-  };
-
-  addGenPlanPhoto = event => {
-    let formData = new FormData();
-    formData.append(`file`, event.target.files[0]);
-    formData.append("site", "ozerodom.ru");
-    formData.append("section", "genPlan");
-    // this.props.sendingEmailPending();
-    fetch(`${BACKEND_URI}/addimg`, {
-      method: "POST",
-      body: formData
-    })
-      .then(response => response.json())
-      .then(response => this.props.addSectionImage("genPlan", response));
-    // .then(response => this.props.renderDeletePost(response))
-    // .then(() => this.props.onDeleteSuccess());
-  };
-  addGalleryPhoto = event => {
-    let formData = new FormData();
-    formData.append(`file`, event.target.files[0]);
-    formData.append("site", "ozerodom.ru");
-    formData.append("section", "gallery");
-    // this.props.sendingEmailPending();
-    fetch(`${BACKEND_URI}/addimg`, {
-      method: "POST",
-      body: formData
-    })
-      .then(response => response.json())
-      .then(response => this.props.addSectionImage("gallery", response));
-    // .then(response => this.props.renderDeletePost(response))
-    // .then(() => this.props.onDeleteSuccess());
   };
 
   componentDidMount() {
@@ -367,10 +283,25 @@ class SectionImages extends React.Component {
   }
 
   render() {
-    // this.getSectionImages();
-    // let { images } = this.state;
     let { classes, carousel, genPlan, gallery, path } = this.props;
-    // let array = images.carousel;
+    let carouselPhotos = carousel.map((item, index) => (
+      <Draggable key={item.id} draggableId={item.id} index={index}>
+        {(provided, snapshot) => (
+          <div
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={getItemStyle(
+              snapshot.isDragging,
+              provided.draggableProps.style
+            )}
+          >
+            <SectionImage key={item.id} item={item} />
+          </div>
+        )}
+      </Draggable>
+    ));
+
     return (
       <main className={classes.content}>
         <div className={classes.toolbar} />
@@ -384,34 +315,16 @@ class SectionImages extends React.Component {
           <Typography variant="h5" gutterBottom>
             Фотографии слайдера
           </Typography>
-          <DragDropContext onDragEnd={this.onDragEndCarousel}>
+          <DragDropContext
+            onDragEnd={result => this.onDragEnd(result, "carousel")}
+          >
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <div
                   ref={provided.innerRef}
                   style={getListStyle(snapshot.isDraggingOver)}
                 >
-                  {carousel.map((item, index) => (
-                    <Draggable
-                      key={item.id}
-                      draggableId={item.id}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          style={getItemStyle(
-                            snapshot.isDragging,
-                            provided.draggableProps.style
-                          )}
-                        >
-                          <SectionImage key={item.id} item={item} />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                  {carouselPhotos}
                   {provided.placeholder}
                 </div>
               )}
@@ -424,7 +337,7 @@ class SectionImages extends React.Component {
             id="addCarouselPhoto"
             multiple
             type="file"
-            onChange={this.addCarouselPhoto}
+            onChange={event => this.addPhoto(event, "carousel")}
           />
           <label htmlFor="addCarouselPhoto">
             <Button aria-label="Add" component="span">
@@ -435,7 +348,9 @@ class SectionImages extends React.Component {
           <Typography variant="h5" gutterBottom>
             Фотографии Генерального плана
           </Typography>
-          <DragDropContext onDragEnd={this.onDragEndGenPlan}>
+          <DragDropContext
+            onDragEnd={result => this.onDragEnd(result, "genPlan")}
+          >
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <div
@@ -475,7 +390,7 @@ class SectionImages extends React.Component {
             id="addGenPlanPhoto"
             multiple
             type="file"
-            onChange={this.addGenPlanPhoto}
+            onChange={event => this.addPhoto(event, "genPlan")}
           />
           <label htmlFor="addGenPlanPhoto">
             <Button aria-label="Add" component="span">
@@ -486,7 +401,9 @@ class SectionImages extends React.Component {
           <Typography variant="h5" gutterBottom>
             Фотогаллерея
           </Typography>
-          <DragDropContext onDragEnd={this.onDragEndGallery}>
+          <DragDropContext
+            onDragEnd={result => this.onDragEnd(result, "gallery")}
+          >
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <div
@@ -526,7 +443,7 @@ class SectionImages extends React.Component {
             id="addGalleryPhoto"
             multiple
             type="file"
-            onChange={this.addGalleryPhoto}
+            onChange={event => this.addPhoto(event, "gallery")}
           />
           <label htmlFor="addGalleryPhoto">
             <Button aria-label="Add" component="span">
@@ -536,7 +453,7 @@ class SectionImages extends React.Component {
           <Typography variant="h5" gutterBottom>
             Фотографии проезда
           </Typography>
-          <DragDropContext onDragEnd={this.onDragEndPath}>
+          <DragDropContext onDragEnd={result => this.onDragEnd(result, "path")}>
             <Droppable droppableId="droppable">
               {(provided, snapshot) => (
                 <div

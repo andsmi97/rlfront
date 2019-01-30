@@ -2,86 +2,18 @@
   margin: 0;
   padding: 0;
 }
-
 .filestosend > ul {
   list-style: none;
 }
-
-@media (min-width: 960px) {
-  .App .tab {
-    min-width: 72px;
-  }
-}
-
-.contactsSettings{
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-  margin-left: 15px;
-}
-
-.accountSettings{
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-  margin-left: 15px;
-}
-
-.tariffsSettings{
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-  margin-left: 15px;
-}
-
-/* Posts here */
-.quill{
+.quill {
   height: 400px;
   margin-top: 20px;
   margin-bottom: 40px;
 }
-
-.posts{
+.posts {
   margin-right: 20px;
-  padding: 15px!important;
+  padding: 15px !important;
 }
-.jcfe{
+.jcfe {
   justify-content: flex-end;
 }
-
-@media (min-width: 960px) {
-  .App .MuiTab-root-317 {
-    min-width: 33%;
-  }
-}
-
-/* div[class^="MuiTabs-flexContainer"],
-div[class*="MuiTabs-flexContainer"]
- {
-  height: 100%;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-} */
-
-/* div[class^="MultipleSelect-formControl"],
-div[class*="MultipleSelect-formControl"] 
-{
-  margin: 8px;
-  width: 90%;
-} */
-
-/* div[class^="MuiInput-formControl"],
-div[class*="MuiInput-formControl"]
- {
-  margin-top: 20px;
-  padding-top: 10px;
-} */
-
-/* div[class^="MuiPaper-elevation2"],
- div[class*="MuiPaper-elevation2"]{
-  padding-top: 20px;
-  background-color: rgba(255, 255, 255, 0);
-  box-shadow: none;
-} */
-

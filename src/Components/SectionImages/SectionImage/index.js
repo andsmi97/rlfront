@@ -3,17 +3,14 @@ import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
-import Snackbar from "@material-ui/core/Snackbar";
-import MySnackbarContentWrapper from "../../MySnackbarContentWrapper";
 import { BACKEND_URI } from "../../../constants.js";
 import { connect } from "react-redux";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import CardMedia from "@material-ui/core/CardMedia";
 import IconButton from "@material-ui/core/IconButton";
-
-//postS actions
-import { selectEditPost } from "../actions";
+import { requestSectionImages } from "../actions";
+import { openSnack, openAlert } from "../../../actions";
 import { RENDER_DELETE_PHOTO, RENDER_UPDATE_PHOTO } from "../constants";
 const styles = theme => ({
   content: {
@@ -51,82 +48,85 @@ const styles = theme => ({
 });
 
 const mapStateToProps = state => {
-  return {
-    snackDelete: state.postsReducer.snackDelete
-  };
+  return {};
 };
 const mapDispatchToProps = dispatch => {
   return {
+    onRequestSectionsImages: () => dispatch(requestSectionImages()),
     renderDeletePhoto: response =>
       dispatch({ type: RENDER_DELETE_PHOTO, payload: response }),
     renderUpdatePhoto: response =>
       dispatch({
         type: RENDER_UPDATE_PHOTO,
         payload: response
-      })
+      }),
+    openSnack: (type, message) => dispatch(openSnack(type, message)),
+    openAlert: (message, alertFunction) =>
+      dispatch(openAlert(message, alertFunction))
   };
 };
 
 class SectionImage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: {}, image: props.item.content };
-    this.updatePhoto = this.updatePhoto.bind(this);
-    this.deletePhoto = this.deletePhoto.bind(this);
+    this.state = {
+      file: {},
+      image: this.props.item.content,
+      section: this.props.item.section
+    };
   }
   //TODO CHANGE DELETE
   deletePhoto = () => {
-    fetch(`${BACKEND_URI}/deletePhoto`, {
-      method: "delete",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        site: "ozerodom.ru",
-        section: this.props.item.section,
-        photo: this.props.item.content
-      })
-    })
-      .then(response => response.json())
-      .then(() =>
-        this.props.renderDeletePhoto({
+    this.props.openAlert("Действительно удалить фотографию?", () => {
+      const token = window.localStorage.getItem("token");
+      fetch(`${BACKEND_URI}/deletePhoto`, {
+        method: "delete",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token
+        },
+        body: JSON.stringify({
+          site: "ozerodom.ru",
           section: this.props.item.section,
-          image: this.props.item.content
+          photo: this.props.item.content
         })
-      );
-    // .then(() => this.props.onDeleteSuccess());
+      })
+        .then(response => response.json())
+        .then(() =>
+          this.props.renderDeletePhoto({
+            section: this.props.item.section,
+            image: this.props.item.content
+          })
+        )
+        .then(() => this.props.openSnack("success", "Фото удалено"));
+    });
   };
-  //TODO CHANGE UPDATE
+
   updatePhoto = event => {
+    const token = window.localStorage.getItem("token");
     let formData = new FormData();
     formData.append(`file`, event.target.files[0]);
     formData.append("site", "ozerodom.ru");
-    formData.append("section", this.props.item.section);
-    formData.append("oldPhoto", this.props.item.content);
+    formData.append("section", this.state.section);
+    formData.append("oldPhoto", this.state.image);
     fetch(`${BACKEND_URI}/updatePhoto`, {
       method: "POST",
-      body: formData
-    })
-      .then(response => response.json())
-      .then(image => {
-        this.props.renderUpdatePhoto({
-          section: this.props.item.section,
-          oldImage: this.props.item.content,
-          newImage: image
-        });
-        // this.setState({ image });
-      });
+      body: formData,
+      headers: {
+        Authorization: token
+      }
+    }).then(() => this.props.onRequestSectionsImages());
   };
 
   onFileChange = event => {
     let file = event.target.files[0];
-    console.log(file);
     this.setState({
       file
     });
   };
   render() {
     const { classes, item } = this.props;
+
     return (
       <Card className={classes.card}>
         <CardActions className={classes.actions} disableActionSpacing>
@@ -134,12 +134,12 @@ class SectionImage extends React.Component {
             accept="image/*"
             className={classes.input}
             style={{ display: "none" }}
-            id="raised-button-file"
+            id={`${item.section}-${item.id}`}
             multiple
             type="file"
             onChange={this.updatePhoto}
           />
-          <label htmlFor="raised-button-file">
+          <label htmlFor={`${item.section}-${item.id}`}>
             <IconButton aria-label="Edit" component="span">
               <EditIcon />
             </IconButton>
@@ -153,18 +153,6 @@ class SectionImage extends React.Component {
           image={item.content}
           title="Лесная гавань"
         />
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackDelete}
-          autoHideDuration={6000}
-          onClose={this.props.onDeleteSuccessClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onDeleteSuccessClose}
-            variant="success"
-            message="Новость Удалена"
-          />
-        </Snackbar>
       </Card>
     );
   }

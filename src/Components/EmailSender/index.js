@@ -6,27 +6,23 @@ import TextField from "@material-ui/core/TextField";
 import Dropzone from "react-dropzone";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
-import Snackbar from "@material-ui/core/Snackbar";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import MySnackbarContentWrapper from "../MySnackbarContentWrapper";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import { BACKEND_URI } from "../../constants.js";
 import {
-  BACKEND_URI,
   SENDING_EMAIL_PENDING,
   SENDING_EMAIL_SUCCESS,
   SENDING_EMAIL_ERROR
-} from "../../constants.js";
+} from "./constants.js";
+import { openSnack, openAlert } from "../../actions";
 import {
   setSubjectField,
   setMessageField,
   setSendingFiles,
   removeSendingFiles,
-  closeMessageSuccessPopUp,
-  openMessageSuccessPopUp,
   resetEmailFields
-} from "../../actions";
-
+} from "./actions";
 const styles = theme => ({
   root: {
     flexGrow: 1,
@@ -45,7 +41,7 @@ const styles = theme => ({
     paddingTop: theme.spacing.unit * 3,
     minWidth: 0,
     overflowY: "scroll",
-    marginTop: 60 // So the Typography noWrap works
+    marginTop: 60
   },
   dropZone: {
     position: "relative",
@@ -74,13 +70,11 @@ const styles = theme => ({
 
 const mapStateToProps = state => {
   return {
-    subjectField: state.changeEmailInputs.subjectField,
-    messageField: state.changeEmailInputs.messageField,
-    files: state.changeEmailInputs.files,
+    subjectField: state.emailReducer.subjectField,
+    messageField: state.emailReducer.messageField,
+    files: state.emailReducer.files,
     selectedTenantsObject: state.requestTenants.selectedTenantsObject,
-    snackMessageSend: state.handleSnackbars.snackMessageSend,
-    isEmailPending: state.changeEmailInputs.isEmailPending
-
+    isEmailPending: state.emailReducer.isEmailPending
   };
 };
 
@@ -90,36 +84,100 @@ const mapDispatchToProps = dispatch => {
     onSubjectChange: event => dispatch(setSubjectField(event.target.value)),
     onDrop: files => dispatch(setSendingFiles(files)),
     onCancel: () => dispatch(removeSendingFiles()),
-    onMessageSendSuccess: () => dispatch(openMessageSuccessPopUp()),
-    onMessageSendSuccessClose: () => dispatch(closeMessageSuccessPopUp()),
+    openSnack: (type, message) => dispatch(openSnack(type, message)),
+    openAlert: (message, alertFunction) =>
+      dispatch(openAlert(message, alertFunction)),
     onResetMessageFields: () => dispatch(resetEmailFields()),
     sendingEmailPending: () => dispatch({ type: SENDING_EMAIL_PENDING }),
     sendingEmailSuccess: () => dispatch({ type: SENDING_EMAIL_SUCCESS }),
-    sendingEmailError: error =>
-      dispatch({ type: SENDING_EMAIL_ERROR, payload: error })
+    sendingEmailError: err =>
+      dispatch({ type: SENDING_EMAIL_ERROR, payload: err })
   };
 };
 
 class EmailSender extends React.Component {
   onSubmit = () => {
-    let formData = new FormData();
-    this.props.files.forEach(file => {
-      formData.append(`${file.name}`, file);
+    const {
+      files,
+      subjectField,
+      messageField,
+      selectedTenantsObject,
+      sendingEmailSuccess,
+      openSnack,
+      onResetMessageFields,
+      sendingEmailPending
+    } = this.props;
+    const token = window.localStorage.getItem("token");
+    const filesNumberArray = files.map(file => {
+      return Number(file.name.match(/^(\d*)/)[0]);
     });
-    formData.append("subject", this.props.subjectField);
-    formData.append("message", this.props.messageField);
-    this.props.selectedTenantsObject.forEach(tenant => {
-      formData.append(`${tenant.houseNumber}name`, tenant.name);
-      formData.append(`${tenant.houseNumber}email`, tenant.email);
-    });
-    console.log(this.props.selectedTenantsObject);
-    this.props.sendingEmailPending();
-    fetch(`${BACKEND_URI}/mail`, { method: "POST", body: formData })
-      .then(response => response.json())
-      .then(() => this.props.sendingEmailSuccess())
-      .then(() => this.props.onMessageSendSuccess())
-      .then(() => this.props.onResetMessageFields())
-      .catch(error => this.props.sendingEmailError(error));
+    const tenantsHouseNumbers = selectedTenantsObject.map(
+      tenant => tenant.houseNumber
+    );
+    const isFilesForEveryReciever =
+      (filesNumberArray.length === tenantsHouseNumbers.length &&
+        filesNumberArray
+          .sort()
+          .every(
+            (value, index) => value === tenantsHouseNumbers.sort()[index]
+          )) ||
+      files.length === 0;
+
+    if (!isFilesForEveryReciever) {
+      this.props.openAlert(
+        "Количество файлов не соответсвует получателям, продолжить отправку?",
+        () => {
+          let formData = new FormData();
+          files.forEach(file => {
+            formData.append(`${file.name}`, file);
+          });
+          formData.append("subject", subjectField);
+          formData.append("message", messageField);
+          selectedTenantsObject.forEach(tenant => {
+            formData.append(`${tenant.houseNumber}name`, tenant.name);
+            formData.append(`${tenant.houseNumber}email`, tenant.email);
+          });
+          sendingEmailPending();
+          fetch(`${BACKEND_URI}/mail`, {
+            method: "POST",
+            headers: {
+              Authorization: token
+            },
+            body: formData
+          })
+            .then(response => response.json())
+            .then(() => sendingEmailSuccess())
+            .then(() => openSnack("success", "Сообщения отправлены"))
+            .then(() => onResetMessageFields())
+            .catch(error => openSnack("error","Возникла ошибка, повторите позже"));
+        }
+      );
+    } else {
+      let formData = new FormData();
+      files.forEach(file => {
+        formData.append(`${file.name}`, file);
+      });
+      formData.append("subject", subjectField);
+      formData.append("message", messageField);
+      selectedTenantsObject.forEach(tenant => {
+        formData.append(`${tenant.houseNumber}name`, tenant.name);
+        formData.append(`${tenant.houseNumber}email`, tenant.email);
+      });
+      sendingEmailPending();
+      fetch(`${BACKEND_URI}/mail`, {
+        method: "POST",
+        headers: {
+          Authorization: token
+        },
+        body: formData
+      })
+        .then(response => response.json())
+        .then(() => sendingEmailSuccess())
+        .then(() => openSnack("success", "Сообщения отправлены"))
+        .then(() => onResetMessageFields())
+        .catch(error => openSnack("error","Возникла ошибка, повторите позже"));
+    }
+    //UNCOMMENT DONT DELTE
   };
 
   render() {
@@ -129,7 +187,10 @@ class EmailSender extends React.Component {
       onSubjectChange,
       onDrop,
       onCancel,
-      files
+      files,
+      isEmailPending,
+      subjectField,
+      messageField
     } = this.props;
     return (
       <main className={classes.content}>
@@ -145,7 +206,7 @@ class EmailSender extends React.Component {
               <TextField
                 id="standard-dense"
                 label="Тема сообщения"
-                value={this.props.subjectField}
+                value={subjectField}
                 margin="dense"
                 variant="filled"
                 onChange={onSubjectChange}
@@ -158,7 +219,7 @@ class EmailSender extends React.Component {
                 className={classes.textField}
                 margin="normal"
                 variant="filled"
-                value={this.props.messageField}
+                value={messageField}
                 onChange={onMessageChange}
               />
               <section>
@@ -177,9 +238,9 @@ class EmailSender extends React.Component {
                   <aside className="filestosend">
                     <h2>Отправляемые файлы</h2>
                     <ul>
-                      {files.map(f => (
-                        <li key={f.name}>
-                          {f.name} - {f.size} bytes
+                      {files.map(file => (
+                        <li key={file.name}>
+                          {file.name} - {file.size} байт
                         </li>
                       ))}
                     </ul>
@@ -188,7 +249,7 @@ class EmailSender extends React.Component {
                   <aside />
                 )}
               </section>
-              {this.props.isEmailPending ? (
+              {isEmailPending ? (
                 <div>
                   <CircularProgress className={classes.progress} />
                 </div>
@@ -207,19 +268,6 @@ class EmailSender extends React.Component {
             <MultipleSelect />
           </Grid>
         </Grid>
-        <Snackbar
-          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-          open={this.props.snackMessageSend}
-          autoHideDuration={6000}
-          onClose={this.props.onMessageSendSuccessClose}
-          ContentProps={{ "aria-describedby": "message-id" }}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.props.onMessageSendSuccessClose}
-            variant="success"
-            message="Сообщения отправлены"
-          />
-        </Snackbar>
       </main>
     );
   }

@@ -11,6 +11,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import EmailIcon from "@material-ui/icons/Email";
 import MoneyIcon from "@material-ui/icons/MonetizationOn";
 import ContactIcon from "@material-ui/icons/ContactMail";
+import PeopleIcon from "@material-ui/icons/People";
 import NewsIcon from "@material-ui/icons/FormatAlignLeft";
 import ImageIcon from "@material-ui/icons/Image";
 import ProjectIcon from "@material-ui/icons/Home";
@@ -24,40 +25,16 @@ import classNames from "classnames";
 import Tariffs from "../Tariffs";
 import Avatar from "@material-ui/core/Avatar";
 import logo from "./img/logo.png";
-import Auth from "../Auth";
-import {
-  setSubjectField,
-  setMessageField,
-  setSendingFiles,
-  removeSendingFiles,
-  closeMessageSuccessPopUp,
-  openMessageSuccessPopUp,
-  resetEmailFields
-} from "../../actions";
+import Tenants from "../Tenants";
+import {} from "../../actions";
 import EmailSender from "../EmailSender";
 
 const mapStateToProps = state => {
-  return {
-    subjectField: state.changeEmailInputs.subjectField,
-    messageField: state.changeEmailInputs.messageField,
-    files: state.changeEmailInputs.files,
-    selectedTenantsObject: state.requestTenants.selectedTenantsObject,
-    snackMessageSend: state.handleSnackbars.snackMessageSend,
-    isResponseCorrect: state.authReducer.isResponseCorrect
-  };
+  return {};
 };
 const mapDispatchToProps = dispatch => {
-  return {
-    onMessageChange: event => dispatch(setMessageField(event.target.value)),
-    onSubjectChange: event => dispatch(setSubjectField(event.target.value)),
-    onDrop: files => dispatch(setSendingFiles(files)),
-    onCancel: () => dispatch(removeSendingFiles()),
-    onMessageSendSuccess: () => dispatch(openMessageSuccessPopUp()),
-    onMessageSendSuccessClose: () => dispatch(closeMessageSuccessPopUp()),
-    onResetMessageFields: () => dispatch(resetEmailFields())
-  };
+  return {};
 };
-const drawerWidth = 240;
 
 const styles = theme => ({
   root: {
@@ -73,18 +50,11 @@ const styles = theme => ({
   },
   drawerPaper: {
     position: "relative",
-    width: drawerWidth,
+    width: 240,
     padding: "5px"
   },
   typography: {
     useNextVariants: true
-  },
-  content: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    paddingTop: theme.spacing.unit * 3,
-    minWidth: 0,
-    overflowY: "scroll" // So the Typography noWrap works
   },
   avatar: {
     margin: 10
@@ -99,131 +69,85 @@ const styles = theme => ({
 class ClippedDrawer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { text: "", screen: "EmailSender" }; // You can also pass a Quill Delta here
-    this.handleChange = this.handleChange.bind(this);
+    this.state = { screen: "EmailSender" };
   }
 
-  handleChange(value) {
-    this.setState({ text: value });
-  }
-
-  modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" }
-      ],
-      ["link", "image"],
-      ["clean"]
-    ]
+  changeSection = screen => {
+    this.setState({ screen });
   };
 
-  formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "blockquote",
-    "list",
-    "bullet",
-    "link",
-    "image"
-  ];
-
-  onClickEmailSender = e => {
-    this.setState({ screen: "EmailSender" });
-  };
-  onClickNews = e => {
-    this.setState({ screen: "News" });
-  };
-  onClickTariffs = e => {
-    this.setState({ screen: "Tariffs" });
-  };
-  onClickSettings = e => {
-    this.setState({ screen: "Settings" });
-  };
-  onClickSectionImages = () => {
-    this.setState({ screen: "SectionImages" });
-  };
-  onClickProjects = () => {
-    this.setState({ screen: "Projects" });
-  };
-  onLoad = () => {
-    fetch();
-  };
-  componentDidMount() {}
   render() {
     const { classes } = this.props;
-    if (this.props.isResponseCorrect) {
-      return (
-        <div className={classes.root}>
-          <AppBar position="absolute" className={classes.appBar}>
-            <Toolbar>
-              <Avatar
-                alt="Лесная гавань"
-                src={logo}
-                className={classNames(classes.avatar, classes.bigAvatar)}
-              />
-              <Typography variant="title" color="inherit" noWrap>
-                Лесная Гавань
-              </Typography>
-            </Toolbar>
-          </AppBar>
-          <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
-            <div className={classes.toolbar} />
-            <ListItem />
-            <ListItem button onClick={this.onClickEmailSender}>
-              <ListItemIcon>
-                <EmailIcon />
-              </ListItemIcon>
-              <ListItemText primary="Рассылка" />
-            </ListItem>
-            <ListItem button onClick={this.onClickNews}>
-              <ListItemIcon>
-                <NewsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Новости" />
-            </ListItem>
-            <ListItem button onClick={this.onClickProjects}>
-              <ListItemIcon>
-                <ProjectIcon />
-              </ListItemIcon>
-              <ListItemText primary="Проекты" />
-            </ListItem>
-            <ListItem button onClick={this.onClickTariffs}>
-              <ListItemIcon>
-                <MoneyIcon />
-              </ListItemIcon>
-              <ListItemText primary="Тарифы" />
-            </ListItem>
-            <ListItem button onClick={this.onClickSectionImages}>
-              <ListItemIcon>
-                <ImageIcon />
-              </ListItemIcon>
-              <ListItemText primary="Содержимое" />
-            </ListItem>
-            <ListItem button onClick={this.onClickSettings}>
-              <ListItemIcon>
-                <ContactIcon />
-              </ListItemIcon>
-              <ListItemText primary="Настройки" />
-            </ListItem>
-          </Drawer>
-          {this.state.screen === "EmailSender" && <EmailSender />}
-          {this.state.screen === "News" && <Posts />}
-          {this.state.screen === "Tariffs" && <Tariffs />}
-          {this.state.screen === "Settings" && <Settings />}
-          {this.state.screen === "SectionImages" && <SectionImages />}
-          {this.state.screen === "Projects" && <Projects />}
-        </div>
-      );
-    } else {
-      return <Auth />;
-    }
+    const {screen} = this.state;
+    return (
+      <div className={classes.root}>
+        <AppBar position="absolute" className={classes.appBar}>
+          <Toolbar>
+            <Avatar
+              alt="Лесная гавань"
+              src={logo}
+              className={classNames(classes.avatar, classes.bigAvatar)}
+            />
+            <Typography variant="title" color="inherit" noWrap>
+              Лесная Гавань
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer variant="permanent" classes={{ paper: classes.drawerPaper }}>
+          <div className={classes.toolbar} />
+          <ListItem />
+          <ListItem button onClick={() => this.changeSection("EmailSender")}>
+            <ListItemIcon>
+              <EmailIcon />
+            </ListItemIcon>
+            <ListItemText primary="Рассылка" />
+          </ListItem>
+          <ListItem button onClick={() => this.changeSection("News")}>
+            <ListItemIcon>
+              <NewsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Новости" />
+          </ListItem>
+          <ListItem button onClick={() => this.changeSection("Projects")}>
+            <ListItemIcon>
+              <ProjectIcon />
+            </ListItemIcon>
+            <ListItemText primary="Проекты" />
+          </ListItem>
+          <ListItem button onClick={() => this.changeSection("Tenants")}>
+            <ListItemIcon>
+              <PeopleIcon />
+            </ListItemIcon>
+            <ListItemText primary="Жильцы" />
+          </ListItem>
+          <ListItem button onClick={() => this.changeSection("Tariffs")}>
+            <ListItemIcon>
+              <MoneyIcon />
+            </ListItemIcon>
+            <ListItemText primary="Тарифы" />
+          </ListItem>
+          <ListItem button onClick={() => this.changeSection("SectionImages")}>
+            <ListItemIcon>
+              <ImageIcon />
+            </ListItemIcon>
+            <ListItemText primary="Содержимое" />
+          </ListItem>
+          <ListItem button onClick={() => this.changeSection("Settings")}>
+            <ListItemIcon>
+              <ContactIcon />
+            </ListItemIcon>
+            <ListItemText primary="Настройки" />
+          </ListItem>
+        </Drawer>
+        {screen === "EmailSender" && <EmailSender />}
+        {screen === "News" && <Posts />}
+        {screen === "Tariffs" && <Tariffs />}
+        {screen === "Tenants" && <Tenants />}
+        {screen === "Settings" && <Settings />}
+        {screen === "SectionImages" && <SectionImages />}
+        {screen === "Projects" && <Projects />}
+      </div>
+    );
   }
 }
 
@@ -235,4 +159,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(withStyles(styles)(ClippedDrawer));
-// export default ClippedDrawer;
