@@ -3,7 +3,6 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import SectionImage from "./SectionImage";
@@ -41,20 +40,6 @@ const getListStyle = isDraggingOver => ({
 });
 
 const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    height: 440,
-    zIndex: 1,
-    overflow: "hidden",
-    position: "relative",
-    display: "flex"
-  },
-  fab: {
-    margin: theme.spacing.unit
-  },
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1
-  },
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
@@ -64,43 +49,16 @@ const styles = theme => ({
     marginTop: 60,
     paddingLeft: 20
   },
-  card: {
-    maxWidth: "100%"
-  },
-  media: {
-    height: 0,
-    paddingTop: "56.25%" // 16:9
-  },
   actions: {
     display: "flex",
     justifyContent: "flex-end"
-  },
-  paper: {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    marginRight: "2%",
-    padding: "15px!important",
-    paddingTop: "20px",
-    backgroundColor: "rgba(255, 255, 255, 0)",
-    boxShadow: "none"
-    // marginBottom: 15,
-    // marginLeft: 15
   },
   item: {
     maxWidth: "100%"
   }
 });
 
-const mapStateToProps = state => {
-  return {
-    carousel: state.sectionImagesReducer.carousel,
-    advertising: state.sectionImagesReducer.advertising,
-    genPlan: state.sectionImagesReducer.genPlan,
-    gallery: state.sectionImagesReducer.gallery,
-    path: state.sectionImagesReducer.path
-  };
-};
+const mapStateToProps = state => ({ ...state.sectionImagesReducer });
 const mapDispatchToProps = dispatch => {
   return {
     onRequestSectionsImages: () => dispatch(requestSectionImages()),
@@ -138,123 +96,6 @@ class SectionImages extends React.Component {
       .then(response => response.json())
       .catch(() => console.log("Возникла ошибка изменения порядка"));
   };
-
-  // onDragEndAdvertising = result => {
-  //   const token = window.localStorage.getItem("token");
-  //   // dropped outside the list
-  //   if (!result.destination) {
-  //     return;
-  //   }
-
-  //   const advertising = reorder(
-  //     this.props.advertising,
-  //     result.source.index,
-  //     result.destination.index
-  //   );
-  //   this.props.reorderSection("advertising", advertising);
-  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
-  //     method: "PATCH",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: token
-  //     },
-  //     body: JSON.stringify({
-  //       site: "ozerodom.ru",
-  //       section: "advertising",
-  //       photos: advertising.map(item => item.content)
-  //     })
-  //   })
-  //     .then(response => response.json())
-  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
-  // };
-
-  // onDragEndGallery = result => {
-  //   const token = window.localStorage.getItem("token");
-  //   // dropped outside the list
-  //   if (!result.destination) {
-  //     return;
-  //   }
-
-  //   const gallery = reorder(
-  //     this.props.gallery,
-  //     result.source.index,
-  //     result.destination.index
-  //   );
-  //   this.props.reorderSection("gallery", gallery);
-  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
-  //     method: "PATCH",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: token
-  //     },
-  //     body: JSON.stringify({
-  //       site: "ozerodom.ru",
-  //       section: "gallery",
-  //       photos: gallery.map(item => item.content)
-  //     })
-  //   })
-  //     .then(response => response.json())
-  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
-  // };
-
-  // onDragEndPath = result => {
-  //   const token = window.localStorage.getItem("token");
-  //   // dropped outside the list
-  //   if (!result.destination) {
-  //     return;
-  //   }
-
-  //   const path = reorder(
-  //     this.props.path,
-  //     result.source.index,
-  //     result.destination.index
-  //   );
-  //   this.props.reorderSection("path", path);
-  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
-  //     method: "PATCH",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: token
-  //     },
-  //     body: JSON.stringify({
-  //       site: "ozerodom.ru",
-  //       section: "path",
-  //       photos: path.map(item => item.content)
-  //     })
-  //   })
-  //     .then(response => response.json())
-  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
-  // };
-
-  // onDragEndGenPlan = result => {
-  //   const token = window.localStorage.getItem("token");
-  //   // dropped outside the list
-  //   if (!result.destination) {
-  //     return;
-  //   }
-
-  //   const genPlan = reorder(
-  //     this.props.genPlan,
-  //     result.source.index,
-  //     result.destination.index
-  //   );
-
-  //   this.props.reorderSection("genPlan", genPlan);
-  //   fetch(`${BACKEND_URI}/reorderPhotos`, {
-  //     method: "PATCH",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: token
-  //     },
-  //     body: JSON.stringify({
-  //       site: "ozerodom.ru",
-  //       section: "genPlan",
-  //       photos: genPlan.map(item => item.content)
-  //     })
-  //   })
-  //     .then(response => response.json())
-  //     .catch(() => console.log("Возникла ошибка изменения порядка"));
-  // };
 
   addPhoto = (event, section) => {
     const token = window.localStorage.getItem("token");
@@ -491,10 +332,6 @@ class SectionImages extends React.Component {
     );
   }
 }
-
-SectionImages.propTypes = {
-  classes: PropTypes.object.isRequired
-};
 
 export default connect(
   mapStateToProps,

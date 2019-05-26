@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
@@ -10,7 +9,7 @@ import EditIcon from "@material-ui/icons/Edit";
 import CardMedia from "@material-ui/core/CardMedia";
 import IconButton from "@material-ui/core/IconButton";
 import { requestSectionImages } from "../actions";
-import { openSnack, openAlert } from "../../../actions";
+import { openSnack } from "../../../actions";
 import { RENDER_DELETE_PHOTO, RENDER_UPDATE_PHOTO } from "../constants";
 const styles = theme => ({
   content: {
@@ -32,24 +31,11 @@ const styles = theme => ({
   media: {
     height: 0,
     paddingTop: "56.25%" // 16:9
-  },
-  paper: {
-    display: "flex",
-    justifyContent: "center",
-    flexDirection: "column",
-    marginRight: "2%",
-    padding: "15px!important",
-    paddingTop: "20px",
-    backgroundColor: "rgba(255, 255, 255, 0)",
-    boxShadow: "none"
-    // marginBottom: 15,
-    // marginLeft: 15
   }
 });
 
-const mapStateToProps = state => {
-  return {};
-};
+const mapStateToProps = () => {};
+
 const mapDispatchToProps = dispatch => {
   return {
     onRequestSectionsImages: () => dispatch(requestSectionImages()),
@@ -60,9 +46,7 @@ const mapDispatchToProps = dispatch => {
         type: RENDER_UPDATE_PHOTO,
         payload: response
       }),
-    openSnack: (type, message) => dispatch(openSnack(type, message)),
-    openAlert: (message, alertFunction) =>
-      dispatch(openAlert(message, alertFunction))
+    openSnack: (type, message) => dispatch(openSnack(type, message))
   };
 };
 
@@ -157,10 +141,6 @@ class SectionImage extends React.Component {
     );
   }
 }
-
-SectionImage.propTypes = {
-  classes: PropTypes.object.isRequired
-};
 
 export default connect(
   mapStateToProps,

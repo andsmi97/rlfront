@@ -1,42 +1,55 @@
 import React, { Component } from "react";
-import Drawer from "./Components/ClippedDrawer";
+import Drawer from "./Components/Drawer";
 import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import Auth from "./Components/Auth";
 import Snack from "./Components/Snack";
-import DeleteAlert from "./Components/DeleteAlert";
-import "./App.css";
-import { authenticate, closeSnack, closeAlert, acceptAlert } from "./actions";
-
-const styles = theme => ({
+import { closeSnack } from "./actions";
+import { Switch } from "react-router-dom";
+import { APP_LOAD, REDIRECT } from "./constants/actionTypes";
+import { store } from "./redux/store";
+import { push } from "connected-react-router";
+import agent from "./agent";
+import Loader from "./Components/Loader";
+import Routes from "./Components/Routes";
+const styles = {
+  "@global": {
+    "*": {
+      margin: 0,
+      padding: 0
+    }
+  },
   root: {
     height: "100vh"
   }
-});
-
-const mapStateToProps = state => {
-  return {
-    isResponseCorrect: state.authReducer.isResponseCorrect,
-    snackType: state.appReducer.snackType,
-    snackMessage: state.appReducer.snackMessage,
-    snackStatus: state.appReducer.snackStatus,
-    alertMessage: state.appReducer.alertMessage,
-    alertStatus: state.appReducer.alertStatus,
-    alertFunction: state.appReducer.alertFunction
-  };
 };
+
+const mapStateToProps = state => ({ ...state.common });
 const mapDispatchToProps = dispatch => {
   return {
     onSnackClose: () => dispatch(closeSnack()),
-    onAlertClose: () => dispatch(closeAlert()),
-    onAlertAccept: () => dispatch(acceptAlert()),
-    onAuth: () => dispatch(authenticate())
+    onLoad: (payload, token) =>
+      dispatch({ type: APP_LOAD, payload, token, skipTracking: true }),
+    onRedirect: () => dispatch({ type: REDIRECT })
   };
 };
 class App extends Component {
-  componentDidMount() {
-    this.props.onAuth();
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.redirectTo) {
+      store.dispatch(push(nextProps.redirectTo));
+      this.props.onRedirect();
+    }
   }
+
+  componentWillMount() {
+    const token = window.localStorage.getItem("jwt");
+    if (token) {
+      agent.setToken(token);
+    }
+
+    this.props.onLoad(token ? agent.User.current() : null, token);
+  }
+
   render() {
     const {
       classes,
@@ -44,31 +57,32 @@ class App extends Component {
       snackMessage,
       snackStatus,
       onSnackClose,
-      isResponseCorrect,
-      alertStatus,
-      alertMessage,
-      onAlertClose,
-      onAlertAccept,
-      alertFunction
+      currentUser
     } = this.props;
+    if (this.props.appLoaded) {
+      return (
+        <div className={classes.root}>
+          <Switch>
+            {currentUser ? (
+              <Drawer>
+                <Routes />
+                <Snack
+                  open={snackStatus}
+                  variant={snackType}
+                  message={snackMessage}
+                  onClose={onSnackClose}
+                />
+              </Drawer>
+            ) : (
+              <Auth />
+            )}
+          </Switch>
+        </div>
+      );
+    }
     return (
       <div className={classes.root}>
-        {isResponseCorrect ? <Drawer /> : <Auth />}
-        <Snack
-          open={snackStatus}
-          variant={snackType}
-          message={snackMessage}
-          onClose={onSnackClose}
-        />
-        <DeleteAlert
-          open={alertStatus}
-          message={alertMessage}
-          handleClose={onAlertClose}
-          handleAccept={() => {
-            alertFunction();
-            onAlertAccept();
-          }}
-        />
+        <Loader />
       </div>
     );
   }
