@@ -8,6 +8,7 @@ import email from "../reducers/email";
 import articles from "../reducers/articles";
 import settings from "../reducers/settings";
 import content from "../reducers/content";
+import sensordata from "../reducers/sensordata";
 
 export default history =>
   combineReducers({
@@ -18,6 +19,7 @@ export default history =>
     common,
     email,
     auth,
+    sensordata,
     articles,
     router: connectRouter(history)
   });

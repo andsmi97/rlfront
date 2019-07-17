@@ -34,8 +34,8 @@ const styles = theme => ({
     height: 30
   },
   appBody: {
-    padding: theme.spacing.unit * 3,
-    paddingTop: theme.spacing.unit * 3 + 54,
+    padding: theme.spacing(3),
+    paddingTop: theme.spacing(3) + 54,
     "&::-webkit-scrollbar-thumb": {
       backgroundColor: "darkgrey",
       outline: "1px solid slategrey"
@@ -88,17 +88,15 @@ class ClippedDrawer extends React.Component {
               <MenuIcon />
             </IconButton>
             <Avatar alt="Лесная гавань" src={logo} className={classes.avatar} />
-            <Typography variant="title" color="inherit" noWrap>
+            <Typography variant="h5" color="inherit" noWrap>
               Лесная Гавань
             </Typography>
           </Toolbar>
         </AppBar>
 
         <nav>
-          {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
           <Hidden lgUp implementation="js" className={classes.drawer}>
             <Drawer
-              // container={this.props.container}
               variant="temporary"
               anchor={theme.direction === "rtl" ? "right" : "left"}
               open={this.state.mobileOpen}
@@ -113,8 +111,9 @@ class ClippedDrawer extends React.Component {
               <NavItem route="/Posts" title="Новости" />
               <NavItem route="/Projects" title="Проекты" />
               <NavItem route="/Tenants" title="Жильцы" />
-              {/* <NavItem route="/SectionImages" title="Содержимое" /> */}
               <NavItem route="/Content" title="Содержимое" />
+              <NavItem route="/Bills" title="Счета" />
+              <NavItem route="/SensorData" title="Показания" />
               <NavItem route="/Settings" title="Настройки" />
               <Divider />
               <NavItem route="/" title="Выйти" logout />
@@ -135,7 +134,8 @@ class ClippedDrawer extends React.Component {
               <NavItem route="/Projects" title="Проекты" />
               <NavItem route="/Tenants" title="Жильцы" />
               <NavItem route="/Content" title="Содержимое" />
-              {/* <NavItem route="/SectionImages" title="Содержимое" /> */}
+              <NavItem route="/Bills" title="Счета" />
+              <NavItem route="/SensorData" title="Показания" />
               <NavItem route="/Settings" title="Настройки" />
               <Divider />
               <NavItem route="/" title="Выйти" logout />

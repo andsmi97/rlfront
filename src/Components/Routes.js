@@ -1,6 +1,5 @@
 import React from "react";
 import { Route } from "react-router-dom";
-// import SectionImages from "./SectionImages";
 import Settings from "./Settings";
 import Tenants from "./Tenants";
 import EmailSender from "./EmailSender";
@@ -12,6 +11,7 @@ import {
 import ArticleList from "./Articles/ArticleList";
 import ArticleEditor from "./Articles/ArticleEditor";
 import Content from "./Content";
+import SensorData from "./SensorData";
 
 export default () => (
   <React.Fragment>
@@ -19,8 +19,9 @@ export default () => (
     <Route path="/Posts" component={() => <ArticleList type="Post" />} />
     <Route path="/newPost" component={() => <ArticleEditor type="Post" />} />
     <Route path="/Settings" component={Settings} />
-    {/* <Route path="/SectionImages" component={SectionImages} /> */}
     <Route path="/Content" component={Content} />
+    <Route path="/SensorData" component={SensorData} />
+
     <Route path="/Projects" component={() => <ArticleList type="Project" />} />
     <Route
       path="/newProject"

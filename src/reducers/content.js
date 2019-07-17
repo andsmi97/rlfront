@@ -3,6 +3,9 @@ import {
   REORDER_LIST,
   CONTENT_LOADED,
   CONTENT_UNLOADED,
+  CONTENT_DELETED,
+  CONTENT_UPDATED,
+  CONTENT_ADDED,
   ASYNC_START
 } from "../constants/actionTypes";
 const initialState = {
@@ -32,6 +35,23 @@ export default (state = initialState, action) => {
       return state;
     case CONTENT_LOADED:
       return { ...state, ...action.payload, isPending: false };
+    case CONTENT_UPDATED:
+      return { ...state, [action.section]: action.values };
+    case CONTENT_ADDED:
+      return {
+        ...state,
+        [action.payload.section]: [
+          ...state[action.payload.section],
+          action.payload.content
+        ]
+      };
+    case CONTENT_DELETED:
+      return {
+        ...state,
+        [action.section]: [
+          ...state[action.section].filter((_item, index) => index !== action.id)
+        ]
+      };
     case CONTENT_UNLOADED:
       return initialState;
     default:

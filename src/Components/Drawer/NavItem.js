@@ -11,6 +11,8 @@ import NewsIcon from "@material-ui/icons/FormatAlignLeft";
 import ImageIcon from "@material-ui/icons/Image";
 import ProjectIcon from "@material-ui/icons/Home";
 import ExitIcon from "@material-ui/icons/ExitToApp";
+import CreditCardIcon from "@material-ui/icons/CreditCard";
+import SensorIcon from "@material-ui/icons/OfflineBolt";
 import { connect } from "react-redux";
 import { LOGOUT } from "../../constants/actionTypes";
 
@@ -21,6 +23,8 @@ const icon = {
   Жильцы: <PeopleIcon />,
   Тарифы: <MoneyIcon />,
   Содержимое: <ImageIcon />,
+  Счета: <CreditCardIcon />,
+  Показания: <SensorIcon />,
   Настройки: <ContactIcon />,
   Выйти: <ExitIcon />
 };

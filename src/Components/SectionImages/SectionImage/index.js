@@ -15,7 +15,7 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
-    paddingTop: theme.spacing.unit * 3,
+    paddingTop: theme.spacing(3),
     minWidth: 0,
     overflowY: "scroll", // So the Typography noWrap works
     marginTop: 60,
@@ -104,16 +104,14 @@ class SectionImage extends React.Component {
 
   onFileChange = event => {
     let file = event.target.files[0];
-    this.setState({
-      file
-    });
+    this.setState({ file });
   };
   render() {
     const { classes, item } = this.props;
 
     return (
       <Card className={classes.card}>
-        <CardActions className={classes.actions} disableActionSpacing>
+        <CardActions className={classes.actions} disableSpacing>
           <input
             accept="image/*"
             className={classes.input}

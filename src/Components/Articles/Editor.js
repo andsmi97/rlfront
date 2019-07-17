@@ -5,8 +5,8 @@ import DanteEditor from "./DanteEditor";
 const styles = theme => ({
   fab: {
     position: "absolute",
-    bottom: theme.spacing.unit * 4,
-    right: theme.spacing.unit * 4
+    bottom: theme.spacing(4),
+    right: theme.spacing(4)
   },
   paper: {
     display: "flex",

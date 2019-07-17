@@ -3,7 +3,7 @@ import _superagent from "superagent";
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
-const API_ROOT = "http://localhost:8080/api";
+const API_ROOT = "http://localhost:8082/api";
 
 const responseBody = res => res.body;
 const responseStatus204 = res => res.statusCode === 204;
@@ -68,7 +68,8 @@ const Tenants = {
 };
 
 const Mail = {
-  send: formData => mailRequest.post("/mail", formData)
+  send: formData => mailRequest.post("/mail", formData),
+  sendBill: data => mailRequest.post("/mail/bill", data)
 };
 
 const limit = (count, p) => `limit=${count}&skip=${p ? p * count : 0}`;
@@ -85,17 +86,43 @@ const Content = {
   all: () => requests.get("/content?site=ozerodom.ru"),
   reorder: (section, from, to) =>
     requests.patch("/content/reorder", { section, from, to }),
-  remove: (section, photo) => requests.del("/content", { section, photo }),
-  update: formData => requests.put("content/", formData),
+  remove: (section, photo) =>
+    requests.del(`/content?section=${section}&photo=${photo}`),
+  update: formData => requests.put("/content/", formData),
   create: formData => requests.post("/content", formData)
 };
+const Bill = {
+  remove: (tenantId, billId) =>
+    requests.del(`/bills/bill/${billId}?tenantId=${tenantId}`),
+  update: (billId, bill) => requests.put(`/bills/bill/${billId}`, bill),
+  create: (tenantId, bill) =>
+    requests.post("/bills/bill", { tenantId, ...bill }),
+  getLast: () => requests.get("/bills/lastBills")
+};
 
+const Sensors = {
+  insertAll: sensorData => requests.post("/sensors/all", sensorData),
+  setInitialValues: initialValues =>
+    requests.post("/sensors/setInitialValues", initialValues)
+};
+const Tariffs = {
+  getLast: () => requests.get("/tariffs/"),
+  getAll: () => requests.get("/tariffs/all"),
+  insert: (day, night) => requests.post("/tariffs", { day, night })
+};
+const Download = {
+  bill: name => requests.get(`/download/bill/${name}`)
+};
 export default {
   User,
   Tenants,
   Mail,
   Article,
   Content,
+  Sensors,
+  Tariffs,
+  Download,
+  Bill,
   setToken: _token => {
     token = _token;
   }

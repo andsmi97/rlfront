@@ -142,7 +142,7 @@ class EmailSender extends React.Component {
           direction="row"
           justify="center"
           alignItems="flex-start"
-          spacing={32}
+          spacing={3}
         >
           <Hidden mdUp>
             <Grid item xs={12} sm={12} md={5} lg={5} xl={4}>
@@ -155,7 +155,7 @@ class EmailSender extends React.Component {
             </Grid>
           </Hidden>
           <Grid item xs={12} sm={12} md={7} lg={7} xl={8}>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} elevation={2}>
               <TextField
                 id="subject"
                 label="Тема сообщения"

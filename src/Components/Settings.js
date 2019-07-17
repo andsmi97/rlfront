@@ -87,7 +87,6 @@ class Settings extends React.Component {
       );
       this.props.openSnack("success", "Данные обновлены");
     } catch (e) {
-      console.log(e);
       this.props.openSnack("error", "Возникла ошибка, повторите позже");
     }
   };
@@ -97,28 +96,9 @@ class Settings extends React.Component {
       try {
         await this.props.onPasswordSave(oldPass, newPass);
         openSnack("success", "Настройки изменены");
-        // this.setState({ error: "" });
       } catch (e) {
         openSnack("error", "Возникла ошибка, повторите позже");
       }
-      //   const token = window.localStorage.getItem("token");
-      //   fetch(`${BACKEND_URI}/changeaccountpassword`, {
-      //     method: "put",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: token
-      //     },
-      //     body: JSON.stringify({
-      //       user: "admin",
-      //       currentPassword: this.props.updateAdminAccountPassOldField,
-      //       newPassword: this.props.updateAdminAccountPassNewField
-      //     })
-      //   })
-      //     .then(response => console.log(response))
-      //     .then(() => this.props.openSnack("success", "Настройки изменены"))
-      //     .then(() => this.props.onAccountSettingsUpdateSuccess())
-      //     .then(() => this.props.onResetAdminAccountSettings());
-      //   this.setState({ error: "" });
     } else {
       this.setState({ error: "Пароли не совпадают" });
     }
@@ -148,13 +128,13 @@ class Settings extends React.Component {
         direction="row"
         justify="center"
         alignItems="flex-start"
-        spacing={32}
+        spacing={3}
       >
         <Grid item xs={12} sm={8} md={6} lg={4}>
           <Typography variant="h5" gutterBottom>
             Настройки контактов
           </Typography>
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} elevation={2}>
             <TextField
               id="admin-new-phone"
               label="Первый телефон"
@@ -196,7 +176,7 @@ class Settings extends React.Component {
           <Typography variant="h5" gutterBottom>
             Настройки Аккаунта
           </Typography>
-          <Paper className={classes.paper}>
+          <Paper className={classes.paper} elevation={2}>
             <TextField
               id="admin-old-account-pass"
               label="Старый пароль"

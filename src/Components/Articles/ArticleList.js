@@ -16,8 +16,8 @@ import {
 const styles = theme => ({
   fab: {
     position: "absolute",
-    bottom: theme.spacing.unit * 4,
-    right: theme.spacing.unit * 4
+    bottom: theme.spacing(4),
+    right: theme.spacing(4)
   },
   paper: {
     display: "flex",
@@ -56,10 +56,10 @@ class Articles extends React.Component {
           direction="row"
           justify="center"
           alignItems="flex-start"
-          spacing={32}
+          spacing={3}
         >
           <Grid item xs={12} sm={12} md={10} lg={8} xl={6}>
-            <Paper className={classes.paper}>
+            <Paper className={classes.paper} elevation={2}>
               {articles.map(article => {
                 return (
                   <Article

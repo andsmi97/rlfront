@@ -19,8 +19,8 @@ import Loader from "../Loader";
 const styles = theme => ({
   fab: {
     position: "absolute",
-    bottom: theme.spacing.unit * 4,
-    right: theme.spacing.unit * 4
+    bottom: theme.spacing(4),
+    right: theme.spacing(4)
   },
   paper: {
     display: "flex",
@@ -114,7 +114,7 @@ class ArticlesEditor extends React.Component {
           alignItems="flex-start"
         >
           <Grid item xs={12} sm={12} md={8} lg={6}>
-            <Paper className={classes.paper}>{this.renderEditor()}</Paper>
+            <Paper className={classes.paper} elevation={2}>{this.renderEditor()}</Paper>
           </Grid>
         </Grid>
         <Fab

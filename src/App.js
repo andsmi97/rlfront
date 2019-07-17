@@ -57,9 +57,10 @@ class App extends Component {
       snackMessage,
       snackStatus,
       onSnackClose,
-      currentUser
+      currentUser,
+      appLoaded
     } = this.props;
-    if (this.props.appLoaded) {
+    if (appLoaded) {
       return (
         <div className={classes.root}>
           <Switch>

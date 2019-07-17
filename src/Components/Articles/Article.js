@@ -25,8 +25,10 @@ const styles = {
       flexDirection: "column"
     },
     "& .image img": {
-      maxWidth: "100%",
-      objectFit: "contain"
+      width: "100%",
+      objectFit: "contain",
+
+      height: "100%"
     },
     "& ul, ol": {
       listStylePosition: "inside"
@@ -64,16 +66,16 @@ const mapDispatchToProps = dispatch => {
 
 class Article extends React.Component {
   deleteArticle = async () => {
-    if (window.confirm("Вы уверены что хотите удалить этого жильца?")) {
-      await agent.Article.remove(this.props.id);
+    if (window.confirm("Вы уверены что хотите удалить новость?")) {
       this.props.onDelete(this.props.id);
+      await agent.Article.remove(this.props.id);
     }
   };
 
   render() {
     const { classes, body, id, type } = this.props;
     return (
-      <Paper className={classes.paper}>
+      <Paper className={classes.paper} elevation={2}>
         <Typography
           component="div"
           dangerouslySetInnerHTML={{ __html: body }}

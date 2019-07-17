@@ -1,7 +1,10 @@
 export const editTableColumns = [
   { name: "houseNumber", title: "№Дома" },
   { name: "name", title: "ФИО" },
-  { name: "email", title: "Email" }
+  { name: "email", title: "Email" },
+  { name: "postIndex", title: "Индекс" },
+  { name: "address", title: "Адрес" },
+  { name: "contract", title: "Договор" }
 ];
 export const mailTableColumns = [
   { name: "houseNumber", title: "№Дома" },
@@ -14,7 +17,8 @@ export const editTableColumnExtensions = [
     align: "center"
   },
   { columnName: "name", width: 250 },
-  { columnName: "email", width: 250 }
+  { columnName: "email", width: 250 },
+  { columnName: "postIndex", width: 100 }
 ];
 export const mailTableColumnExtensions = [
   {
