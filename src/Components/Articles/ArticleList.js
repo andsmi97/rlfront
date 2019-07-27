@@ -29,7 +29,10 @@ const styles = theme => ({
   }
 });
 
-const mapStateToProps = state => ({ ...state.articles });
+const mapStateToProps = state => ({
+  articles: state.articles.articles,
+  isPending: state.articles.isPending
+});
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -77,7 +80,7 @@ class Articles extends React.Component {
           component={Link}
           className={classes.fab}
           color="primary"
-          to={`/new${type}`}
+          to={`/admin/new${type}`}
         >
           <AddIcon />
         </Fab>

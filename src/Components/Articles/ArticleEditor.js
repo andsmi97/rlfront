@@ -32,7 +32,10 @@ const styles = theme => ({
   }
 });
 
-const mapStateToProps = state => ({ ...state.articles });
+const mapStateToProps = state => ({
+  body: state.articles.body,
+  isPending: state.articles.isPending
+});
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -52,7 +55,7 @@ const buttonNames = {
   Post: { add: "Добавить новость", edit: "Обновить новость" }
 };
 class ArticlesEditor extends React.Component {
-  async componentWillMount() {
+  async componentDidMount() {
     const { onLoad, id } = this.props;
     //editing
     if (id) {
@@ -114,14 +117,16 @@ class ArticlesEditor extends React.Component {
           alignItems="flex-start"
         >
           <Grid item xs={12} sm={12} md={8} lg={6}>
-            <Paper className={classes.paper} elevation={2}>{this.renderEditor()}</Paper>
+            <Paper className={classes.paper} elevation={2}>
+              {this.renderEditor()}
+            </Paper>
           </Grid>
         </Grid>
         <Fab
           component={Link}
           className={classes.fab}
           color="primary"
-          to={`/${type}s`}
+          to={`/admin/${type}s`}
         >
           <CloseIcon />
         </Fab>

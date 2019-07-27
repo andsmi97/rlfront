@@ -13,20 +13,21 @@ const AddButton = ({ onExecute }) => (
   </div>
 );
 
-const EditButton = ({ onExecute }) => (
-  <IconButton onClick={onExecute} title="Редактировать">
+const EditButton = ({ onExecute, disabled }) => (
+  <IconButton onClick={onExecute} title="Редактировать" disabled={disabled}>
     <EditIcon />
   </IconButton>
 );
 
-const DeleteButton = ({ onExecute }) => (
+const DeleteButton = ({ onExecute, disabled }) => (
   <IconButton
     onClick={() => {
-      if (window.confirm("Вы уверены что хотите удалить этого жильца?")) {
+      if (window.confirm("Вы уверены что хотите удалить?")) {
         onExecute();
       }
     }}
     title="Удалить"
+    disabled={disabled}
   >
     <DeleteIcon />
   </IconButton>
@@ -52,7 +53,9 @@ const commandComponents = {
   cancel: CancelButton
 };
 
-export default ({ id, onExecute }) => {
+const CommandButtonComponent = ({ id, onExecute }) => {
   const CommandButton = commandComponents[id];
   return <CommandButton onExecute={onExecute} />;
 };
+
+export default CommandButtonComponent;

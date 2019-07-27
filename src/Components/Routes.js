@@ -15,28 +15,28 @@ import SensorData from "./SensorData";
 
 export default () => (
   <React.Fragment>
-    <Route exact path="/" component={EmailSender} />
-    <Route path="/Posts" component={() => <ArticleList type="Post" />} />
-    <Route path="/newPost" component={() => <ArticleEditor type="Post" />} />
-    <Route path="/Settings" component={Settings} />
-    <Route path="/Content" component={Content} />
-    <Route path="/SensorData" component={SensorData} />
+    <Route exact path="/admin" component={EmailSender} />
+    <Route path="/admin/Posts" component={() => <ArticleList type="Post" />} />
+    <Route path="/admin/newPost" component={() => <ArticleEditor type="Post" />} />
+    <Route path="/admin/Settings" component={Settings} />
+    <Route path="/admin/Content" component={Content} />
+    <Route path="/admin/SensorData" component={SensorData} />
 
-    <Route path="/Projects" component={() => <ArticleList type="Project" />} />
+    <Route path="/admin/Projects" component={() => <ArticleList type="Project" />} />
     <Route
-      path="/newProject"
+      path="/admin/newProject"
       component={() => <ArticleEditor type="Project" />}
     />
     <Route
-      path="/Project/:id"
+      path="/admin/Project/:id"
       component={e => <ArticleEditor type="Project" id={e.match.params.id} />}
     />
     <Route
-      path="/Post/:id"
+      path="/admin/Post/:id"
       component={e => <ArticleEditor type="Post" id={e.match.params.id} />}
     />
     <Route
-      path="/Tenants"
+      path="/admin/Tenants"
       component={() => (
         <Tenants
           columns={editTableColumns}

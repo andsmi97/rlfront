@@ -32,7 +32,7 @@ import {
   searchMessages
 } from "./localization";
 import Command from "./CommandButtons";
-import agent from "../../agent";
+import agent, { API_ROOT } from "../../agent";
 import { connect } from "react-redux";
 import { withStyles } from "@material-ui/core/styles";
 import {
@@ -71,6 +71,8 @@ const detailColumns = [
   { name: "nightCounter", title: "Ночь" },
   { name: "dayTariff", title: "Тариф День" },
   { name: "nightTariff", title: "Тариф Ночь" },
+  { name: "comission", title: "Комиссия, руб" },
+  { name: "totalPriceWithComission", title: "Сумма, руб" },
   { name: "file", title: "Файл" },
   { name: "sender", title: "Повторная отправка" }
 ];
@@ -82,6 +84,8 @@ const tableDetailColumnExtensions = [
   { columnName: "nightCounter", width: 150 },
   { columnName: "dayTariff", width: 150 },
   { columnName: "nightTariff", width: 150 },
+  { columnName: "comission", width: 150 },
+  { columnName: "totalPriceWithComission", width: 150 },
   { columnName: "file", width: 80 },
   { columnName: "sender", width: 165 }
 ];
@@ -101,9 +105,15 @@ const styles = theme => ({
     color: theme.palette.primary.main
   }
 });
-
-const ActionCell = withStyles(styles)(
-  ({ row, column, classes, ...restProps }) => {
+const mapTableStateToProps = state => ({
+  tenantId: state.tenants.expandedRowIds[0]
+});
+const mapTableDispatchToProps = dispatch => ({});
+const ActionCell = connect(
+  mapTableStateToProps,
+  mapTableDispatchToProps
+)(
+  withStyles(styles)(({ row, column, classes, tenantId, ...restProps }) => {
     if (column.name === "sender") {
       return (
         <Table.Cell>
@@ -111,7 +121,8 @@ const ActionCell = withStyles(styles)(
             file={row.file}
             subject={"Тема"}
             message={"Сообщение"}
-            houseNumber={1}
+            tenantId={tenantId}
+            type="single"
           />
         </Table.Cell>
       );
@@ -119,7 +130,7 @@ const ActionCell = withStyles(styles)(
       return (
         <Table.Cell>
           <IconButton
-            href={`http://localhost:8082/api/download/bill/${row.file}`}
+            href={`${API_ROOT}/download/bill/${row.file}`}
             className={classes.clicableItem}
           >
             <FileIcon />
@@ -129,16 +140,10 @@ const ActionCell = withStyles(styles)(
     } else {
       return <Table.Cell row={row} column={column} {...restProps} />;
     }
-  }
+  })
 );
 
-const LookupEditCellBase = ({
-  availableColumnValues,
-  value,
-  type,
-  onValueChange,
-  classes
-}) => (
+const LookupEditCellBase = ({ value, type, onValueChange, classes }) => (
   <TableCell className={classes.lookupEditCell}>
     {type === "number" && (
       <TextField
@@ -172,6 +177,7 @@ const LookupEditCellBase = ({
     )}
   </TableCell>
 );
+
 export const LookupEditCell = withStyles(styles, {
   name: "ControlledModeDemo"
 })(LookupEditCellBase);
@@ -191,97 +197,132 @@ const EditCell = props => {
   }
   return <TableEditRow.Cell {...props} />;
 };
-const mapStateToProps = state => ({ ...state.tenants });
+
+const comparePriority = (a, b) => {
+  const priorityA = new Date(a);
+  const priorityB = new Date(b);
+  if (priorityA === priorityB) {
+    return 0;
+  }
+  return priorityA < priorityB ? -1 : 1;
+};
+
+const mapTenantDocumentsToProps = state => ({
+  dayTariff: state.common.dayTariff,
+  nightTariff: state.common.nightTariff
+});
 const mapBillDispatchToProps = dispatch => ({
   onCommitChanges: tenantId => e => dispatch(commitBillChanges(e, tenantId))
 });
 const GridDetailContainerBase = connect(
-  mapStateToProps,
+  mapTenantDocumentsToProps,
   mapBillDispatchToProps
 )(
-  withStyles(styles)(({ row, classes, parentId, onCommitChanges }) => {
-    const [data] = useState(
-      row.documents.map(document => {
-        return {
-          ...document,
-          billDate: format(new Date(document.billDate), "dd/MM/yyyy"),
-          createdAt: format(new Date(document.createdAt), "dd/MM/yyyy")
-        };
-      })
-    );
-    console.log("parentId", parentId);
-    const [sorting, setSorting] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [pageSize, setPageSize] = useState(10);
-    const [pageSizes] = useState([5, 10, 0]);
-    const [editingRowIds, setEditingRowIds] = useState([]);
-    const [rowChanges, setRowChanges] = useState({});
-    const [addedRows, setAddedRows] = useState([]);
-    const [searchValue, setSearchValue] = useState("");
-    const editingStateColumnExtensions = [
-      { columnName: "createdAt", editingEnabled: false },
-      { columnName: "file", editingEnabled: false },
-      { columnName: "sender", editingEnabled: false }
-    ];
+  withStyles(styles)(
+    ({ row, nightTariff, dayTariff, classes, parentId, onCommitChanges }) => {
+      const [data] = useState(
+        row.documents.map(document => {
+          return {
+            ...document,
+            billDate: format(new Date(document.billDate), "dd/MM/yyyy"),
+            createdAt: format(new Date(document.createdAt), "dd/MM/yyyy")
+          };
+        })
+      );
+      const [sorting, setSorting] = useState([
+        { columnName: "billDate", direction: "asc" }
+      ]);
+      const [currentPage, setCurrentPage] = useState(0);
+      const [pageSize, setPageSize] = useState(10);
+      const [pageSizes] = useState([5, 10, 0]);
+      const [editingRowIds, setEditingRowIds] = useState([]);
+      const [rowChanges, setRowChanges] = useState({});
+      const [addedRows, setAddedRows] = useState([]);
+      const [searchValue, setSearchValue] = useState("");
+      const integratedSortingColumnExtensions = [
+        { columnName: "billDate", compare: comparePriority },
+        { columnName: "cretaedAt", compare: comparePriority }
+      ];
+      const editingStateColumnExtensions = [
+        { columnName: "createdAt", editingEnabled: false },
+        { columnName: "file", editingEnabled: false },
+        { columnName: "sender", editingEnabled: false },
+        { columnName: "comission", editingEnabled: false },
+        { columnName: "totalPriceWithComission", editingEnabled: false }
+      ];
+      const changeAddedRows = addedRows => {
+        const initialized = addedRows.map(row =>
+          Object.keys(row).length ? row : { dayTariff, nightTariff }
+        );
+        setAddedRows(initialized);
+      };
 
-    return (
-      <div className={classes.detailContainer}>
-        <Paper>
-          <Grid
-            rows={data}
-            columns={detailColumns}
-            className={classes.root}
-            getRowId={row => row._id}
-          >
-            <SortingState sorting={sorting} onSortingChange={setSorting} />
-            <PagingState
-              currentPage={currentPage}
-              onCurrentPageChange={setCurrentPage}
-              pageSize={pageSize}
-              onPageSizeChange={setPageSize}
-            />
-            <SearchState value={searchValue} onValueChange={setSearchValue} />
-            <EditingState
-              editingRowIds={editingRowIds}
-              onEditingRowIdsChange={setEditingRowIds}
-              rowChanges={rowChanges}
-              onRowChangesChange={setRowChanges}
-              addedRows={addedRows}
-              onAddedRowsChange={setAddedRows}
-              onCommitChanges={onCommitChanges(parentId)}
-              className={classes.clicableItem}
-              columnExtensions={editingStateColumnExtensions}
-            />
-            <IntegratedFiltering />
-            <IntegratedSorting />
-            <IntegratedPaging />
-            <Table
-              columnExtensions={tableDetailColumnExtensions}
-              cellComponent={ActionCell}
-            />
+      return (
+        <div className={classes.detailContainer}>
+          <Paper>
+            <Grid
+              rows={data}
+              columns={detailColumns}
+              className={classes.root}
+              getRowId={row => row._id}
+            >
+              <SortingState sorting={sorting} onSortingChange={setSorting} />
+              <PagingState
+                currentPage={currentPage}
+                onCurrentPageChange={setCurrentPage}
+                pageSize={pageSize}
+                onPageSizeChange={setPageSize}
+              />
+              <SearchState value={searchValue} onValueChange={setSearchValue} />
+              <EditingState
+                editingRowIds={editingRowIds}
+                onEditingRowIdsChange={setEditingRowIds}
+                rowChanges={rowChanges}
+                onRowChangesChange={setRowChanges}
+                addedRows={addedRows}
+                onAddedRowsChange={changeAddedRows}
+                onCommitChanges={onCommitChanges(parentId)}
+                className={classes.clicableItem}
+                columnExtensions={editingStateColumnExtensions}
+              />
+              <IntegratedFiltering />
+              <IntegratedSorting
+                columnExtensions={integratedSortingColumnExtensions}
+              />
+              <IntegratedPaging />
+              <Table
+                columnExtensions={tableDetailColumnExtensions}
+                cellComponent={ActionCell}
+                messages={tableMessages}
+              />
 
-            <Toolbar />
-            <SearchPanel messages={searchMessages} />
-            <TableEditRow cellComponent={EditCell} />
+              <Toolbar />
+              <SearchPanel messages={searchMessages} />
+              <TableEditRow cellComponent={EditCell} />
 
-            <TableEditColumn
-              width={110}
-              showAddCommand={!addedRows.length}
-              showEditCommand
-              showDeleteCommand
-              commandComponent={Command}
-              className={classes.clicableItem}
-            />
+              <TableEditColumn
+                width={110}
+                // showAddCommand={!addedRows.length}
+                showEditCommand
+                // showDeleteCommand
+                commandComponent={Command}
+                className={classes.clicableItem}
+              />
 
-            <TableHeaderRow showSortingControls messages={sortingMessages} />
-            <PagingPanel pageSizes={pageSizes} messages={pagingPanelMessages} />
-          </Grid>
-        </Paper>
-      </div>
-    );
-  })
+              <TableHeaderRow showSortingControls messages={sortingMessages} />
+              <PagingPanel
+                pageSizes={pageSizes}
+                messages={pagingPanelMessages}
+              />
+            </Grid>
+          </Paper>
+        </div>
+      );
+    }
+  )
 );
 
+const mapStateToProps = state => ({ ...state.tenants });
 const mapDispatchToProps = dispatch => ({
   onTableChange: (key, value) =>
     dispatch({ type: CHANGE_TABLE_STATE, key, value }),
@@ -291,14 +332,17 @@ const mapDispatchToProps = dispatch => ({
 });
 
 class TenantsTable extends React.PureComponent {
-  componentWillMount() {
+  componentDidMount() {
     const tenants = agent.Tenants.getAll();
+
     this.props.onLoad(tenants);
   }
 
-  componentWillUnmount() {
-    this.props.onUnload();
-  }
+  //Not sure if this actually helps
+  //+ I had some cases where this was unneceseraly called
+  // componentWillUnmount() {
+  //   this.props.onUnload();
+  // }
 
   render() {
     const {

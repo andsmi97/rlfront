@@ -35,6 +35,9 @@ const mapDispatchToProps = dispatch => ({
 class SensorRows extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     const { houseNumber } = this.props;
+    if (nextProps.errors !== this.props.errors) {
+      return true;
+    }
     return (
       nextProps[`day${houseNumber}`] !== this.props[`day${houseNumber}`] ||
       nextProps[`night${houseNumber}`] !== this.props[`night${houseNumber}`]
@@ -44,7 +47,7 @@ class SensorRows extends React.Component {
     this.props.onSensorDataChange(name, event.target.value);
 
   render() {
-    const { houseNumber, classes } = this.props;
+    const { houseNumber, dayError, nightError, classes } = this.props;
 
     return (
       <>
@@ -55,6 +58,7 @@ class SensorRows extends React.Component {
             className={classes.dense}
           />
           <TextField
+            error={dayError}
             id="day"
             label="День"
             className={classes.textField}
@@ -70,6 +74,7 @@ class SensorRows extends React.Component {
             placeholder={String(this.props.dayPlaceholder)}
           />
           <TextField
+            error={nightError}
             id="night"
             label="Ночь"
             className={classes.textField}

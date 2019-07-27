@@ -7,7 +7,7 @@ import { PlaceholderBlockConfig } from "Dante2/package/es/components/blocks/plac
 import { DanteTooltipConfig } from "Dante2/package/es/components/popovers/toolTip.js";
 import { DanteInlineTooltipConfig } from "Dante2/package/es/components/popovers/addButton.js";
 import Icons from "Dante2/package/es/components/icons";
-
+import { API_ROOT } from "../../agent";
 class DanteEditor extends React.Component {
   render() {
     const { content, onChange, readOnly, bodyPlaceholder } = this.props;
@@ -141,8 +141,7 @@ class DanteEditor extends React.Component {
         widgets={[
           ImageBlockConfig({
             options: {
-              //TODO: add env
-              upload_url: "http://localhost:8080/api/images",
+              upload_url: `${API_ROOT}/images`,
               upload_headers: {
                 Authorization: `Token ${window.localStorage.getItem("jwt")}`
               },

@@ -7,11 +7,13 @@ import {
   CONTENT_UNLOADED,
   CONTENT_UPDATED,
   CONTENT_DELETED,
-  CONTENT_ADDED
+  CONTENT_ADDED,
+  ON_SALES_TEXT_CHANGE
 } from "../constants/actionTypes";
 import Grid from "@material-ui/core/Grid";
 import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
 import agent from "../agent";
 import IconButton from "@material-ui/core/IconButton";
 import Paper from "@material-ui/core/Paper";
@@ -19,21 +21,26 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Loader from "./Loader";
 import { Button } from "@material-ui/core";
+import { openSnack } from "../actions";
 const styles = theme => ({
   container: {
-    position: "relative",
-    height: "100%"
+    height: "250px",
+    width: "100%",
+    overflow: "hidden",
+    position: "relative"
   },
   imageHeader: {
     height: 50,
     width: "100%",
     display: "flex",
     justifyContent: "flex-end",
-    position: "absolute"
+    position: "absolute",
+    background: "rgba(255,255,255,.3)"
   },
   img: {
-    width: "100%",
-    height: "100%"
+    objectFit: "cover",
+    height: "100%",
+    minWidth: "100%"
   },
   title: {
     color: theme.palette.primary.main
@@ -142,6 +149,9 @@ const mapDispatchToProps = dispatch => ({
   onUnload: () => dispatch({ type: CONTENT_UNLOADED }),
   onCreate: payload => dispatch({ type: CONTENT_ADDED, payload }),
   onDelete: (section, id) => dispatch({ type: CONTENT_DELETED, section, id }),
+  openSnack: (type, message) => dispatch(openSnack(type, message)),
+  onSalesTextChange: payload =>
+    dispatch({ type: ON_SALES_TEXT_CHANGE, payload }),
   onUpdate: (section, values) =>
     dispatch({ type: CONTENT_UPDATED, section, values }),
   reorder: (section, payload) => {
@@ -165,6 +175,9 @@ const contentStyles = {
   title: {
     display: "flex",
     justifyContent: "space-between"
+  },
+  saveButton: {
+    marginBottom: 16
   }
 };
 
@@ -185,6 +198,10 @@ class Content extends Component {
     formData.append(`file`, event.target.files[0]);
     formData.append("section", section);
     this.props.onCreate(await agent.Content.create(formData));
+  };
+  saveText = async () => {
+    await agent.Content.changeSalesText(this.props.salesText);
+    this.props.openSnack("success", "Текст сохранен");
   };
   render() {
     const {
@@ -251,6 +268,22 @@ class Content extends Component {
           </Button>
         </div>
         <Paper className={classes.paper} elevation={2}>
+          <TextField
+            id="add-sales-text"
+            label="Рекламный текст"
+            margin="dense"
+            onBlur={event => this.props.onSalesTextChange(event.target.value)}
+            defaultValue={this.props.salesText}
+            variant="filled"
+          />
+          <Button
+            color="primary"
+            aria-label="add"
+            className={classes.saveButton}
+            onClick={this.saveText}
+          >
+            Cохранить текст
+          </Button>
           <SortableList
             items={advertising}
             type={"advertising"}

@@ -51,7 +51,20 @@ export default (state = initialState, action = {}) => {
         })
       };
     case BILL_UPDATED:
-      return { ...state };
+      return {
+        ...state,
+        rows: state.rows.map(tenant => {
+          if (tenant._id === action.payload.tenant) {
+            tenant.documents = tenant.documents.map(document => {
+              if (document._id === action._id) {
+                return action.payload;
+              }
+              return document;
+            });
+          }
+          return tenant;
+        })
+      };
     case BILL_DELETED:
       return {
         ...state,

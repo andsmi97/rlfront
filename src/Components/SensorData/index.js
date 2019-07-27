@@ -20,27 +20,46 @@ import {
   TARIFFS_LOADED,
   CHANGE_SENSOR_STATE,
   LAST_BILLS_LOADED,
-  SENSORS_CLEAR
+  SENSORS_CLEAR,
+  LAST_BILL_DATE_LOADED,
+  SET_SENSORS_ERRORS,
+  SET_PREVIOUS_DATA
 } from "../../constants/actionTypes";
 import { openSnack } from "../../actions";
 import agent from "../../agent.js";
 import InitialValuesDialogButton from "./initialValuesDialog";
-const mapStateToProps = state => ({ ...state.sensordata });
-const mapDispatchToProps = dispatch => {
-  return {
-    onLoad: payload => dispatch({ type: SENSORSDATA_LOADED, payload }),
-    onTariffsLoad: payload => dispatch({ type: TARIFFS_LOADED, payload }),
-    onLastBillsLoad: payload => dispatch({ type: LAST_BILLS_LOADED, payload }),
-    onUnload: () => dispatch({ type: SENSORSDATA_UNLOADED }),
-    openSnack: (type, message) => dispatch(openSnack(type, message)),
-    onTariffChange: (key, value) =>
-      dispatch({ type: CHANGE_SENSOR_STATE, key, value }),
-    onClear: () => dispatch({ type: SENSORS_CLEAR })
-  };
-};
+
+const mapStateToProps = state => ({
+  ...state.sensordata,
+  isInitialValuesSet:
+    state.common.currentUser && state.common.currentUser.isInitialValuesSet
+});
+
+const mapDispatchToProps = dispatch => ({
+  onLoad: payload => dispatch({ type: SENSORSDATA_LOADED, payload }),
+  onTariffsLoad: payload => dispatch({ type: TARIFFS_LOADED, payload }),
+  onLastBillsLoad: payload => dispatch({ type: LAST_BILLS_LOADED, payload }),
+  onUnload: () => dispatch({ type: SENSORSDATA_UNLOADED }),
+  openSnack: (type, message) => dispatch(openSnack(type, message)),
+  onTariffChange: (key, value) =>
+    dispatch({ type: CHANGE_SENSOR_STATE, key, value }),
+  onClear: () => dispatch({ type: SENSORS_CLEAR }),
+  onError: payload => dispatch({ type: SET_SENSORS_ERRORS, payload }),
+  setPreviousData: (lastBillDate, houses) =>
+    dispatch({ type: SET_PREVIOUS_DATA, lastBillDate, houses }),
+  onLoadLastBillDate: payload =>
+    dispatch({ type: LAST_BILL_DATE_LOADED, payload })
+});
 
 const styles = theme => ({
   paper: {
+    display: "flex",
+    justifyContent: "center",
+    flexDirection: "column",
+    padding: 24,
+    marginBottom: 32
+  },
+  paperWarrning: {
     display: "flex",
     justifyContent: "center",
     flexDirection: "column",
@@ -68,26 +87,38 @@ class Bills extends React.Component {
   constructor() {
     super();
     this.state = {
-      selectedDate: new Date(new Date().getFullYear(), new Date().getMonth(), 0)
+      selectedDate: new Date(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        0
+      ),
+      errors: []
     };
   }
+
   componentDidMount() {
-    this.props.onLoad(agent.Tenants.getAll());
+    this.props.onLoad(agent.Tenants.getAllHousesWithLastSensorValues());
     this.props.onTariffsLoad(agent.Tariffs.getLast());
-    // this.props.onLastBillsLoad(agent.Bill.getLast());
+    this.props.onLoadLastBillDate(agent.Bill.getLastBillDate());
   }
   componentWillUnmount() {
     this.props.onUnload();
   }
+
   handleDateChange = selectedDate => this.setState({ selectedDate });
+
   handleChange = name => event =>
     this.props.onTariffChange(name, event.target.value);
-  onSubmit = async () => {
-    await agent.Sensors.insertAll({
+
+  onSubmit = async e => {
+    e.preventDefault();
+    const { houses } = this.props;
+
+    const payload = await agent.Sensors.insertAll({
       billDate: this.state.selectedDate,
       dayTariff: this.props.dayTariff,
       nightTariff: this.props.nightTariff,
-      houses: this.props.houses.map(house => {
+      houses: houses.map(house => {
         return {
           houseNumber: house.houseNumber,
           day: this.props[`day${house.houseNumber}`],
@@ -95,23 +126,73 @@ class Bills extends React.Component {
         };
       })
     });
-    this.props.openSnack(
-      "success",
-      `Счета за ${format(
+    //payload can be only error here
+    if (payload) {
+      this.props.openSnack("error", payload.error.msg);
+      if (payload.error.errors) {
+        console.log("i wanted to dispatch");
+        this.props.onError(payload.error.errors);
+      }
+    } else {
+      this.props.openSnack(
+        "success",
+        `Счета за ${format(
+          this.state.selectedDate,
+          "dd/MM/yyyy"
+        )} cозданы. Для рассылки, перейдите во вкладку рассылка`
+      );
+      this.props.onError([]);
+      this.props.setPreviousData(
         this.state.selectedDate,
-        "dd/MM/yyyy"
-      )} cозданы. Для рассылки, перейдите во вкладку рассылка`
-    );
-    this.props.onClear();
+        houses.map(house => {
+          return {
+            houseNumber: house.houseNumber,
+            lastDayValue: this.props[`day${house.houseNumber}`],
+            lastNightValue: this.props[`night${house.houseNumber}`]
+          };
+        })
+      );
+      this.props.onClear();
+    }
   };
+
   onSubmitTariffs = async e => {
     e.preventDefault();
     await agent.Tariffs.insert(this.props.dayTariff, this.props.nightTariff);
     this.props.openSnack("success", "Тарифы сохранены");
   };
-  render() {
-    const { classes } = this.props;
 
+  onRemoveLastBills = async () => {
+    try {
+      const newData = await agent.Bills.removeLastBills();
+      this.props.setPreviousData(
+        newData.lastBillDate,
+        newData.houses.map(house => {
+          return {
+            houseNumber: house.houseNumber,
+            lastDayValue: this.props[`day${house.houseNumber}`],
+            lastNightValue: this.props[`night${house.houseNumber}`]
+          };
+        })
+      );
+      this.props.openSnack("success", "Последние счета удалены");
+    } catch (e) {
+      this.props.openSnack("error", "Возникла ошибка, попробуйте позже");
+    }
+  };
+  render() {
+    const { houses, classes, errors } = this.props;
+    const housesWithErrors = errors
+      ? houses.map(house => {
+          const houseError = errors.find(
+            error => error.houseNumber === house.houseNumber
+          );
+          if (houseError) {
+            return { ...house, ...houseError };
+          }
+          return house;
+        })
+      : houses;
     return (
       <Grid
         container
@@ -121,11 +202,14 @@ class Bills extends React.Component {
         spacing={3}
       >
         <Grid item xs={12} sm={10} md={8} lg={6}>
-          <Paper elevaltion={2} className={classes.paper}>
-            <Typography variant="body1">
-              Дата внесения последних показаний: 21.06.2019
-            </Typography>
-          </Paper>
+          {this.props.lastBillDate && (
+            <Paper elevaltion={2} className={classes.paper}>
+              <Typography variant="body1">
+                Последний счет за:{" "}
+                {format(this.props.lastBillDate, "dd/MM/yyyy")}
+              </Typography>
+            </Paper>
+          )}
           <Typography variant="h5" gutterBottom>
             Тарифы
           </Typography>
@@ -163,34 +247,59 @@ class Bills extends React.Component {
             <InitialValuesDialogButton />
           </div>
           <Paper className={classes.paper} elevation={2}>
-            {this.props.houses.map(item => (
-              <SensorRows
-                key={item.houseNumber}
-                index={item.houseNumber}
-                houseNumber={item.houseNumber}
-                dayPlaceholder={item.lastDayValue}
-                nightPlaceholder={item.lastNightValue}
-              />
-            ))}
-            <div className={classes.actionBar}>
-              <MuiPickersUtilsProvider utils={DateFnsUtils} locale={ruLocale}>
-                <KeyboardDatePicker
-                  value={this.state.selectedDate}
-                  onChange={this.handleDateChange}
-                  cancelLabel="ОТМЕНА"
-                  okLabel="ОК"
-                  format="dd/MM/yyyy"
-                />
-              </MuiPickersUtilsProvider>
-              <Button
-                color="primary"
-                className={classes.button}
-                onClick={this.onSubmit}
-              >
-                Применить
-              </Button>
-            </div>
+            {this.props.isInitialValuesSet ? (
+              <form onSubmit={this.onSubmit}>
+                {housesWithErrors.map(item => (
+                  <SensorRows
+                    key={item.houseNumber}
+                    index={item.houseNumber}
+                    houseNumber={item.houseNumber}
+                    dayPlaceholder={item.lastDayValue}
+                    nightPlaceholder={item.lastNightValue}
+                    dayError={item.day}
+                    nightError={item.night}
+                  />
+                ))}
+                <div className={classes.actionBar}>
+                  <MuiPickersUtilsProvider
+                    utils={DateFnsUtils}
+                    locale={ruLocale}
+                  >
+                    <KeyboardDatePicker
+                      value={this.state.selectedDate}
+                      onChange={this.handleDateChange}
+                      cancelLabel="ОТМЕНА"
+                      okLabel="ОК"
+                      format="dd/MM/yyyy"
+                    />
+                  </MuiPickersUtilsProvider>
+                  <Button
+                    color="primary"
+                    className={classes.button}
+                    type="submit"
+                  >
+                    Применить
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <Typography variant="body1">
+                Чтобы внести показания и создать счета, внесите первичные
+                показания
+              </Typography>
+            )}
           </Paper>
+          {this.props.lastBillDate && (
+            <Paper elevaltion={2} className={classes.paperWarrning}>
+              <Typography variant="body1">
+                Удалить последние счета за:{" "}
+                {format(this.props.lastBillDate, "dd/MM/yyyy")}
+              </Typography>
+              <Button onClick={this.onRemoveLastBills} color="secondary">
+                Удалить
+              </Button>
+            </Paper>
+          )}
         </Grid>
       </Grid>
     );

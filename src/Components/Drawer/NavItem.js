@@ -28,7 +28,6 @@ const icon = {
   Настройки: <ContactIcon />,
   Выйти: <ExitIcon />
 };
-const mapStateToProps = () => ({});
 
 const mapDispatchToProps = dispatch => ({
   onClickLogout: () => dispatch({ type: LOGOUT })
@@ -51,6 +50,6 @@ class NavItem extends React.Component {
 }
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(NavItem);

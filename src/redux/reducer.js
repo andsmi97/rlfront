@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
 import { connectRouter } from "connected-react-router";
-import { sectionImagesReducer } from "../Components/SectionImages/reducers";
 import tenants from "../reducers/tenants";
 import auth from "../reducers/auth";
 import common from "../reducers/common";
@@ -14,7 +13,6 @@ export default history =>
   combineReducers({
     settings,
     content,
-    sectionImagesReducer,
     tenants,
     common,
     email,

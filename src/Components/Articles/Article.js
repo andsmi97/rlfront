@@ -57,7 +57,6 @@ const styles = {
   }
 };
 
-const mapStateToProps = state => ({});
 const mapDispatchToProps = dispatch => {
   return {
     onDelete: id => dispatch({ type: ARTICLE_DELETED, id })
@@ -86,7 +85,7 @@ class Article extends React.Component {
             component={Link}
             size="small"
             color="primary"
-            to={`/${type}/${id}`}
+            to={`/admin/${type}/${id}`}
           >
             Редактировать
           </Button>
@@ -100,6 +99,6 @@ class Article extends React.Component {
 }
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(withStyles(styles)(Article));

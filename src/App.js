@@ -6,7 +6,7 @@ import Auth from "./Components/Auth";
 import Snack from "./Components/Snack";
 import { closeSnack } from "./actions";
 import { Switch } from "react-router-dom";
-import { APP_LOAD, REDIRECT } from "./constants/actionTypes";
+import { APP_LOAD, REDIRECT, TARIFFS_LOADED } from "./constants/actionTypes";
 import { store } from "./redux/store";
 import { push } from "connected-react-router";
 import agent from "./agent";
@@ -30,7 +30,8 @@ const mapDispatchToProps = dispatch => {
     onSnackClose: () => dispatch(closeSnack()),
     onLoad: (payload, token) =>
       dispatch({ type: APP_LOAD, payload, token, skipTracking: true }),
-    onRedirect: () => dispatch({ type: REDIRECT })
+    onRedirect: () => dispatch({ type: REDIRECT }),
+    onTariffsLoad: payload => dispatch({ type: TARIFFS_LOADED, payload })
   };
 };
 class App extends Component {
@@ -48,6 +49,9 @@ class App extends Component {
     }
 
     this.props.onLoad(token ? agent.User.current() : null, token);
+    if (this.props.user) {
+      this.props.onTariffsLoad(agent.Tariffs.getLast());
+    }
   }
 
   render() {

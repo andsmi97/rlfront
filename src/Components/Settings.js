@@ -6,11 +6,6 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import FormControl from "@material-ui/core/FormControl";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import Input from "@material-ui/core/Input";
-import InputLabel from "@material-ui/core/InputLabel";
-
 import {
   CHANGE_SETTING_FIELD,
   SETTINGS_LOADED,
@@ -141,6 +136,7 @@ class Settings extends React.Component {
               margin="dense"
               onChange={event => onSettingsChange(event, "phone")}
               value={phone}
+              variant="filled"
             />
             <TextField
               id="admin-new-phone2"
@@ -148,6 +144,7 @@ class Settings extends React.Component {
               margin="dense"
               onChange={event => onSettingsChange(event, "phone2")}
               value={phone2}
+              variant="filled"
             />
             <TextField
               id="admin-new-email"
@@ -156,6 +153,7 @@ class Settings extends React.Component {
               onChange={event => onSettingsChange(event, "email")}
               type="email"
               value={email}
+              variant="filled"
             />
             <TextField
               id="admin-new-mail-pass"
@@ -164,6 +162,7 @@ class Settings extends React.Component {
               onChange={event => onSettingsChange(event, "mailPass")}
               type="password"
               value={mailPass}
+              variant="filled"
             />
             <Button
               color="primary"
@@ -184,6 +183,7 @@ class Settings extends React.Component {
               onChange={event => onSettingsChange(event, "oldPass")}
               type="password"
               value={oldPass}
+              variant="filled"
             />
             <TextField
               id="admin-new-account-pass"
@@ -192,24 +192,19 @@ class Settings extends React.Component {
               onChange={event => onSettingsChange(event, "newPass")}
               margin="dense"
               type="password"
+              variant="filled"
             />
-            <FormControl
-              error={Boolean(this.state.error)}
-              aria-describedby="component-error-text"
-            >
-              <InputLabel htmlFor="repeatpass">Повторите пароль</InputLabel>
-              <Input
-                id="repeatpass"
-                value={repeatPass}
-                onChange={event => onSettingsChange(event, "repeatPass")}
-                onBlur={this.comparePasswords}
-                margin="dense"
-                type="password"
-              />
-              <FormHelperText id="component-error-text">
-                {this.state.error ? this.state.error : ""}
-              </FormHelperText>
-            </FormControl>
+            <TextField
+              error={this.state.error ? this.state.error : false}
+              id="repeatpass"
+              value={repeatPass}
+              onChange={e => onSettingsChange(e, "repeatPass")}
+              onBlur={this.comparePasswords}
+              label={this.state.error ? this.state.error : "Повторите пароль"}
+              margin="normal"
+              variant="filled"
+              type="password"
+            />
             <Button
               color="primary"
               className={classes.button}

@@ -9,18 +9,17 @@ import SensorRows from "./SensorRows";
 import agent from "../../agent";
 import { connect } from "react-redux";
 import { openSnack } from "../../actions";
-import { SENSORS_CLEAR } from "../../constants/actionTypes";
+import { SENSORS_CLEAR, SET_INITIAL_VALUES } from "../../constants/actionTypes";
 
 const mapStateToProps = state => ({ ...state.sensordata });
 const mapDispatchToProps = dispatch => ({
   openSnack: (type, message) => dispatch(openSnack(type, message)),
+  onSetInitialValues: payload =>
+    dispatch({ type: SET_INITIAL_VALUES, payload }),
   onClear: () => dispatch({ type: SENSORS_CLEAR })
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(props => {
+const InitialValuesDialog = props => {
   const [open, setOpen] = React.useState(false);
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => {
@@ -28,20 +27,20 @@ export default connect(
   };
   const onSubmit = async e => {
     e.preventDefault();
-    await agent.Sensors.setInitialValues({
-      tenants: props.houses.map(house => {
-        return {
-          houseNumber: house.houseNumber,
-          lastDayValue: props[`day${house.houseNumber}`],
-          lastNightValue: props[`night${house.houseNumber}`]
-        };
+    props.onSetInitialValues(
+      await agent.Sensors.setInitialValues({
+        tenants: props.houses.map(house => {
+          return {
+            houseNumber: house.houseNumber,
+            lastDayValue: props[`day${house.houseNumber}`],
+            lastNightValue: props[`night${house.houseNumber}`]
+          };
+        })
       })
-    });
+    );
     props.onClear();
     props.openSnack("success", "Первичные показания внесены");
     setOpen(false);
-
-    // await agent.Sensors.setInitialValues(initialValues);
   };
   return (
     <div>
@@ -86,4 +85,9 @@ export default connect(
       </Dialog>
     </div>
   );
-});
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(InitialValuesDialog);

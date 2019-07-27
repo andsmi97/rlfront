@@ -1,8 +1,10 @@
-import { SNACK_STATUS_CLOSE, SNACK_STATUS_OPEN } from "./constants.js";
+import {
+  SNACK_STATUS_CLOSE,
+  SNACK_STATUS_OPEN
+} from "./constants/actionTypes.js";
 
 export const closeSnack = () => ({
-  type: SNACK_STATUS_CLOSE,
-  payload: false
+  type: SNACK_STATUS_CLOSE
 });
 
 export const openSnack = (type, message) => ({

@@ -6,7 +6,8 @@ import {
   CONTENT_DELETED,
   CONTENT_UPDATED,
   CONTENT_ADDED,
-  ASYNC_START
+  ASYNC_START,
+  ON_SALES_TEXT_CHANGE
 } from "../constants/actionTypes";
 const initialState = {
   carousel: [],
@@ -33,6 +34,8 @@ export default (state = initialState, action) => {
         return { ...state, isPending: true };
       }
       return state;
+    case ON_SALES_TEXT_CHANGE:
+      return { ...state, salesText: action.payload };
     case CONTENT_LOADED:
       return { ...state, ...action.payload, isPending: false };
     case CONTENT_UPDATED:

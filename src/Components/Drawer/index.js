@@ -107,16 +107,15 @@ class ClippedDrawer extends React.Component {
               }}
             >
               <div className={classes.toolbar} />
-              <NavItem route="/" title="Рассылка" />
-              <NavItem route="/Posts" title="Новости" />
-              <NavItem route="/Projects" title="Проекты" />
-              <NavItem route="/Tenants" title="Жильцы" />
-              <NavItem route="/Content" title="Содержимое" />
-              <NavItem route="/Bills" title="Счета" />
-              <NavItem route="/SensorData" title="Показания" />
-              <NavItem route="/Settings" title="Настройки" />
+              <NavItem route="/admin" title="Рассылка" />
+              <NavItem route="/admin/Posts" title="Новости" />
+              <NavItem route="/admin/Projects" title="Проекты" />
+              <NavItem route="/admin/Tenants" title="Жильцы" />
+              <NavItem route="/admin/Content" title="Содержимое" />
+              <NavItem route="/admin/SensorData" title="Показания" />
+              <NavItem route="/admin/Settings" title="Настройки" />
               <Divider />
-              <NavItem route="/" title="Выйти" logout />
+              <NavItem route="/admin/" title="Выйти" logout />
             </Drawer>
           </Hidden>
           <Hidden mdDown implementation="js" className={classes.drawer}>
@@ -129,16 +128,15 @@ class ClippedDrawer extends React.Component {
               open
             >
               <div className={classes.toolbar} />
-              <NavItem route="/" title="Рассылка" />
-              <NavItem route="/Posts" title="Новости" />
-              <NavItem route="/Projects" title="Проекты" />
-              <NavItem route="/Tenants" title="Жильцы" />
-              <NavItem route="/Content" title="Содержимое" />
-              <NavItem route="/Bills" title="Счета" />
-              <NavItem route="/SensorData" title="Показания" />
-              <NavItem route="/Settings" title="Настройки" />
+              <NavItem route="/admin/" title="Рассылка" />
+              <NavItem route="/admin/Posts" title="Новости" />
+              <NavItem route="/admin/Projects" title="Проекты" />
+              <NavItem route="/admin/Tenants" title="Жильцы" />
+              <NavItem route="/admin/Content" title="Содержимое" />
+              <NavItem route="/admin/SensorData" title="Показания" />
+              <NavItem route="/admin/Settings" title="Настройки" />
               <Divider />
-              <NavItem route="/" title="Выйти" logout />
+              <NavItem route="/admin" title="Выйти" logout />
             </Drawer>
           </Hidden>
         </nav>
