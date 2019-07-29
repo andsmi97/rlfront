@@ -38,6 +38,12 @@ class SensorRows extends React.Component {
     if (nextProps.errors !== this.props.errors) {
       return true;
     }
+    if (
+      nextProps.dayPlaceholder !== this.props.dayPlaceholder ||
+      nextProps.nightPlaceholder !== this.props.nightPlaceholder
+    ) {
+      return true;
+    }
     return (
       nextProps[`day${houseNumber}`] !== this.props[`day${houseNumber}`] ||
       nextProps[`night${houseNumber}`] !== this.props[`night${houseNumber}`]

@@ -164,24 +164,23 @@ class Bills extends React.Component {
 
   onRemoveLastBills = async () => {
     try {
-      const newData = await agent.Bills.removeLastBills();
-      this.props.setPreviousData(
-        newData.lastBillDate,
-        newData.houses.map(house => {
-          return {
-            houseNumber: house.houseNumber,
-            lastDayValue: this.props[`day${house.houseNumber}`],
-            lastNightValue: this.props[`night${house.houseNumber}`]
-          };
-        })
-      );
-      this.props.openSnack("success", "Последние счета удалены");
+      if (window.confirm("Вы уверены что хотите удалить?")) {
+        const newData = await agent.Bill.removeLastBills();
+
+        this.props.setPreviousData(
+          newData.lastBillDate ? new Date(newData.lastBillDate) : null,
+          newData.houses
+        );
+        this.props.openSnack("success", "Последние счета удалены");
+      }
     } catch (e) {
+      console.log(e);
       this.props.openSnack("error", "Возникла ошибка, попробуйте позже");
     }
   };
   render() {
     const { houses, classes, errors } = this.props;
+    console.log("i have refreshed)");
     const housesWithErrors = errors
       ? houses.map(house => {
           const houseError = errors.find(

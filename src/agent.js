@@ -3,7 +3,7 @@ import _superagent from "superagent";
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
-export const API_ROOT = "http://localhost:8082/api";
+export const API_ROOT = "https://lesnayagavan.ru/api";
 
 const responseBody = res => res.body;
 const responseStatus204 = res => res.statusCode === 204;
@@ -124,8 +124,7 @@ const Bill = {
 const Sensors = {
   insertAll: sensorData => requests.post("/sensors/all", sensorData),
   setInitialValues: initialValues =>
-    requests.post("/sensors/setInitialValues", initialValues),
-  
+    requests.post("/sensors/setInitialValues", initialValues)
 };
 
 const Tariffs = {
